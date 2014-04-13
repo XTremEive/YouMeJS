@@ -90,26 +90,24 @@ This part also aim at showcasing what we can do so far.
 Can I use it in production?
 ---
 
-No. This project is a work in progress, as such it is yet to be documented or even tested in a production environment.
+**No**. This project is a work in progress, as such it is yet to be documented or even tested in a production environment.
 If you really want to play with those feature such as the template system, I encourage you to use [Knockout](https://github.com/knockout/knockout) instead.
 
 What do I need to use it anyway?
 ---
 
 A build of the library is available in the */build/dev/* directory.
-If you're an widget / API developer. Keep in mind that you, and your clients will have to have (jQuery)[https://github.com/jquery/jquery] available.
-If you want to modify and the library itself you might consider installing (Browserify)[https://github.com/substack/node-browserify] and run the *resouces/Scripts/build_dev.sh* to generate a new build (this script should be run at the root of the library.
+If you're an widget / API developer. Keep in mind that you, and your clients will have to have [jQuery](https://github.com/jquery/jquery) available.
+If you want to modify and the library itself you might consider installing [Browserify](https://github.com/substack/node-browserify) and run the *resouces/Scripts/build_dev.sh* to generate a new build (this script should be run at the root of the library.
 
 
 What is left to do in order to have a kickass library? (todolist)
 ---
 
 - Complete the todolist
-- Add the comment parsing
 - Add recursion in the comment parsing
-- Add the for binding
-- Add the if binding
 - Add the save (or send) binding
 - Add some input binding (with reload)
+- Add the unknown command warning
 - ...
 

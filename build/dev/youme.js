@@ -1,18 +1,48 @@
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.YouMe=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-var Application = function (documentParsers, attributeParser, interpreters, hookName, rootNode)
+var Application = function (documentParsers, commandParser, interpreters, hookName, rootNode)
 {
     this.documentParsers = documentParsers || [];
-    this.attributeParser = attributeParser || null;
+    this.commandParser = commandParser || null;
     this.interpreters = interpreters || [];
     this.hookName = hookName || 'missingHookName'
     this.rootNode = rootNode || 'body';
+    this.debug = false;
+};
+
+Application.prototype.process = function(rootNode, context)
+{
+    context = context || {};
+
+    // Parse
+    var commands = [];
+    for(var index = 0, documentParser; documentParser = this.documentParsers[index]; ++index)
+    {
+        var parsedCommands = documentParser.parse(this, rootNode, context, this.hookName);
+        for(var i = 0; i < parsedCommands.length; ++i)
+        {
+            commands.push(parsedCommands[i]);
+        }
+    }
+
+    // Execute
+    for(var i = 0; i < commands.length; ++i)
+    {
+        if(this.debug)
+        {
+            console.log("Processing " + commands[i]);
+        }
+        for(var index = 0, interpreter; interpreter = this.interpreters[index]; ++index)
+        {
+            interpreter.interpret(commands[i]);
+        }
+    }
 };
 
 Application.prototype.run = function(givenArguments)
 {
     givenArguments = givenArguments || {};
 
-    // Process arguments
+    // Handle arguments
     var defaultArguments = {
         debug: true
     };
@@ -23,28 +53,10 @@ Application.prototype.run = function(givenArguments)
     }
 
     // Run
-    var commands = [];
-    for(var index = 0, documentParser; documentParser = this.documentParsers[index]; ++index)
-    {
-        var parsedCommands = documentParser.parse(this.attributeParser, this.rootNode, this.hookName);
-        for(var i = 0; i < parsedCommands.length; ++i)
-        {
-            commands.push(parsedCommands[i]);
-        }
-    }
+    this.debug = arguments.debug;
+    this.process(this.rootNode);
 
-    for(var i = 0; i < commands.length; ++i)
-    {
-        if(arguments.debug)
-        {
-            console.log("Processing " + commands[i]);
-        }
-        for(var index = 0, interpreter; interpreter = this.interpreters[index]; ++index)
-        {
-            interpreter.interpret(commands[i]);
-        }
-    }
-
+    // Return
     return this;
 };
 
@@ -54,38 +66,81 @@ module.exports = Application;
 },{}],2:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
+var ForInterpreter = function(storage)
+{
+    Interpreter.call(this, storage);
+};
+
+ForInterpreter.prototype = Object.create(Interpreter.prototype);
+
+ForInterpreter.prototype.interpret = function(command)
+{
+    // Discard any command that has nothing to do with this interpreter
+    if (command.name != 'for')
+    {
+        return false;
+    }
+
+    // Get value from storage
+    var value = this.getValue(command.context, command.getArgument(0), []);
+
+    // Process
+    var newElements = [];
+    for(var i = 0; i < value.length; ++i)
+    {
+        newElements.push(command.target.createTemplate());
+    }
+    command.target.clear();
+
+    for(var i = 0; i < value.length; ++i)
+    {
+        command.target.append(newElements[i]);
+        command.application.process(newElements[i], value[i]);
+    }
+
+    return true;
+};
+
+// Exports
+module.exports = ForInterpreter;
+},{"./Interpreter":4}],3:[function(_dereq_,module,exports){
+var Interpreter = _dereq_('./Interpreter');
+
 var IfInterpreter = function(storage)
 {
-    Interpreter.call(this);
-
-    this.storage = storage || null;
+    Interpreter.call(this, storage);
 };
 
 IfInterpreter.prototype = Object.create(Interpreter.prototype);
 
 IfInterpreter.prototype.interpret = function(command)
 {
+    // Discard any command that has nothing to do with this interpreter
     if (command.name != 'if')
     {
-        return;
+        return false;
     }
 
-    var value = this.storage.get(command.getArgument(0), false);
+    // Get value from storage
+    var value = this.getValue(command.context, command.getArgument(0), false);
 
+    // Process
     if (value)
     {
         command.target.show();
     } else {
         command.target.hide();
     }
+
+    return true;
 };
 
 // Exports
 module.exports = IfInterpreter;
-},{"./Interpreter":3}],3:[function(_dereq_,module,exports){
-var Interpreter = function()
+},{"./Interpreter":4}],4:[function(_dereq_,module,exports){
+var Interpreter = function(storage)
 {
-
+    this.storage = storage || null;
 };
 
 Interpreter.prototype.interpret = function(command)
@@ -95,35 +150,57 @@ Interpreter.prototype.interpret = function(command)
     return false;
 };
 
+Interpreter.prototype.getValue = function(context, name, defaultValue)
+{
+    // Handle context request
+    if (name == 'context')
+    {
+        return context;
+    }
+
+    // Handle context variables request
+    if (name.substring(0, "context.".length) == "context.")
+    {
+        var key = name.substring("context.".length);
+        return (key in context) ? context[key] : defaultValue;
+    }
+
+    // Handle storage variables request
+    return this.storage.get(name, defaultValue);
+}
+
 // Exports
 module.exports = Interpreter;
-},{}],4:[function(_dereq_,module,exports){
+},{}],5:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
 var TextInterpreter = function(storage)
 {
-    Interpreter.call(this);
-
-    this.storage = storage || null;
+    Interpreter.call(this, storage);
 };
 
 TextInterpreter.prototype = Object.create(Interpreter.prototype);
 
 TextInterpreter.prototype.interpret = function(command)
 {
+    // Discard any command that has nothing to do with this interpreter
     if (command.name != 'text')
     {
-        return;
+        return false;
     }
 
-    var value = this.storage.get(command.getArgument(0), 'undefined');
+    // Get value from storage
+    var value = this.getValue(command.context, command.getArgument(0), 'undefined');
 
+    // Process
     command.target.html(value);
+
+    return true;
 };
 
 // Exports
 module.exports = TextInterpreter;
-},{"./Interpreter":3}],5:[function(_dereq_,module,exports){
+},{"./Interpreter":4}],6:[function(_dereq_,module,exports){
 var Storage = _dereq_('./Storage');
 
 var MockStorage = function(data)
@@ -173,7 +250,7 @@ MockStorage.prototype.save = function()
 
 // Exports
 module.exports = MockStorage;
-},{"./Storage":6}],6:[function(_dereq_,module,exports){
+},{"./Storage":7}],7:[function(_dereq_,module,exports){
 var Storage = function(data)
 {
     this.data = data;
@@ -210,10 +287,12 @@ Storage.prototype.save = function()
 
 // Exports
 module.exports = Storage;
-},{}],7:[function(_dereq_,module,exports){
-var Command = function(target, name, arguments)
+},{}],8:[function(_dereq_,module,exports){
+var Command = function(application, target, context, name, arguments)
 {
+    this.application = application;
     this.target = target;
+    this.context = context;
     this.name = name || '';
     this.arguments = arguments || {};
 };
@@ -251,7 +330,7 @@ Command.prototype.toString = function()
 // Exports
 module.exports = Command;
 
-},{}],8:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 var Command = _dereq_('./Command');
 
 var CommandParser = function()
@@ -259,7 +338,7 @@ var CommandParser = function()
 
 };
 
-CommandParser.prototype.parse = function(target, input)
+CommandParser.prototype.parse = function(application, target, context, input)
 {
     throw "Not implemented!";
 
@@ -268,7 +347,7 @@ CommandParser.prototype.parse = function(target, input)
 
 // Exports
 module.exports = CommandParser;
-},{"./Command":7}],9:[function(_dereq_,module,exports){
+},{"./Command":8}],10:[function(_dereq_,module,exports){
 var CommandParser = _dereq_('./CommandParser');
 var Command = _dereq_('./Command');
 
@@ -279,7 +358,7 @@ var SimpleCommandParser = function()
 
 SimpleCommandParser.prototype = Object.create(CommandParser.prototype);
 
-SimpleCommandParser.prototype.parse = function(target, input)
+SimpleCommandParser.prototype.parse = function(application, target, context, input)
 {
     var commandComponents = input.split(':', 2);
     var argumentString = commandComponents[1].trim();
@@ -287,18 +366,18 @@ SimpleCommandParser.prototype.parse = function(target, input)
     var commandName = commandComponents[0].trim();
     var commandArguments = argumentString.split(',');
 
-    return new Command(target, commandName, commandArguments);
+    return new Command(application, target, context, commandName, commandArguments);
 };
 
 // Exports
 module.exports = SimpleCommandParser;
-},{"./Command":7,"./CommandParser":8}],10:[function(_dereq_,module,exports){
+},{"./Command":8,"./CommandParser":9}],11:[function(_dereq_,module,exports){
 var DocumentParser = function()
 {
 
 };
 
-DocumentParser.prototype.parse = function(rootNode, hookName)
+DocumentParser.prototype.parse = function(application, rootNode, context, hookName)
 {
     throw "Not implemented!";
     return [];
@@ -307,10 +386,25 @@ DocumentParser.prototype.parse = function(rootNode, hookName)
 // Exports
 module.exports = DocumentParser;
 
-},{}],11:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 var NormalNode = function(node)
 {
     this.node = $(node);
+};
+
+NormalNode.prototype.append = function(content)
+{
+    this.node.append(content);
+};
+
+NormalNode.prototype.clear = function()
+{
+    this.html('');
+};
+
+NormalNode.prototype.createTemplate = function()
+{
+    return this.node.children().clone().get(0);
 };
 
 NormalNode.prototype.html = function(htmlContent)
@@ -330,7 +424,7 @@ NormalNode.prototype.show = function()
 
 // Exports
 module.exports = NormalNode;
-},{}],12:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 var DocumentParser = _dereq_('./DocumentParser');
 var VirtualNode = _dereq_('./VirtualNode');
 
@@ -345,7 +439,7 @@ var SimpleCommentParser = function()
 
 SimpleCommentParser.prototype = Object.create(DocumentParser.prototype);
 
-SimpleCommentParser.prototype.parse = function(commandParser, rootNode, hookName)
+SimpleCommentParser.prototype.parse = function(application, rootNode, context, hookName)
 {
     var commands = [];
     var nodesToParse = [$(rootNode).get(0)];
@@ -375,7 +469,7 @@ SimpleCommentParser.prototype.parse = function(commandParser, rootNode, hookName
             case this.isEndComment(nodeToParse):
                 scopes[scopes.length - 1].endNode = nodeToParse;
                 var scope = scopes.pop();
-                commands.push(commandParser.parse(new VirtualNode(scope.startNode, scope.contentNodes, scope.endNode), scope.commandString));
+                commands.push(application.commandParser.parse(application, new VirtualNode(scope.startNode, scope.contentNodes, scope.endNode), context, scope.commandString));
                 break;
             default:
                 if (scopes.length > 0)
@@ -411,7 +505,7 @@ SimpleCommentParser.prototype.getCommentValue = function (node) {
 
 // Exports
 module.exports = SimpleCommentParser;
-},{"./DocumentParser":10,"./VirtualNode":14}],13:[function(_dereq_,module,exports){
+},{"./DocumentParser":11,"./VirtualNode":15}],14:[function(_dereq_,module,exports){
 var DocumentParser = _dereq_('./DocumentParser');
 var NormalNode = _dereq_('./NormalNode');
 
@@ -424,17 +518,17 @@ var SimpleDomParser = function()
 
 SimpleDomParser.prototype = Object.create(DocumentParser.prototype);
 
-SimpleDomParser.prototype.parse = function(commandParser, rootNode, hookName)
+SimpleDomParser.prototype.parse = function(application, rootNode, context, hookName)
 {
     var commands = [];
 
     var rootNodeAttribute = $(rootNode).attr('data-' + hookName);
     if (typeof rootNodeAttribute !== 'undefined' && rootNodeAttribute !== false)
     {
-        commands.push(commandParser.parse(rootNode, rootNodeAttribute));
+        commands.push(application.commandParser.parse(application, new NormalNode(rootNode), context, rootNodeAttribute));
     }
     $(rootNode).find('[data-' + hookName + ']').each(function (index, element) {
-        commands.push(commandParser.parse(new NormalNode(element), $(element).attr('data-' + hookName)));
+        commands.push(application.commandParser.parse(application, new NormalNode(element), context, $(element).attr('data-' + hookName)));
     });
 
     return commands;
@@ -442,28 +536,43 @@ SimpleDomParser.prototype.parse = function(commandParser, rootNode, hookName)
 
 // Exports
 module.exports = SimpleDomParser;
-},{"./DocumentParser":10,"./NormalNode":11}],14:[function(_dereq_,module,exports){
+},{"./DocumentParser":11,"./NormalNode":12}],15:[function(_dereq_,module,exports){
 var VirtualNode = function (startComment, nodes, endComment)
 {
-    this.startComment = startComment;
-    this.nodes = nodes;
-    this.endComment = endComment;
+    this.startComment = $(startComment);
+    this.nodes = $(nodes);
+    this.endComment = $(endComment);
+};
+
+VirtualNode.prototype.append = function(content)
+{
+    this.endComment.before(content);
+};
+
+VirtualNode.prototype.clear = function()
+{
+    this.html('');
+};
+
+VirtualNode.prototype.createTemplate = function()
+{
+    return this.nodes.clone().get(0);
 };
 
 VirtualNode.prototype.html = function(htmlContent)
 {
-    $(this.nodes).remove();
-    $(this.startComment).after(htmlContent);
+    this.nodes.remove();
+    this.startComment.after(htmlContent);
 };
 
 VirtualNode.prototype.hide = function()
 {
-    $(this.nodes).hide();
+    this.nodes.hide();
 };
 
 VirtualNode.prototype.show = function()
 {
-    $(this.nodes).show();
+    this.nodes.show();
 };
 
 // Exports
@@ -475,6 +584,7 @@ var Application = _dereq_('./Application');
 var SimpleCommentParser = _dereq_('./Parsing/DocumentParsers/SimpleCommentParser');
 var SimpleDomParser = _dereq_('./Parsing/DocumentParsers/SimpleDomParser');
 var SimpleCommandParser = _dereq_('./Parsing/CommandParsers/SimpleCommandParser');
+var ForInterpreter = _dereq_('./Execution/Interpreters/ForInterpreter');
 var IfInterpreter = _dereq_('./Execution/Interpreters/IfInterpreter');
 var TextInterpreter = _dereq_('./Execution/Interpreters/TextInterpreter');
 var MockStorage = _dereq_('./Execution/Storages/MockStorage');
@@ -492,6 +602,7 @@ module.exports = {
             new SimpleDomParser()
         ],
             new SimpleCommandParser(),[
+                new ForInterpreter(storage),
                 new IfInterpreter(storage),
                 new TextInterpreter(storage)
             ], hookName, rootNode)
@@ -502,6 +613,6 @@ module.exports = {
         return new MockStorage(data);
     }
 };
-},{"./Application":1,"./Execution/Interpreters/IfInterpreter":2,"./Execution/Interpreters/TextInterpreter":4,"./Execution/Storages/MockStorage":5,"./Parsing/CommandParsers/SimpleCommandParser":9,"./Parsing/DocumentParsers/SimpleCommentParser":12,"./Parsing/DocumentParsers/SimpleDomParser":13}]},{},["u88BNT"])
+},{"./Application":1,"./Execution/Interpreters/ForInterpreter":2,"./Execution/Interpreters/IfInterpreter":3,"./Execution/Interpreters/TextInterpreter":5,"./Execution/Storages/MockStorage":6,"./Parsing/CommandParsers/SimpleCommandParser":10,"./Parsing/DocumentParsers/SimpleCommentParser":13,"./Parsing/DocumentParsers/SimpleDomParser":14}]},{},["u88BNT"])
 ("u88BNT")
 });

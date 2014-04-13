@@ -3,7 +3,7 @@ var DocumentParser = function()
 
 };
 
-DocumentParser.prototype.parse = function(rootNode, hookName)
+DocumentParser.prototype.parse = function(application, rootNode, context, hookName)
 {
     throw "Not implemented!";
     return [];

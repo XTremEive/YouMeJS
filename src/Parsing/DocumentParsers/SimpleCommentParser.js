@@ -12,7 +12,7 @@ var SimpleCommentParser = function()
 
 SimpleCommentParser.prototype = Object.create(DocumentParser.prototype);
 
-SimpleCommentParser.prototype.parse = function(commandParser, rootNode, hookName)
+SimpleCommentParser.prototype.parse = function(application, rootNode, context, hookName)
 {
     var commands = [];
     var nodesToParse = [$(rootNode).get(0)];
@@ -42,7 +42,7 @@ SimpleCommentParser.prototype.parse = function(commandParser, rootNode, hookName
             case this.isEndComment(nodeToParse):
                 scopes[scopes.length - 1].endNode = nodeToParse;
                 var scope = scopes.pop();
-                commands.push(commandParser.parse(new VirtualNode(scope.startNode, scope.contentNodes, scope.endNode), scope.commandString));
+                commands.push(application.commandParser.parse(application, new VirtualNode(scope.startNode, scope.contentNodes, scope.endNode), context, scope.commandString));
                 break;
             default:
                 if (scopes.length > 0)

@@ -1,6 +1,8 @@
-var Command = function(target, name, arguments)
+var Command = function(application, target, context, name, arguments)
 {
+    this.application = application;
     this.target = target;
+    this.context = context;
     this.name = name || '';
     this.arguments = arguments || {};
 };

@@ -8,7 +8,7 @@ var SimpleCommandParser = function()
 
 SimpleCommandParser.prototype = Object.create(CommandParser.prototype);
 
-SimpleCommandParser.prototype.parse = function(target, input)
+SimpleCommandParser.prototype.parse = function(application, target, context, input)
 {
     var commandComponents = input.split(':', 2);
     var argumentString = commandComponents[1].trim();
@@ -16,7 +16,7 @@ SimpleCommandParser.prototype.parse = function(target, input)
     var commandName = commandComponents[0].trim();
     var commandArguments = argumentString.split(',');
 
-    return new Command(target, commandName, commandArguments);
+    return new Command(application, target, context, commandName, commandArguments);
 };
 
 // Exports

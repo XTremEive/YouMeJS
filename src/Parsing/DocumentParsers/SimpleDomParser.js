@@ -10,17 +10,17 @@ var SimpleDomParser = function()
 
 SimpleDomParser.prototype = Object.create(DocumentParser.prototype);
 
-SimpleDomParser.prototype.parse = function(commandParser, rootNode, hookName)
+SimpleDomParser.prototype.parse = function(application, rootNode, context, hookName)
 {
     var commands = [];
 
     var rootNodeAttribute = $(rootNode).attr('data-' + hookName);
     if (typeof rootNodeAttribute !== 'undefined' && rootNodeAttribute !== false)
     {
-        commands.push(commandParser.parse(rootNode, rootNodeAttribute));
+        commands.push(application.commandParser.parse(application, new NormalNode(rootNode), context, rootNodeAttribute));
     }
     $(rootNode).find('[data-' + hookName + ']').each(function (index, element) {
-        commands.push(commandParser.parse(new NormalNode(element), $(element).attr('data-' + hookName)));
+        commands.push(application.commandParser.parse(application, new NormalNode(element), context, $(element).attr('data-' + hookName)));
     });
 
     return commands;

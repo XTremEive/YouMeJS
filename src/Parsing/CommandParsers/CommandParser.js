@@ -5,7 +5,7 @@ var CommandParser = function()
 
 };
 
-CommandParser.prototype.parse = function(target, input)
+CommandParser.prototype.parse = function(application, target, context, input)
 {
     throw "Not implemented!";
 
