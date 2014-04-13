@@ -23,16 +23,17 @@ Application.prototype.process = function(rootNode, context)
         }
     }
 
-    // Execute
+    // Interpret
     for(var i = 0; i < commands.length; ++i)
     {
-        if(this.debug)
-        {
-            console.log("Processing " + commands[i]);
-        }
+        commandWasInterpreted = false;
         for(var index = 0, interpreter; interpreter = this.interpreters[index]; ++index)
         {
-            interpreter.interpret(commands[i]);
+            commandWasInterpreted = interpreter.interpret(commands[i]) || commandWasInterpreted;
+        }
+        if(this.debug && !commandWasInterpreted)
+        {
+            console.log('YouMe WARNING: command ' + commands[i] +  ' unknown.');
         }
     }
 };
