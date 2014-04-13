@@ -17,7 +17,7 @@ Here is a showcase of currently implemented features.
 <!DOCTYPE html>
 <html>
 <head>
-    <title>YouMe.JS - Demo document</title>
+    <title>YouMe.JS - Demo</title>
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="../build/dev/youme.js"></script>
 
@@ -35,29 +35,28 @@ Here is a showcase of currently implemented features.
         // You don't want to say that you used a kick-ass library so you create an alias.
         var MyAwesomeService = YouMe;
 
+        // Here we're using a mock storage built-in YouMe. But this typically the class (or object) that you want to write on your own to handle API call
+        MyAwesomeService.storage = YouMe.createMockStorage({
+            'textVariable': 'This is a simple text',
+            'booleanTrueVariable': true,
+            'booleanFalseVariable': false,
+            'arrayVariable': ['foo', 'bar', 'baz'],
+            'arrayWithObjectsVariable': [
+                {
+                    id: 25,
+                    name: 'Pikachu'
+                },
+                {
+                    id: 26,
+                    name: 'Raichu'
+                },
+            ]
+        });
+
         // Then you define some methods to interact with your client pages.
         MyAwesomeService.start = function(debug) {
-
-            // Here we're using a mock storage built-in YouMe. But this typically the class (or object) that you want to write on your own to handle API call
-            var storage = YouMe.createMockStorage({
-                'textVariable': 'This is a simple text',
-                'booleanTrueVariable': true,
-                'booleanFalseVariable': false,
-                'arrayVariable': ['foo', 'bar', 'baz'],
-                'arrayWithObjectsVariable': [
-                    {
-                        id: 25,
-                        name: 'Pikachu'
-                    },
-                    {
-                        id: 26,
-                        name: 'Raichu'
-                    },
-                ]
-            });
-
-            // Finally you call "fuse" with a storage, a root node to start parsing, a a custom alias (see client code below)
-            this.fuse(storage, document, 'mas', { // "mas" stands for "MyAwesomeService"... Obviously.
+            // Finally you call "fuse" with a root node to start parsing, a a custom alias (see client code below)
+            this.fuse(document, 'mas', { // "mas" stands for "MyAwesomeService"... Obviously.
                 debug: debug
             });
         };
@@ -72,10 +71,9 @@ This part also aim at showcasing what we can do so far.
 ---------------------------------------------------------------
 -->
 
-<!-- The parameter provided in start() is a debug flag... But that's your (widget developer) decision -->
-<body onload="MyAwesomeService.start(true)">
+<body>
 
-<h1>YouMe.JS demo file</h1>
+<h1>YouMe.JS demo</h1>
 <p>Don't just stare at this page, check its source code to understand what's happening.</p>
 
 <h2>Text binding</h2>
@@ -139,9 +137,38 @@ This part also aim at showcasing what we can do so far.
     <p data-notMas="text: textVariable">This should stay visible</p>
 </div>
 
+<h2>Javascript hooks</h2>
+<p>There are some additional javascript hook (again check the source code of the page to see what's going on here)</p>
+<script>
+    $(window).load(function () {
+        MyAwesomeService.on('start', function () {
+            alert("This javascript hook is triggered on application's start (but before any refresh)") ;
+        });
+        MyAwesomeService.on('beforeRefresh', function () {
+            alert("This javascript hook is triggered just before refreshing") ;
+        });
+        MyAwesomeService.on('afterRefresh', function () {
+            alert("This javascript hook is triggered just after refreshing") ;
+        });
+
+        MyAwesomeService.on('beforeSave', function () {
+            alert("This javascript hook is triggered just before saving") ;
+        });
+        MyAwesomeService.on('afterSave', function () {
+            alert("This javascript hook is triggered just after saving") ;
+        });
+    });
+</script>
+
+<script>
+    // User will start the service like so.
+    $(window).load(function () {
+        MyAwesomeService.start(true); // The parameter provided in start() is a debug flag... But that's your (widget developer) decision.
+    });
+</script>
+
 </body>
 </html>
-
 
 ```
 

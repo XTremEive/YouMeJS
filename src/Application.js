@@ -6,12 +6,60 @@ var Application = function (documentParsers, commandParser, interpreters, hookNa
     this.hookName = hookName || 'missingHookName'
     this.rootNode = rootNode || 'body';
     this.debug = false;
+    this.listeners = {};
+    this._refreshDepth = -1;
+};
+
+Application.prototype.on = function(event, callback)
+{
+    if (!(event in this.listeners))
+    {
+        this.listeners[event] = [];
+    }
+
+    this.listeners[event].push(callback);
+};
+
+Application.prototype.off = function(event, callback)
+{
+    if (!(event in this.listeners))
+    {
+        return;
+    }
+
+    for(var i = 0; i < this.listeners[event].length; ++i)
+    {
+        if (this.listeners[event][i] == callback)
+        {
+            delete this.listeners[event][i];
+            return;
+        }
+    }
+};
+
+Application.prototype.trigger = function (event, arguements)
+{
+    if (!(event in this.listeners))
+    {
+        return;
+    }
+
+    for(var i = 0; i < this.listeners[event].length; ++i)
+    {
+        this.listeners[event][i](arguements);
+    }
 };
 
 Application.prototype.refresh = function(rootNode, context)
 {
     rootNode = rootNode || this.rootNode;
     context = context || {};
+
+    // Handle pre events
+    if (++this._refreshDepth == 0)
+    {
+        this.trigger('beforeRefresh', this);
+    }
 
     // Parse
     var commands = [];
@@ -37,6 +85,12 @@ Application.prototype.refresh = function(rootNode, context)
             console.log('YouMe WARNING: command ' + commands[i] +  ' unknown.');
         }
     }
+
+    // Handle post events
+    if (this._refreshDepth-- == 0)
+    {
+        this.trigger('afterRefresh', this);
+    }
 };
 
 Application.prototype.run = function(givenArguments)
@@ -55,7 +109,8 @@ Application.prototype.run = function(givenArguments)
 
     // Run
     this.debug = arguments.debug;
-    this.process();
+    this.trigger('start', this);
+    this.refresh();
 
     // Return
     return this;

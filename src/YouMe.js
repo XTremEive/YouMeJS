@@ -11,25 +11,48 @@ var MockStorage = require('./Execution/Storages/MockStorage');
 
 // exports
 module.exports = {
-    fuse: function(storage, rootNode, hookName, arguments)
+    application: new Application([
+        new SimpleCommentParser(),
+        new SimpleDomParser()
+    ], new SimpleCommandParser()),
+
+    storage: new MockStorage(),
+
+    on: function(event, callback)
     {
+        this.application.on(event, callback);
+    },
+
+    off: function(event, callback)
+    {
+        this.application.off(event, callback);
+    },
+
+    trigger: function(event)
+    {
+        this.application.trigger(event);
+    },
+
+    fuse: function(rootNode, hookName, arguments)
+    {
+        // Format parameters
         rootNode || 'body';
         hookName = hookName || 'youme';
         arguments = arguments || {};
 
-        return new Application([
-            new SimpleCommentParser(),
-            new SimpleDomParser()
-        ],
-            new SimpleCommandParser(),[
-                new ForInterpreter(storage),
-                new InputInterpreter(storage),
-                new IfInterpreter(storage),
-                new SaveInterpreter(storage),
-                new TextInterpreter(storage)
-            ], hookName, rootNode)
-            .run(arguments);
+        // Build application
+        this.application.interpreters = [
+            new ForInterpreter(this.storage),
+            new InputInterpreter(this.storage),
+            new IfInterpreter(this.storage),
+            new SaveInterpreter(this.storage),
+            new TextInterpreter(this.storage)
+        ];
+        this.application.rootNode = rootNode;
+        this.application.hookName = hookName;
+        return this.application.run(arguments);
     },
+
     createMockStorage: function(data)
     {
         return new MockStorage(data);

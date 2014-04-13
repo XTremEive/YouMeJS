@@ -19,11 +19,14 @@ SaveInterpreter.prototype.interpret = function(command)
     var value = this.getValue(command.context, command.getArgument(0), 'undefined');
 
     // Process
-    var self = this;
-    command.target.on('click', function()
-    {
-        self.storage.save();
-    });
+    (function(application, instance) {
+        command.target.on('click', function()
+        {
+            application.trigger('beforeSave', instance.storage);
+            instance.storage.save();
+            application.trigger('afterSave', instance.storage);
+        });
+    })(command.application, this)
 
     return true;
 };

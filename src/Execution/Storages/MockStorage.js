@@ -4,7 +4,7 @@ var MockStorage = function(data)
 {
     Storage.call(this);
 
-    this.data = data;
+    this.data = data || {};
 
 };
 

@@ -7,12 +7,60 @@ var Application = function (documentParsers, commandParser, interpreters, hookNa
     this.hookName = hookName || 'missingHookName'
     this.rootNode = rootNode || 'body';
     this.debug = false;
+    this.listeners = {};
+    this._refreshDepth = -1;
 };
 
-Application.prototype.process = function(rootNode, context)
+Application.prototype.on = function(event, callback)
+{
+    if (!(event in this.listeners))
+    {
+        this.listeners[event] = [];
+    }
+
+    this.listeners[event].push(callback);
+};
+
+Application.prototype.off = function(event, callback)
+{
+    if (!(event in this.listeners))
+    {
+        return;
+    }
+
+    for(var i = 0; i < this.listeners[event].length; ++i)
+    {
+        if (this.listeners[event][i] == callback)
+        {
+            delete this.listeners[event][i];
+            return;
+        }
+    }
+};
+
+Application.prototype.trigger = function (event, arguements)
+{
+    if (!(event in this.listeners))
+    {
+        return;
+    }
+
+    for(var i = 0; i < this.listeners[event].length; ++i)
+    {
+        this.listeners[event][i](arguements);
+    }
+};
+
+Application.prototype.refresh = function(rootNode, context)
 {
     rootNode = rootNode || this.rootNode;
     context = context || {};
+
+    // Handle pre events
+    if (++this._refreshDepth == 0)
+    {
+        this.trigger('beforeRefresh', this);
+    }
 
     // Parse
     var commands = [];
@@ -38,6 +86,12 @@ Application.prototype.process = function(rootNode, context)
             console.log('YouMe WARNING: command ' + commands[i] +  ' unknown.');
         }
     }
+
+    // Handle post events
+    if (this._refreshDepth-- == 0)
+    {
+        this.trigger('afterRefresh', this);
+    }
 };
 
 Application.prototype.run = function(givenArguments)
@@ -56,7 +110,8 @@ Application.prototype.run = function(givenArguments)
 
     // Run
     this.debug = arguments.debug;
-    this.process();
+    this.trigger('start', this);
+    this.refresh();
 
     // Return
     return this;
@@ -97,7 +152,7 @@ ForInterpreter.prototype.interpret = function(command)
     for(var i = 0; i < value.length; ++i)
     {
         command.target.append(newElements[i]);
-        command.application.process(newElements[i], value[i]);
+        command.application.refresh(newElements[i], value[i]);
     }
 
     return true;
@@ -166,7 +221,7 @@ InputInterpreter.prototype.interpret = function(command)
     (function (instance, application, variable, target) {
         command.target.on('change', function () {
             instance.storage.set(variable, target.getValue())
-            application.process();
+            application.refresh();
         });
     })(this, command.application, command.getArgument(0), command.target);
 
@@ -231,11 +286,14 @@ SaveInterpreter.prototype.interpret = function(command)
     var value = this.getValue(command.context, command.getArgument(0), 'undefined');
 
     // Process
-    var self = this;
-    command.target.on('click', function()
-    {
-        self.storage.save();
-    });
+    (function(application, instance) {
+        command.target.on('click', function()
+        {
+            application.trigger('beforeSave', instance.storage);
+            instance.storage.save();
+            application.trigger('afterSave', instance.storage);
+        });
+    })(command.application, this)
 
     return true;
 };
@@ -278,7 +336,7 @@ var MockStorage = function(data)
 {
     Storage.call(this);
 
-    this.data = data;
+    this.data = data || {};
 
 };
 
@@ -695,25 +753,48 @@ var MockStorage = _dereq_('./Execution/Storages/MockStorage');
 
 // exports
 module.exports = {
-    fuse: function(storage, rootNode, hookName, arguments)
+    application: new Application([
+        new SimpleCommentParser(),
+        new SimpleDomParser()
+    ], new SimpleCommandParser()),
+
+    storage: new MockStorage(),
+
+    on: function(event, callback)
     {
+        this.application.on(event, callback);
+    },
+
+    off: function(event, callback)
+    {
+        this.application.off(event, callback);
+    },
+
+    trigger: function(event)
+    {
+        this.application.trigger(event);
+    },
+
+    fuse: function(rootNode, hookName, arguments)
+    {
+        // Format parameters
         rootNode || 'body';
         hookName = hookName || 'youme';
         arguments = arguments || {};
 
-        return new Application([
-            new SimpleCommentParser(),
-            new SimpleDomParser()
-        ],
-            new SimpleCommandParser(),[
-                new ForInterpreter(storage),
-                new InputInterpreter(storage),
-                new IfInterpreter(storage),
-                new SaveInterpreter(storage),
-                new TextInterpreter(storage)
-            ], hookName, rootNode)
-            .run(arguments);
+        // Build application
+        this.application.interpreters = [
+            new ForInterpreter(this.storage),
+            new InputInterpreter(this.storage),
+            new IfInterpreter(this.storage),
+            new SaveInterpreter(this.storage),
+            new TextInterpreter(this.storage)
+        ];
+        this.application.rootNode = rootNode;
+        this.application.hookName = hookName;
+        return this.application.run(arguments);
     },
+
     createMockStorage: function(data)
     {
         return new MockStorage(data);
