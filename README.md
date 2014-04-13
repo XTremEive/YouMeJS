@@ -60,6 +60,19 @@ Here is a showcase of currently implemented features.
                 debug: debug
             });
         };
+
+        // You  can even create your own commands
+        MyAwesomeService.addCommand('chu', function (command) { // This one will replace a content by a paragraph with some text
+            command.target.html('<p>Chu chuuuu!</p>');
+        });
+
+        MyAwesomeService.addCommand('add', function (command) { // This one willadd numbers passed as arguments.
+            command.target.on('click', function () {
+                var result = parseInt(command.getArgument(0)) + parseInt(command.getArgument(1));
+                command.target.html(result);
+            });
+        });
+
     </script>
 </head>
 
@@ -160,6 +173,13 @@ This part also aim at showcasing what we can do so far.
     });
 </script>
 
+<h2>Custom user-defined binding</h2>
+<!-- mas chu -->
+    <p>This will be overwritten</p>
+<!-- /mas -->
+
+<p data-mas="add: 1, 3">Click here to see how much is 1 + 3</p>
+
 <script>
     // User will start the service like so.
     $(window).load(function () {
@@ -192,8 +212,7 @@ What is left to do in order to have a ready-to-use library? (todolist)
 ---
 
 - Add recursion in the comment parsing
-- Allow user to inject their own commands
 - Add the HTML attribute binding
-- Add a callback system for event
+- Add some object resolver in the Interpreter class.
 - ...
 

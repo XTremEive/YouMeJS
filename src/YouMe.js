@@ -7,6 +7,7 @@ var IfInterpreter = require('./Execution/Interpreters/IfInterpreter');
 var InputInterpreter = require('./Execution/Interpreters/InputInterpreter');
 var SaveInterpreter = require('./Execution/Interpreters/SaveInterpreter');
 var TextInterpreter = require('./Execution/Interpreters/TextInterpreter');
+var UserDefinedInterpreter = require('./Execution/Interpreters/UserDefinedInterpreter');
 var MockStorage = require('./Execution/Storages/MockStorage');
 
 // exports
@@ -17,6 +18,11 @@ module.exports = {
     ], new SimpleCommandParser()),
 
     storage: new MockStorage(),
+
+    addCommand: function(commandName, callback)
+    {
+        this.application.interpreters.push(new UserDefinedInterpreter(this.storage, commandName, callback));
+    },
 
     on: function(event, callback)
     {
@@ -41,15 +47,19 @@ module.exports = {
         arguments = arguments || {};
 
         // Build application
-        this.application.interpreters = [
+        this.application.rootNode = rootNode;
+        this.application.hookName = hookName;
+        var standardInterpreters = [
             new ForInterpreter(this.storage),
             new InputInterpreter(this.storage),
             new IfInterpreter(this.storage),
             new SaveInterpreter(this.storage),
             new TextInterpreter(this.storage)
-        ];
-        this.application.rootNode = rootNode;
-        this.application.hookName = hookName;
+        ]
+        for(var i = 0, interpreter; interpreter = standardInterpreters[i]; ++i)
+        {
+            this.application.interpreters.push(interpreter);
+        }
         return this.application.run(arguments);
     },
 
