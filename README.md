@@ -165,10 +165,8 @@ What is left to do in order to have a ready-to-use library? (todolist)
 ---
 
 - Add recursion in the comment parsing
-- Add some refreshes when changing inputs
 - Allow user to inject their own commands
 - Add the HTML attribute binding
 - Add a callback system for event
-
 - ...
 

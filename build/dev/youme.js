@@ -11,6 +11,7 @@ var Application = function (documentParsers, commandParser, interpreters, hookNa
 
 Application.prototype.process = function(rootNode, context)
 {
+    rootNode = rootNode || this.rootNode;
     context = context || {};
 
     // Parse
@@ -55,7 +56,7 @@ Application.prototype.run = function(givenArguments)
 
     // Run
     this.debug = arguments.debug;
-    this.process(this.rootNode);
+    this.process();
 
     // Return
     return this;
@@ -162,11 +163,12 @@ InputInterpreter.prototype.interpret = function(command)
     // Process
     command.target.setValue(value);
 
-    (function (instance, variable, target) {
+    (function (instance, application, variable, target) {
         command.target.on('change', function () {
             instance.storage.set(variable, target.getValue())
+            application.process();
         });
-    })(this, command.getArgument(0), command.target);
+    })(this, command.application, command.getArgument(0), command.target);
 
     return true;
 };
@@ -459,6 +461,7 @@ module.exports = DocumentParser;
 var NormalNode = function(node)
 {
     this.node = $(node);
+    this.template = this.node.clone();
 };
 
 NormalNode.prototype.append = function(content)
@@ -473,7 +476,7 @@ NormalNode.prototype.clear = function()
 
 NormalNode.prototype.createTemplate = function()
 {
-    return this.node.children().clone().get(0);
+    return this.template.children().clone().get(0);
 };
 
 NormalNode.prototype.html = function(htmlContent)
@@ -625,6 +628,7 @@ var VirtualNode = function (startComment, nodes, endComment)
     this.startComment = $(startComment);
     this.nodes = $(nodes);
     this.endComment = $(endComment);
+    this.template = this.nodes.clone();
 };
 
 VirtualNode.prototype.append = function(content)
@@ -639,7 +643,7 @@ VirtualNode.prototype.clear = function()
 
 VirtualNode.prototype.createTemplate = function()
 {
-    return this.nodes.clone().get(0);
+    return this.template.clone().get(0);
 };
 
 VirtualNode.prototype.html = function(htmlContent)

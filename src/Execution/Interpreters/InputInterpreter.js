@@ -21,11 +21,12 @@ InputInterpreter.prototype.interpret = function(command)
     // Process
     command.target.setValue(value);
 
-    (function (instance, variable, target) {
+    (function (instance, application, variable, target) {
         command.target.on('change', function () {
             instance.storage.set(variable, target.getValue())
+            application.refresh();
         });
-    })(this, command.getArgument(0), command.target);
+    })(this, command.application, command.getArgument(0), command.target);
 
     return true;
 };

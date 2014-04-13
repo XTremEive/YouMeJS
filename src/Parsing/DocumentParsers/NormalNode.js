@@ -1,6 +1,7 @@
 var NormalNode = function(node)
 {
     this.node = $(node);
+    this.template = this.node.clone();
 };
 
 NormalNode.prototype.append = function(content)
@@ -15,7 +16,7 @@ NormalNode.prototype.clear = function()
 
 NormalNode.prototype.createTemplate = function()
 {
-    return this.node.children().clone().get(0);
+    return this.template.children().clone().get(0);
 };
 
 NormalNode.prototype.html = function(htmlContent)

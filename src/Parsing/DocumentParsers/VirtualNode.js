@@ -3,6 +3,7 @@ var VirtualNode = function (startComment, nodes, endComment)
     this.startComment = $(startComment);
     this.nodes = $(nodes);
     this.endComment = $(endComment);
+    this.template = this.nodes.clone();
 };
 
 VirtualNode.prototype.append = function(content)
@@ -17,7 +18,7 @@ VirtualNode.prototype.clear = function()
 
 VirtualNode.prototype.createTemplate = function()
 {
-    return this.nodes.clone().get(0);
+    return this.template.clone().get(0);
 };
 
 VirtualNode.prototype.html = function(htmlContent)

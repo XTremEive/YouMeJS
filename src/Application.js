@@ -8,8 +8,9 @@ var Application = function (documentParsers, commandParser, interpreters, hookNa
     this.debug = false;
 };
 
-Application.prototype.process = function(rootNode, context)
+Application.prototype.refresh = function(rootNode, context)
 {
+    rootNode = rootNode || this.rootNode;
     context = context || {};
 
     // Parse
@@ -54,7 +55,7 @@ Application.prototype.run = function(givenArguments)
 
     // Run
     this.debug = arguments.debug;
-    this.process(this.rootNode);
+    this.process();
 
     // Return
     return this;

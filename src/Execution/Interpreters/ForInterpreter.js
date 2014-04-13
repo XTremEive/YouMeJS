@@ -29,7 +29,7 @@ ForInterpreter.prototype.interpret = function(command)
     for(var i = 0; i < value.length; ++i)
     {
         command.target.append(newElements[i]);
-        command.application.process(newElements[i], value[i]);
+        command.application.refresh(newElements[i], value[i]);
     }
 
     return true;
