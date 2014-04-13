@@ -19,7 +19,7 @@ TextInterpreter.prototype.interpret = function(command)
     var value = this.getValue(command.context, command.getArgument(0), 'undefined');
 
     // Process
-    command.target.html(value);
+    command.target.setHtml(value);
 
     return true;
 };

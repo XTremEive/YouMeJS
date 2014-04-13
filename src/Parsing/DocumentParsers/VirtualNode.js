@@ -13,7 +13,7 @@ VirtualNode.prototype.append = function(content)
 
 VirtualNode.prototype.clear = function()
 {
-    this.html('');
+    this.setHtml('');
 };
 
 VirtualNode.prototype.createTemplate = function()
@@ -21,7 +21,22 @@ VirtualNode.prototype.createTemplate = function()
     return this.template.clone().get(0);
 };
 
-VirtualNode.prototype.html = function(htmlContent)
+
+VirtualNode.prototype.setAttribute = function()
+{
+    throw "Not available";
+}
+VirtualNode.prototype.getAttribute = function()
+{
+    throw "Not available";
+}
+
+VirtualNode.prototype.getHtml = function()
+{
+    throw "Not available";
+}
+
+VirtualNode.prototype.setHtml = function(htmlContent)
 {
     this.nodes.remove();
     this.startComment.after(htmlContent);

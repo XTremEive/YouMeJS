@@ -10,11 +10,11 @@ SimpleCommandParser.prototype = Object.create(CommandParser.prototype);
 
 SimpleCommandParser.prototype.parse = function(application, target, context, input)
 {
-    var commandComponents = input.split(':', 2);
-    var argumentString = commandComponents.length > 1 ? commandComponents[1].trim() : '';
+    var commandComponents = input.split(':');
 
     var commandName = commandComponents[0].trim();
-    var commandArguments = argumentString.split(',');
+    commandComponents.shift();
+    var commandArguments = commandComponents.join(':').trim().split(',');
 
     return new Command(application, target, context, commandName, commandArguments);
 };

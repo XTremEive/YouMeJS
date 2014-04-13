@@ -13,7 +13,6 @@ What does it do?
 Here is a showcase of currently implemented features.
 
 ```html
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -63,13 +62,13 @@ Here is a showcase of currently implemented features.
 
         // You  can even create your own commands
         MyAwesomeService.addCommand('chu', function (command) { // This one will replace a content by a paragraph with some text
-            command.target.html('<p>Chu chuuuu!</p>');
+            command.target.setHtml('<p>Chu chuuuu!</p>');
         });
 
         MyAwesomeService.addCommand('add', function (command) { // This one willadd numbers passed as arguments.
             command.target.on('click', function () {
                 var result = parseInt(command.getArgument(0)) + parseInt(command.getArgument(1));
-                command.target.html(result);
+                command.target.setHtml(result);
             });
         });
 
@@ -95,6 +94,12 @@ This part also aim at showcasing what we can do so far.
     <p>This paragraph will be replaced by the content of foo.</p>
     <!-- /mas -->
     <p data-mas="text: textVariable">The content of this paragraph will be replace by the content of bar</p>
+</div>
+
+
+<h2>Attribute binding</h2>
+<div>
+    <a href="#" data-mas="attribute: {title: textVariable}">Mouse over to see a tooltip set using the binding system.</a>
 </div>
 
 <h2>If binding</h2>
@@ -212,7 +217,6 @@ What is left to do in order to have a ready-to-use library? (todolist)
 ---
 
 - Add recursion in the comment parsing
-- Add the HTML attribute binding
 - Add some object resolver in the Interpreter class.
 - ...
 

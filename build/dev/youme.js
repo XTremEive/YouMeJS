@@ -123,6 +123,40 @@ module.exports = Application;
 },{}],2:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
+var AttributeInterpreter = function(storage)
+{
+    Interpreter.call(this, storage);
+};
+
+AttributeInterpreter.prototype = Object.create(Interpreter.prototype);
+
+AttributeInterpreter.prototype.interpret = function(command)
+{
+    // Discard any command that has nothing to do with this interpreter
+    if (command.name != 'attribute')
+    {
+        return false;
+    }
+
+    // Process
+    var jsonString = command.getArgument(0).replace(/(\w+):\s(\w+)/g, '"$1":"$2"');
+    console.log(command);
+    console.log(jsonString);
+    var attributes = JSON.parse(jsonString);
+    for(var attributeName in attributes)
+    {
+        var value = this.getValue(command.context, attributes[attributeName], 'undefined');
+        command.target.setAttribute(attributeName, value);
+    }
+
+    return true;
+};
+
+// Exports
+module.exports = AttributeInterpreter;
+},{"./Interpreter":6}],3:[function(_dereq_,module,exports){
+var Interpreter = _dereq_('./Interpreter');
+
 var ForInterpreter = function(storage)
 {
     Interpreter.call(this, storage);
@@ -160,7 +194,7 @@ ForInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = ForInterpreter;
-},{"./Interpreter":5}],3:[function(_dereq_,module,exports){
+},{"./Interpreter":6}],4:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
 var IfInterpreter = function(storage)
@@ -194,7 +228,7 @@ IfInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = IfInterpreter;
-},{"./Interpreter":5}],4:[function(_dereq_,module,exports){
+},{"./Interpreter":6}],5:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
 var InputInterpreter = function(storage)
@@ -230,7 +264,7 @@ InputInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = InputInterpreter;
-},{"./Interpreter":5}],5:[function(_dereq_,module,exports){
+},{"./Interpreter":6}],6:[function(_dereq_,module,exports){
 var Interpreter = function(storage)
 {
     this.storage = storage || null;
@@ -264,7 +298,7 @@ Interpreter.prototype.getValue = function(context, name, defaultValue)
 
 // Exports
 module.exports = Interpreter;
-},{}],6:[function(_dereq_,module,exports){
+},{}],7:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
 var SaveInterpreter = function(storage)
@@ -300,7 +334,7 @@ SaveInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = SaveInterpreter;
-},{"./Interpreter":5}],7:[function(_dereq_,module,exports){
+},{"./Interpreter":6}],8:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
 var TextInterpreter = function(storage)
@@ -322,14 +356,14 @@ TextInterpreter.prototype.interpret = function(command)
     var value = this.getValue(command.context, command.getArgument(0), 'undefined');
 
     // Process
-    command.target.html(value);
+    command.target.setHtml(value);
 
     return true;
 };
 
 // Exports
 module.exports = TextInterpreter;
-},{"./Interpreter":5}],8:[function(_dereq_,module,exports){
+},{"./Interpreter":6}],9:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
 var UserDefinedInterpreter = function(storage, commandName, callback)
@@ -357,7 +391,7 @@ UserDefinedInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = UserDefinedInterpreter;
-},{"./Interpreter":5}],9:[function(_dereq_,module,exports){
+},{"./Interpreter":6}],10:[function(_dereq_,module,exports){
 var Storage = _dereq_('./Storage');
 
 var MockStorage = function(data)
@@ -407,7 +441,7 @@ MockStorage.prototype.save = function()
 
 // Exports
 module.exports = MockStorage;
-},{"./Storage":10}],10:[function(_dereq_,module,exports){
+},{"./Storage":11}],11:[function(_dereq_,module,exports){
 var Storage = function(data)
 {
     this.data = data;
@@ -444,7 +478,7 @@ Storage.prototype.save = function()
 
 // Exports
 module.exports = Storage;
-},{}],11:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 var Command = function(application, target, context, name, arguments)
 {
     this.application = application;
@@ -487,7 +521,7 @@ Command.prototype.toString = function()
 // Exports
 module.exports = Command;
 
-},{}],12:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 var Command = _dereq_('./Command');
 
 var CommandParser = function()
@@ -504,7 +538,7 @@ CommandParser.prototype.parse = function(application, target, context, input)
 
 // Exports
 module.exports = CommandParser;
-},{"./Command":11}],13:[function(_dereq_,module,exports){
+},{"./Command":12}],14:[function(_dereq_,module,exports){
 var CommandParser = _dereq_('./CommandParser');
 var Command = _dereq_('./Command');
 
@@ -517,18 +551,18 @@ SimpleCommandParser.prototype = Object.create(CommandParser.prototype);
 
 SimpleCommandParser.prototype.parse = function(application, target, context, input)
 {
-    var commandComponents = input.split(':', 2);
-    var argumentString = commandComponents.length > 1 ? commandComponents[1].trim() : '';
+    var commandComponents = input.split(':');
 
     var commandName = commandComponents[0].trim();
-    var commandArguments = argumentString.split(',');
+    commandComponents.shift();
+    var commandArguments = commandComponents.join(':').trim().split(',');
 
     return new Command(application, target, context, commandName, commandArguments);
 };
 
 // Exports
 module.exports = SimpleCommandParser;
-},{"./Command":11,"./CommandParser":12}],14:[function(_dereq_,module,exports){
+},{"./Command":12,"./CommandParser":13}],15:[function(_dereq_,module,exports){
 var DocumentParser = function()
 {
 
@@ -543,7 +577,7 @@ DocumentParser.prototype.parse = function(application, rootNode, context, hookNa
 // Exports
 module.exports = DocumentParser;
 
-},{}],15:[function(_dereq_,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 var NormalNode = function(node)
 {
     this.node = $(node);
@@ -557,15 +591,26 @@ NormalNode.prototype.append = function(content)
 
 NormalNode.prototype.clear = function()
 {
-    this.html('');
+    this.setHtml('');
 };
 
 NormalNode.prototype.createTemplate = function()
 {
     return this.template.children().clone().get(0);
 };
-
-NormalNode.prototype.html = function(htmlContent)
+NormalNode.prototype.getAttribute = function(name)
+{
+    return this.node.attr(name);
+};
+NormalNode.prototype.setAttribute = function(name, value)
+{
+    return this.node.attr(name, value);
+};
+NormalNode.prototype.getHtml = function()
+{
+    return this.node.html();
+};
+NormalNode.prototype.setHtml = function(htmlContent)
 {
     this.node.html(htmlContent);
 };
@@ -596,7 +641,7 @@ NormalNode.prototype.show = function()
 
 // Exports
 module.exports = NormalNode;
-},{}],16:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 var DocumentParser = _dereq_('./DocumentParser');
 var VirtualNode = _dereq_('./VirtualNode');
 
@@ -677,7 +722,7 @@ SimpleCommentParser.prototype.getCommentValue = function (node) {
 
 // Exports
 module.exports = SimpleCommentParser;
-},{"./DocumentParser":14,"./VirtualNode":18}],17:[function(_dereq_,module,exports){
+},{"./DocumentParser":15,"./VirtualNode":19}],18:[function(_dereq_,module,exports){
 var DocumentParser = _dereq_('./DocumentParser');
 var NormalNode = _dereq_('./NormalNode');
 
@@ -708,7 +753,7 @@ SimpleDomParser.prototype.parse = function(application, rootNode, context, hookN
 
 // Exports
 module.exports = SimpleDomParser;
-},{"./DocumentParser":14,"./NormalNode":15}],18:[function(_dereq_,module,exports){
+},{"./DocumentParser":15,"./NormalNode":16}],19:[function(_dereq_,module,exports){
 var VirtualNode = function (startComment, nodes, endComment)
 {
     this.startComment = $(startComment);
@@ -724,7 +769,7 @@ VirtualNode.prototype.append = function(content)
 
 VirtualNode.prototype.clear = function()
 {
-    this.html('');
+    this.setHtml('');
 };
 
 VirtualNode.prototype.createTemplate = function()
@@ -732,7 +777,22 @@ VirtualNode.prototype.createTemplate = function()
     return this.template.clone().get(0);
 };
 
-VirtualNode.prototype.html = function(htmlContent)
+
+VirtualNode.prototype.setAttribute = function()
+{
+    throw "Not available";
+}
+VirtualNode.prototype.getAttribute = function()
+{
+    throw "Not available";
+}
+
+VirtualNode.prototype.getHtml = function()
+{
+    throw "Not available";
+}
+
+VirtualNode.prototype.setHtml = function(htmlContent)
 {
     this.nodes.remove();
     this.startComment.after(htmlContent);
@@ -772,6 +832,7 @@ var Application = _dereq_('./Application');
 var SimpleCommentParser = _dereq_('./Parsing/DocumentParsers/SimpleCommentParser');
 var SimpleDomParser = _dereq_('./Parsing/DocumentParsers/SimpleDomParser');
 var SimpleCommandParser = _dereq_('./Parsing/CommandParsers/SimpleCommandParser');
+var AttributeInterpreter = _dereq_('./Execution/Interpreters/AttributeInterpreter');
 var ForInterpreter = _dereq_('./Execution/Interpreters/ForInterpreter');
 var IfInterpreter = _dereq_('./Execution/Interpreters/IfInterpreter');
 var InputInterpreter = _dereq_('./Execution/Interpreters/InputInterpreter');
@@ -820,6 +881,7 @@ module.exports = {
         this.application.rootNode = rootNode;
         this.application.hookName = hookName;
         var standardInterpreters = [
+            new AttributeInterpreter(this.storage),
             new ForInterpreter(this.storage),
             new InputInterpreter(this.storage),
             new IfInterpreter(this.storage),
@@ -838,6 +900,6 @@ module.exports = {
         return new MockStorage(data);
     }
 };
-},{"./Application":1,"./Execution/Interpreters/ForInterpreter":2,"./Execution/Interpreters/IfInterpreter":3,"./Execution/Interpreters/InputInterpreter":4,"./Execution/Interpreters/SaveInterpreter":6,"./Execution/Interpreters/TextInterpreter":7,"./Execution/Interpreters/UserDefinedInterpreter":8,"./Execution/Storages/MockStorage":9,"./Parsing/CommandParsers/SimpleCommandParser":13,"./Parsing/DocumentParsers/SimpleCommentParser":16,"./Parsing/DocumentParsers/SimpleDomParser":17}]},{},["u88BNT"])
+},{"./Application":1,"./Execution/Interpreters/AttributeInterpreter":2,"./Execution/Interpreters/ForInterpreter":3,"./Execution/Interpreters/IfInterpreter":4,"./Execution/Interpreters/InputInterpreter":5,"./Execution/Interpreters/SaveInterpreter":7,"./Execution/Interpreters/TextInterpreter":8,"./Execution/Interpreters/UserDefinedInterpreter":9,"./Execution/Storages/MockStorage":10,"./Parsing/CommandParsers/SimpleCommandParser":14,"./Parsing/DocumentParsers/SimpleCommentParser":17,"./Parsing/DocumentParsers/SimpleDomParser":18}]},{},["u88BNT"])
 ("u88BNT")
 });

@@ -11,15 +11,26 @@ NormalNode.prototype.append = function(content)
 
 NormalNode.prototype.clear = function()
 {
-    this.html('');
+    this.setHtml('');
 };
 
 NormalNode.prototype.createTemplate = function()
 {
     return this.template.children().clone().get(0);
 };
-
-NormalNode.prototype.html = function(htmlContent)
+NormalNode.prototype.getAttribute = function(name)
+{
+    return this.node.attr(name);
+};
+NormalNode.prototype.setAttribute = function(name, value)
+{
+    return this.node.attr(name, value);
+};
+NormalNode.prototype.getHtml = function()
+{
+    return this.node.html();
+};
+NormalNode.prototype.setHtml = function(htmlContent)
 {
     this.node.html(htmlContent);
 };
