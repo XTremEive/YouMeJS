@@ -11,5 +11,15 @@ VirtualNode.prototype.html = function(htmlContent)
     $(this.startComment).after(htmlContent);
 };
 
+VirtualNode.prototype.hide = function()
+{
+    $(this.nodes).hide();
+};
+
+VirtualNode.prototype.show = function()
+{
+    $(this.nodes).show();
+};
+
 // Exports
 module.exports = VirtualNode;
