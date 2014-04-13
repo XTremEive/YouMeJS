@@ -22,6 +22,15 @@ NormalNode.prototype.html = function(htmlContent)
 {
     this.node.html(htmlContent);
 };
+NormalNode.prototype.setValue = function(value)
+{
+    this.node.val(value);
+};
+
+NormalNode.prototype.getValue = function()
+{
+    return this.node.val();
+};
 
 NormalNode.prototype.hide = function()
 {

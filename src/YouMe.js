@@ -4,6 +4,7 @@ var SimpleDomParser = require('./Parsing/DocumentParsers/SimpleDomParser');
 var SimpleCommandParser = require('./Parsing/CommandParsers/SimpleCommandParser');
 var ForInterpreter = require('./Execution/Interpreters/ForInterpreter');
 var IfInterpreter = require('./Execution/Interpreters/IfInterpreter');
+var InputInterpreter = require('./Execution/Interpreters/InputInterpreter');
 var SaveInterpreter = require('./Execution/Interpreters/SaveInterpreter');
 var TextInterpreter = require('./Execution/Interpreters/TextInterpreter');
 var MockStorage = require('./Execution/Storages/MockStorage');
@@ -22,6 +23,7 @@ module.exports = {
         ],
             new SimpleCommandParser(),[
                 new ForInterpreter(storage),
+                new InputInterpreter(storage),
                 new IfInterpreter(storage),
                 new SaveInterpreter(storage),
                 new TextInterpreter(storage)

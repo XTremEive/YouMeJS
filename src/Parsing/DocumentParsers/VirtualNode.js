@@ -26,6 +26,16 @@ VirtualNode.prototype.html = function(htmlContent)
     this.startComment.after(htmlContent);
 };
 
+VirtualNode.prototype.setValue = function(value)
+{
+    this.nodes.val(value);
+};
+
+VirtualNode.prototype.getValue = function()
+{
+    return this.nodes.val();
+};
+
 VirtualNode.prototype.hide = function()
 {
     this.nodes.hide();

@@ -104,7 +104,7 @@ ForInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = ForInterpreter;
-},{"./Interpreter":4}],3:[function(_dereq_,module,exports){
+},{"./Interpreter":5}],3:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
 var IfInterpreter = function(storage)
@@ -138,7 +138,42 @@ IfInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = IfInterpreter;
-},{"./Interpreter":4}],4:[function(_dereq_,module,exports){
+},{"./Interpreter":5}],4:[function(_dereq_,module,exports){
+var Interpreter = _dereq_('./Interpreter');
+
+var InputInterpreter = function(storage)
+{
+    Interpreter.call(this, storage);
+};
+
+InputInterpreter.prototype = Object.create(Interpreter.prototype);
+
+InputInterpreter.prototype.interpret = function(command)
+{
+    // Discard any command that has nothing to do with this interpreter
+    if (command.name != 'input')
+    {
+        return false;
+    }
+
+    // Get value from storage
+    var value = this.getValue(command.context, command.getArgument(0), '');
+
+    // Process
+    command.target.setValue(value);
+
+    (function (instance, variable, target) {
+        command.target.on('change', function () {
+            instance.storage.set(variable, target.getValue())
+        });
+    })(this, command.getArgument(0), command.target);
+
+    return true;
+};
+
+// Exports
+module.exports = InputInterpreter;
+},{"./Interpreter":5}],5:[function(_dereq_,module,exports){
 var Interpreter = function(storage)
 {
     this.storage = storage || null;
@@ -172,7 +207,7 @@ Interpreter.prototype.getValue = function(context, name, defaultValue)
 
 // Exports
 module.exports = Interpreter;
-},{}],5:[function(_dereq_,module,exports){
+},{}],6:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
 var SaveInterpreter = function(storage)
@@ -205,7 +240,7 @@ SaveInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = SaveInterpreter;
-},{"./Interpreter":4}],6:[function(_dereq_,module,exports){
+},{"./Interpreter":5}],7:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
 var TextInterpreter = function(storage)
@@ -234,7 +269,7 @@ TextInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = TextInterpreter;
-},{"./Interpreter":4}],7:[function(_dereq_,module,exports){
+},{"./Interpreter":5}],8:[function(_dereq_,module,exports){
 var Storage = _dereq_('./Storage');
 
 var MockStorage = function(data)
@@ -284,7 +319,7 @@ MockStorage.prototype.save = function()
 
 // Exports
 module.exports = MockStorage;
-},{"./Storage":8}],8:[function(_dereq_,module,exports){
+},{"./Storage":9}],9:[function(_dereq_,module,exports){
 var Storage = function(data)
 {
     this.data = data;
@@ -321,7 +356,7 @@ Storage.prototype.save = function()
 
 // Exports
 module.exports = Storage;
-},{}],9:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 var Command = function(application, target, context, name, arguments)
 {
     this.application = application;
@@ -364,7 +399,7 @@ Command.prototype.toString = function()
 // Exports
 module.exports = Command;
 
-},{}],10:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 var Command = _dereq_('./Command');
 
 var CommandParser = function()
@@ -381,7 +416,7 @@ CommandParser.prototype.parse = function(application, target, context, input)
 
 // Exports
 module.exports = CommandParser;
-},{"./Command":9}],11:[function(_dereq_,module,exports){
+},{"./Command":10}],12:[function(_dereq_,module,exports){
 var CommandParser = _dereq_('./CommandParser');
 var Command = _dereq_('./Command');
 
@@ -405,7 +440,7 @@ SimpleCommandParser.prototype.parse = function(application, target, context, inp
 
 // Exports
 module.exports = SimpleCommandParser;
-},{"./Command":9,"./CommandParser":10}],12:[function(_dereq_,module,exports){
+},{"./Command":10,"./CommandParser":11}],13:[function(_dereq_,module,exports){
 var DocumentParser = function()
 {
 
@@ -420,7 +455,7 @@ DocumentParser.prototype.parse = function(application, rootNode, context, hookNa
 // Exports
 module.exports = DocumentParser;
 
-},{}],13:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 var NormalNode = function(node)
 {
     this.node = $(node);
@@ -445,6 +480,15 @@ NormalNode.prototype.html = function(htmlContent)
 {
     this.node.html(htmlContent);
 };
+NormalNode.prototype.setValue = function(value)
+{
+    this.node.val(value);
+};
+
+NormalNode.prototype.getValue = function()
+{
+    return this.node.val();
+};
 
 NormalNode.prototype.hide = function()
 {
@@ -463,7 +507,7 @@ NormalNode.prototype.show = function()
 
 // Exports
 module.exports = NormalNode;
-},{}],14:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 var DocumentParser = _dereq_('./DocumentParser');
 var VirtualNode = _dereq_('./VirtualNode');
 
@@ -544,7 +588,7 @@ SimpleCommentParser.prototype.getCommentValue = function (node) {
 
 // Exports
 module.exports = SimpleCommentParser;
-},{"./DocumentParser":12,"./VirtualNode":16}],15:[function(_dereq_,module,exports){
+},{"./DocumentParser":13,"./VirtualNode":17}],16:[function(_dereq_,module,exports){
 var DocumentParser = _dereq_('./DocumentParser');
 var NormalNode = _dereq_('./NormalNode');
 
@@ -575,7 +619,7 @@ SimpleDomParser.prototype.parse = function(application, rootNode, context, hookN
 
 // Exports
 module.exports = SimpleDomParser;
-},{"./DocumentParser":12,"./NormalNode":13}],16:[function(_dereq_,module,exports){
+},{"./DocumentParser":13,"./NormalNode":14}],17:[function(_dereq_,module,exports){
 var VirtualNode = function (startComment, nodes, endComment)
 {
     this.startComment = $(startComment);
@@ -604,6 +648,16 @@ VirtualNode.prototype.html = function(htmlContent)
     this.startComment.after(htmlContent);
 };
 
+VirtualNode.prototype.setValue = function(value)
+{
+    this.nodes.val(value);
+};
+
+VirtualNode.prototype.getValue = function()
+{
+    return this.nodes.val();
+};
+
 VirtualNode.prototype.hide = function()
 {
     this.nodes.hide();
@@ -630,6 +684,7 @@ var SimpleDomParser = _dereq_('./Parsing/DocumentParsers/SimpleDomParser');
 var SimpleCommandParser = _dereq_('./Parsing/CommandParsers/SimpleCommandParser');
 var ForInterpreter = _dereq_('./Execution/Interpreters/ForInterpreter');
 var IfInterpreter = _dereq_('./Execution/Interpreters/IfInterpreter');
+var InputInterpreter = _dereq_('./Execution/Interpreters/InputInterpreter');
 var SaveInterpreter = _dereq_('./Execution/Interpreters/SaveInterpreter');
 var TextInterpreter = _dereq_('./Execution/Interpreters/TextInterpreter');
 var MockStorage = _dereq_('./Execution/Storages/MockStorage');
@@ -648,6 +703,7 @@ module.exports = {
         ],
             new SimpleCommandParser(),[
                 new ForInterpreter(storage),
+                new InputInterpreter(storage),
                 new IfInterpreter(storage),
                 new SaveInterpreter(storage),
                 new TextInterpreter(storage)
@@ -659,6 +715,6 @@ module.exports = {
         return new MockStorage(data);
     }
 };
-},{"./Application":1,"./Execution/Interpreters/ForInterpreter":2,"./Execution/Interpreters/IfInterpreter":3,"./Execution/Interpreters/SaveInterpreter":5,"./Execution/Interpreters/TextInterpreter":6,"./Execution/Storages/MockStorage":7,"./Parsing/CommandParsers/SimpleCommandParser":11,"./Parsing/DocumentParsers/SimpleCommentParser":14,"./Parsing/DocumentParsers/SimpleDomParser":15}]},{},["u88BNT"])
+},{"./Application":1,"./Execution/Interpreters/ForInterpreter":2,"./Execution/Interpreters/IfInterpreter":3,"./Execution/Interpreters/InputInterpreter":4,"./Execution/Interpreters/SaveInterpreter":6,"./Execution/Interpreters/TextInterpreter":7,"./Execution/Storages/MockStorage":8,"./Parsing/CommandParsers/SimpleCommandParser":12,"./Parsing/DocumentParsers/SimpleCommentParser":15,"./Parsing/DocumentParsers/SimpleDomParser":16}]},{},["u88BNT"])
 ("u88BNT")
 });
