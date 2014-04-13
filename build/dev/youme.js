@@ -35,6 +35,10 @@ Application.prototype.run = function(givenArguments)
 
     for(var i = 0; i < commands.length; ++i)
     {
+        if(arguments.debug)
+        {
+            console.log("Processing " + commands[i]);
+        }
         for(var index = 0, interpreter; interpreter = this.interpreters[index]; ++index)
         {
             interpreter.interpret(commands[i]);
@@ -133,11 +137,9 @@ TextInterpreter.prototype = Object.create(Interpreter.prototype);
 
 TextInterpreter.prototype.interpret = function(command)
 {
-    var $target = $(command.target);
-
     var value = this.storage.get(command.getArgument(0), 'undefined');
 
-    $target.html(value);
+    command.target.html(value);
 };
 
 // Exports
@@ -327,7 +329,102 @@ DocumentParser.prototype.parse = function(rootNode, hookName)
 module.exports = DocumentParser;
 
 },{}],10:[function(_dereq_,module,exports){
+var NormalNode = function(node)
+{
+    this.node = $(node);
+};
+
+NormalNode.prototype.html = function(htmlContent)
+{
+    this.node.html(htmlContent);
+};
+
+// Exports
+module.exports = NormalNode;
+},{}],11:[function(_dereq_,module,exports){
 var DocumentParser = _dereq_('./DocumentParser');
+var VirtualNode = _dereq_('./VirtualNode');
+
+var SimpleCommentParser = function()
+{
+    DocumentParser.call(this);
+
+    this.startCommentRegex = null;
+    this.endCommentRegex = null;
+    this._commentNodesHaveTextProperty = null;
+};
+
+SimpleCommentParser.prototype = Object.create(DocumentParser.prototype);
+
+SimpleCommentParser.prototype.parse = function(commandParser, rootNode, hookName)
+{
+    var commands = [];
+    var nodesToParse = [$(rootNode).get(0)];
+
+    // Initialize parsing parameters
+    var htmlTagsWithOptionallyClosingChildren = { 'ul': true, 'ol': true };
+    this._commentNodesHaveTextProperty = document && document.createComment("test").text === "<!--test-->";
+    this._startCommentRegex = this._commentNodesHaveTextProperty ? new RegExp('^<!--\\s*' + hookName + '(?:\\s+([\\s\\S]+))?\\s*-->$')  : new RegExp('^\\s*' + hookName + '(?:\\s+([\\s\\S]+))?\\s*$');
+    this._endCommentRegex =  this._commentNodesHaveTextProperty ? new RegExp('^<!--\\s*\/' + hookName + '\\s*-->$') : new RegExp('^\\s*\/' + hookName + '\\s*$');
+
+    // Parsing
+    var scopes = [];
+    while(nodesToParse.length > 0)
+    {
+        var nodeToParse = nodesToParse.shift();
+
+        switch(true)
+        {
+            case this.isStartComment(nodeToParse):
+                scopes.push({
+                    startNode: nodeToParse,
+                    commandString: this.getCommentValue(nodeToParse).substring(this.getCommentValue(nodeToParse).indexOf(hookName) + hookName.length, this.getCommentValue(nodeToParse).length).trim(),
+                    contentNodes: [],
+                    endNode: null
+                });
+                break;
+            case this.isEndComment(nodeToParse):
+                scopes[scopes.length - 1].endNode = nodeToParse;
+                var scope = scopes.pop();
+                commands.push(commandParser.parse(new VirtualNode(scope.startNode, scope.contentNodes, scope.endNode), scope.commandString));
+                break;
+            default:
+                if (scopes.length > 0)
+                {
+                    scopes[scopes.length - 1].contentNodes.push(nodeToParse);
+                }
+                break;
+        }
+
+        if (scopes.length == 0)
+        {
+            for(var i = 0, child; child = nodeToParse.childNodes[i]; ++i)
+            {
+                nodesToParse.push(child);
+            }
+        }
+    }
+
+    return commands;
+};
+
+SimpleCommentParser.prototype.isStartComment =  function (node) {
+    return (node.nodeType == 8) && this._startCommentRegex.test(this.getCommentValue(node));
+};
+
+SimpleCommentParser.prototype.isEndComment = function (node) {
+    return (node.nodeType == 8) && this._endCommentRegex.test(this.getCommentValue(node));
+};
+
+SimpleCommentParser.prototype.getCommentValue = function (node) {
+  return this._commentNodesHaveTextProperty ? node.text : node.nodeValue;
+};
+
+// Exports
+module.exports = SimpleCommentParser;
+},{"./DocumentParser":9,"./VirtualNode":13}],12:[function(_dereq_,module,exports){
+var DocumentParser = _dereq_('./DocumentParser');
+var NormalNode = _dereq_('./NormalNode');
 
 var SimpleDomParser = function()
 {
@@ -348,7 +445,7 @@ SimpleDomParser.prototype.parse = function(commandParser, rootNode, hookName)
         commands.push(commandParser.parse(rootNode, rootNodeAttribute));
     }
     $(rootNode).find('[data-' + hookName + ']').each(function (index, element) {
-        commands.push(commandParser.parse(element, $(element).attr('data-' + hookName)));
+        commands.push(commandParser.parse(new NormalNode(element), $(element).attr('data-' + hookName)));
     });
 
     return commands;
@@ -356,11 +453,28 @@ SimpleDomParser.prototype.parse = function(commandParser, rootNode, hookName)
 
 // Exports
 module.exports = SimpleDomParser;
-},{"./DocumentParser":9}],"YouMe":[function(_dereq_,module,exports){
+},{"./DocumentParser":9,"./NormalNode":10}],13:[function(_dereq_,module,exports){
+var VirtualNode = function (startComment, nodes, endComment)
+{
+    this.startComment = startComment;
+    this.nodes = nodes;
+    this.endComment = endComment;
+};
+
+VirtualNode.prototype.html = function(htmlContent)
+{
+    $(this.nodes).remove();
+    $(this.startComment).after(htmlContent);
+};
+
+// Exports
+module.exports = VirtualNode;
+},{}],"YouMe":[function(_dereq_,module,exports){
 module.exports=_dereq_('u88BNT');
 },{}],"u88BNT":[function(_dereq_,module,exports){
 var Application = _dereq_('./Application');
-var SimpleDomParser = _dereq_('./Parsing/DocumentParsers/SImpleDomParser');
+var SimpleCommentParser = _dereq_('./Parsing/DocumentParsers/SimpleCommentParser');
+var SimpleDomParser = _dereq_('./Parsing/DocumentParsers/SimpleDomParser');
 var SimpleCommandParser = _dereq_('./Parsing/CommandParsers/SimpleCommandParser');
 var TextInterpreter = _dereq_('./Execution/Interpreters/TextInterpreter');
 var MockStorage = _dereq_('./Execution/Storages/MockStorage');
@@ -374,6 +488,7 @@ module.exports = {
         arguments = arguments || {};
 
         return new Application([
+            new SimpleCommentParser(),
             new SimpleDomParser()
         ],
             new SimpleCommandParser(),[
@@ -386,6 +501,6 @@ module.exports = {
         return new MockStorage(data);
     }
 };
-},{"./Application":1,"./Execution/Interpreters/TextInterpreter":3,"./Execution/Storages/MockStorage":4,"./Parsing/CommandParsers/SimpleCommandParser":8,"./Parsing/DocumentParsers/SImpleDomParser":10}]},{},["u88BNT"])
+},{"./Application":1,"./Execution/Interpreters/TextInterpreter":3,"./Execution/Storages/MockStorage":4,"./Parsing/CommandParsers/SimpleCommandParser":8,"./Parsing/DocumentParsers/SimpleCommentParser":11,"./Parsing/DocumentParsers/SimpleDomParser":12}]},{},["u88BNT"])
 ("u88BNT")
 });

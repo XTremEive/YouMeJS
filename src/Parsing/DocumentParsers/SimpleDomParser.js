@@ -1,4 +1,5 @@
 var DocumentParser = require('./DocumentParser');
+var NormalNode = require('./NormalNode');
 
 var SimpleDomParser = function()
 {
@@ -19,7 +20,7 @@ SimpleDomParser.prototype.parse = function(commandParser, rootNode, hookName)
         commands.push(commandParser.parse(rootNode, rootNodeAttribute));
     }
     $(rootNode).find('[data-' + hookName + ']').each(function (index, element) {
-        commands.push(commandParser.parse(element, $(element).attr('data-' + hookName)));
+        commands.push(commandParser.parse(new NormalNode(element), $(element).attr('data-' + hookName)));
     });
 
     return commands;

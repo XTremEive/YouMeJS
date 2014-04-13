@@ -34,6 +34,10 @@ Application.prototype.run = function(givenArguments)
 
     for(var i = 0; i < commands.length; ++i)
     {
+        if(arguments.debug)
+        {
+            console.log("Processing " + commands[i]);
+        }
         for(var index = 0, interpreter; interpreter = this.interpreters[index]; ++index)
         {
             interpreter.interpret(commands[i]);

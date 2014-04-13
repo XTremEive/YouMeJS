@@ -1,5 +1,6 @@
 var Application = require('./Application');
-var SimpleDomParser = require('./Parsing/DocumentParsers/SImpleDomParser');
+var SimpleCommentParser = require('./Parsing/DocumentParsers/SimpleCommentParser');
+var SimpleDomParser = require('./Parsing/DocumentParsers/SimpleDomParser');
 var SimpleCommandParser = require('./Parsing/CommandParsers/SimpleCommandParser');
 var TextInterpreter = require('./Execution/Interpreters/TextInterpreter');
 var MockStorage = require('./Execution/Storages/MockStorage');
@@ -13,6 +14,7 @@ module.exports = {
         arguments = arguments || {};
 
         return new Application([
+            new SimpleCommentParser(),
             new SimpleDomParser()
         ],
             new SimpleCommandParser(),[
