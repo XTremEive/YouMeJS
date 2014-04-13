@@ -41,7 +41,18 @@ Here is a showcase of the current features.
             var storage = YouMe.createMockStorage({
                 'textVariable': 'This is a simple text',
                 'booleanTrueVariable': true,
-                'booleanFalseVariable': false
+                'booleanFalseVariable': false,
+                'arrayVariable': ['foo', 'bar', 'baz'],
+                'arrayWithObjectsVariable': [
+                    {
+                        id: 25,
+                        name: 'Pikachu'
+                    },
+                    {
+                        id: 26,
+                        name: 'Raichu'
+                    },
+                ]
             });
 
             // Finally you call "fuse" with a storage, a root node to start parsing, a a custom alias (see client code below)
@@ -61,6 +72,9 @@ This part also aim at showcasing what we can do so far.
 -->
 
 <body onload="MyAwesomeService.start()">
+
+<h1>YouMe.JS demo file</h1>
+<p>Don't just stare at this page, check its source code to understand what's happening.</p>
 
 <h2>Text binding</h2>
 <div>
@@ -82,8 +96,36 @@ This part also aim at showcasing what we can do so far.
     <p data-mas="if: booleanFalseVariable">But not this one.</p>
 </div>
 
+<h2>For binding</h2>
+<div>
+    <!-- mas for: arrayVariable -->
+    <p>Current item <span data-mas="text: context"></span></p>
+    <!-- /mas -->
+    <ul data-mas="for: arrayVariable">
+        <li data-mas="text: context"></li>
+    </ul>
+
+    <!-- mas for: arrayWithObjectsVariable -->
+    <p>Id: <span data-mas="text: context.id"></span> <span data-mas="text: context.name"></span></p>
+    <!-- /mas -->
+    <ul data-mas="for: arrayWithObjectsVariable">
+        <li><b data-mas="text: context.id"></b> <span data-mas="text: context.name"></span></li>
+    </ul>
+
+</div>
+
+<h2>Save binding</h2>
+<div>
+    <!-- mas save -->
+        <a href="#" title="Clicking here wil trigger your storage's save method." >Save link</a>
+    <!-- /mas -->
+
+    <input type="button" data-mas="save" title="Clicking here wil trigger your storage's save method." value="Save button" />
+</div>
+
 </body>
 </html>
+
 ```
 
 

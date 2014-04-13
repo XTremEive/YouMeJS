@@ -31,6 +31,11 @@ VirtualNode.prototype.hide = function()
     this.nodes.hide();
 };
 
+VirtualNode.prototype.on = function(eventName, callback)
+{
+    this.nodes.on(eventName, callback);
+};
+
 VirtualNode.prototype.show = function()
 {
     this.nodes.show();

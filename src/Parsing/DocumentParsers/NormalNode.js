@@ -28,6 +28,11 @@ NormalNode.prototype.hide = function()
     this.node.hide();
 };
 
+NormalNode.prototype.on = function(eventName, callback)
+{
+    this.node.on(eventName, callback);
+};
+
 NormalNode.prototype.show = function()
 {
     this.node.show();
