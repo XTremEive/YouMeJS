@@ -222,5 +222,6 @@ What is left to do in order to have a ready-to-use library? (todolist)
 ---
 
 - Add recursion in the comment parsing
+- Add conditional attributes
 - ...
 
