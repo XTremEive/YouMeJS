@@ -15,9 +15,6 @@ SaveInterpreter.prototype.interpret = function(command)
         return false;
     }
 
-    // Get value from storage
-    var value = this.getValue(command.context, command.getArgument(0), 'undefined');
-
     // Process
     (function(application, instance) {
         command.target.on('click', function()

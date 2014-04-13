@@ -18,6 +18,13 @@ Storage.prototype.get = function(key, defaultValue)
     throw "Not implemented!";
 };
 
+Storage.prototype.has = function(key)
+{
+    throw "Not implemented!";
+
+    return false;
+};
+
 Storage.prototype.unset = function(key)
 {
     throw "Not implemented!";

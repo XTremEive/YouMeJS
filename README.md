@@ -40,6 +40,9 @@ Here is a showcase of currently implemented features.
             'booleanTrueVariable': true,
             'booleanFalseVariable': false,
             'arrayVariable': ['foo', 'bar', 'baz'],
+            'objectVariable': {
+                property: "This is an object property",
+            },
             'arrayWithObjectsVariable': [
                 {
                     id: 25,
@@ -93,7 +96,8 @@ This part also aim at showcasing what we can do so far.
     <!-- mas text: textVariable -->
     <p>This paragraph will be replaced by the content of foo.</p>
     <!-- /mas -->
-    <p data-mas="text: textVariable">The content of this paragraph will be replace by the content of bar</p>
+    <p data-mas="text: textVariable">The content of this paragraph will be replace by the content of textVariable</p>
+    <p data-mas="text: objectVariable.property">We can even access object properties</p>
 </div>
 
 
@@ -195,6 +199,7 @@ This part also aim at showcasing what we can do so far.
 </body>
 </html>
 
+
 ```
 
 
@@ -217,6 +222,5 @@ What is left to do in order to have a ready-to-use library? (todolist)
 ---
 
 - Add recursion in the comment parsing
-- Add some object resolver in the Interpreter class.
 - ...
 

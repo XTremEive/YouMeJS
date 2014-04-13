@@ -28,6 +28,11 @@ MockStorage.prototype.get = function(key, defaultValue)
     return this.data[key] ? this.data[key] : defaultValue;
 };
 
+MockStorage.prototype.has = function(key)
+{
+    return key in this.data;
+};
+
 MockStorage.prototype.unset = function(key)
 {
     delete this.data[key];

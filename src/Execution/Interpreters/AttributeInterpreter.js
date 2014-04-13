@@ -17,8 +17,6 @@ AttributeInterpreter.prototype.interpret = function(command)
 
     // Process
     var jsonString = command.getArgument(0).replace(/(\w+):\s(\w+)/g, '"$1":"$2"');
-    console.log(command);
-    console.log(jsonString);
     var attributes = JSON.parse(jsonString);
     for(var attributeName in attributes)
     {
