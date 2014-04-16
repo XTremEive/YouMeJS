@@ -2,6 +2,7 @@ var Application = require('./Application');
 var CommentParser = require('./Parsing/DocumentParsers/CommentParser');
 var DomParser = require('./Parsing/DocumentParsers/DomParser');
 var KeyValueCommandParser = require('./Parsing/CommandParsers/KeyValueCommandParser');
+var ConditionEvaluator = require('./Execution/Interpreters/Evaluators/ConditionEvaluator');
 var AttributeInterpreter = require('./Execution/Interpreters/AttributeInterpreter');
 var ForInterpreter = require('./Execution/Interpreters/ForInterpreter');
 var IfInterpreter = require('./Execution/Interpreters/IfInterpreter');
@@ -51,10 +52,10 @@ module.exports = {
         this.application.rootNode = rootNode;
         this.application.hookName = hookName;
         var standardInterpreters = [
-            new AttributeInterpreter(this.storage),
+            new AttributeInterpreter(this.storage, new ConditionEvaluator()),
             new ForInterpreter(this.storage),
             new InputInterpreter(this.storage),
-            new IfInterpreter(this.storage),
+            new IfInterpreter(this.storage, new ConditionEvaluator()),
             new SaveInterpreter(this.storage),
             new TextInterpreter(this.storage)
         ]

@@ -1,8 +1,11 @@
 var Interpreter = require('./Interpreter');
 
-var IfInterpreter = function(storage)
+var IfInterpreter = function(storage, conditionEvaluator)
 {
     Interpreter.call(this, storage);
+
+    this.conditionEvaluator = conditionEvaluator;
+    this.conditionEvaluator.interpreter = this;
 };
 
 IfInterpreter.prototype = Object.create(Interpreter.prototype);
@@ -16,7 +19,7 @@ IfInterpreter.prototype.interpret = function(command)
     }
 
     // Get value from storage
-    var value = this.getValue(command.context, command.getArgument(0), false);
+    var value = this.conditionEvaluator.evaluate(command.context, command.getArgument(0));
 
     // Process
     if (value)

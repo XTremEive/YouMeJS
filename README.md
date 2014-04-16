@@ -4,7 +4,7 @@ YouMeJS
 What is it?
 ---
 
-YouMe is a [Knockout](https://github.com/knockout/knockout) inspired library create to help widget and API developers injecting code logic into their partners websites.
+YouMe is a [Knockout](https://github.com/knockout/knockout) inspired library create to help web widget developers injecting code logic into their partners websites.
 
 
 What does it do?
@@ -111,13 +111,7 @@ This part also aim at showcasing what we can do so far.
     <a href="#" data-mas="attribute: {title: textVariable}">Mouse over to see a tooltip set using the binding system.</a>
 </div>
 
-<h2>Conditional attrbiute binding</h2>
-<div>
-    <a href="#" data-mas="attribute: {class: highlight}, {class: booleanTrueVariable}">This will display a CSS class as booleanTrueVariable is true</a><br />
-    <a href="#" data-mas="attribute: {class: highlight}, {class: booleanFalseVariable}">This will not add a CSS class as booleanFalseVariable is false..</a>
-</div>
-
-<h2>Control structures</h2>
+<h2>Conditions</h2>
 <h3>If statement</h3>
 <div>
     <!-- mas if: booleanTrueVariable -->
@@ -128,9 +122,18 @@ This part also aim at showcasing what we can do so far.
     <!-- /mas -->
     <p data-mas="if: booleanTrueVariable">This paragraph should be shown</p>
     <p data-mas="if: booleanFalseVariable">But not this one.</p>
+    <p data-mas="if: booleanTrueVariable && booleanFalseVariable">And not this one either.</p>
+    <p data-mas="if: booleanTrueVariable || booleanFalseVariable">And this one should be visible too.</p>
 </div>
 
-<h2>For statement</h2>
+<h2>Conditional attribute binding (the second parameter contains indexed conditions)</h2>
+<div>
+    <a href="#" data-mas="attribute: {class: highlight}, {class: booleanTrueVariable}">This will display a CSS class as booleanTrueVariable is true</a><br />
+    <a href="#" data-mas="attribute: {class: highlight}, {class: booleanFalseVariable}">This will not add a CSS class as booleanFalseVariable is false..</a><br />
+    <a href="#" data-mas="attribute: {class: highlight}, {class: arrayVariable.length > 2}">This will add a CSS class as arrayVariables contains more than 2 elements..</a>
+</div>
+
+<h2>Loops</h2>
 <div>
     <!-- mas for: arrayVariable -->
     <p>Current item <span data-mas="text: context"></span></p>
@@ -240,29 +243,21 @@ This part also aim at showcasing what we can do so far.
 </body>
 </html>
 
-
 ```
 
 
 Can I use it in production?
 ---
 
-**No**. This project is a work in progress, as such it is yet to be documented or even tested in a production environment.
+**At your own risk**.
+This project is a work in progress, and as such it has yet to be documented or even tested in a production environment.
 If you really want to play with those feature such as the template system, I encourage you to use [Knockout](https://github.com/knockout/knockout) instead.
 
 
-What do I need to use it anyway?
+I still want to use it, so what do I need anyway?
 ---
 
 A build of the library is available in the */build/dev/* directory.
-If you're an widget / API developer. Keep in mind that you, and your clients will have to have [jQuery](https://github.com/jquery/jquery) available.
-If you want to modify and the library itself you might consider installing [Browserify](https://github.com/substack/node-browserify) and run the *resouces/Scripts/build_dev.sh* to generate a new build (this script should be run at the root of the library.
-
-
-What is left to do in order to have a ready-to-use library? (todolist)
----
-
-- Add if evaluator
-- Add multiple attributes
-- ...
+If you're a widget developer keep in mind that your clients will have to have [jQuery](https://github.com/jquery/jquery) available.
+If you want to modify the library itself you might consider installing [Browserify](https://github.com/substack/node-browserify) and run the *resouces/Scripts/build_dev.sh* to generate a new build (this script should be run at the root of the library.
 

@@ -1,8 +1,11 @@
 var Interpreter = require('./Interpreter');
 
-var AttributeInterpreter = function(storage)
+var AttributeInterpreter = function(storage, conditionEvaluator)
 {
     Interpreter.call(this, storage);
+
+    this.conditionEvaluator = conditionEvaluator;
+    this.conditionEvaluator.interpreter = this;
 };
 
 AttributeInterpreter.prototype = Object.create(Interpreter.prototype);
@@ -16,8 +19,8 @@ AttributeInterpreter.prototype.interpret = function(command)
     }
 
     // Process
-    var attributes = JSON.parse(command.getArgument(0).replace(/((\w|\s)+)/g, '"$1"'));
-    var conditions = JSON.parse(command.getArgument(1, "{}").replace(/((\w|\s)+)/g, '"$1"'));
+    var attributes = JSON.parse(command.getArgument(0).replace(/((\w|\s|[!|\.><&=])+)/g, '"$1"'));
+    var conditions = JSON.parse(command.getArgument(1, "{}").replace(/((\w|\s|[!|\.><&=])+)/g, '"$1"'));
 
     // Format parameters
     for(var i in attributes)
@@ -27,14 +30,13 @@ AttributeInterpreter.prototype.interpret = function(command)
 
     for(var i in conditions)
     {
-        conditions[i] = conditions[i].trim();
+        conditions[i] = this.conditionEvaluator.evaluate(command.context, conditions[i].trim());
     }
-
 
     for(var attributeName in attributes)
     {
         var value = this.getValue(command.context, attributes[attributeName], attributes[attributeName]);
-        var conditionValue = (attributeName in conditions) ? this.getValue(command.context, conditions[attributeName], false) : true;
+        var conditionValue = (attributeName in conditions) ? conditions[attributeName] : true;
 
         if (conditionValue)
         {

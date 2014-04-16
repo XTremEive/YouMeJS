@@ -123,9 +123,12 @@ module.exports = Application;
 },{}],2:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
-var AttributeInterpreter = function(storage)
+var AttributeInterpreter = function(storage, conditionEvaluator)
 {
     Interpreter.call(this, storage);
+
+    this.conditionEvaluator = conditionEvaluator;
+    this.conditionEvaluator.interpreter = this;
 };
 
 AttributeInterpreter.prototype = Object.create(Interpreter.prototype);
@@ -139,8 +142,8 @@ AttributeInterpreter.prototype.interpret = function(command)
     }
 
     // Process
-    var attributes = JSON.parse(command.getArgument(0).replace(/((\w|\s)+)/g, '"$1"'));
-    var conditions = JSON.parse(command.getArgument(1, "{}").replace(/((\w|\s)+)/g, '"$1"'));
+    var attributes = JSON.parse(command.getArgument(0).replace(/((\w|\s|[!|\.><&=])+)/g, '"$1"'));
+    var conditions = JSON.parse(command.getArgument(1, "{}").replace(/((\w|\s|[!|\.><&=])+)/g, '"$1"'));
 
     // Format parameters
     for(var i in attributes)
@@ -150,14 +153,13 @@ AttributeInterpreter.prototype.interpret = function(command)
 
     for(var i in conditions)
     {
-        conditions[i] = conditions[i].trim();
+        conditions[i] = this.conditionEvaluator.evaluate(command.context, conditions[i].trim());
     }
-
 
     for(var attributeName in attributes)
     {
         var value = this.getValue(command.context, attributes[attributeName], attributes[attributeName]);
-        var conditionValue = (attributeName in conditions) ? this.getValue(command.context, conditions[attributeName], false) : true;
+        var conditionValue = (attributeName in conditions) ? conditions[attributeName] : true;
 
         if (conditionValue)
         {
@@ -170,7 +172,85 @@ AttributeInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = AttributeInterpreter;
-},{"./Interpreter":6}],3:[function(_dereq_,module,exports){
+},{"./Interpreter":7}],3:[function(_dereq_,module,exports){
+var ConditionEvaluator = function(interpreter)
+{
+    this.interpreter = interpreter || null;
+};
+
+ConditionEvaluator.prototype.evaluate = function(context, input)
+{
+    var result = true;
+    var components = input.split(' ');
+    var operator = '&&';
+
+    for(var i = 0, component; component = components[i]; ++i)
+    {
+        component = component.trim();
+
+        switch(component)
+        {
+            case '&&':
+            case '||':
+            case '>':
+            case '<':
+            case '>=':
+            case '<=':
+            case '==':
+            case '!=':
+                operator = component;
+                break;
+            default:
+                if (component == "true")
+                {
+                    component = true;
+                }
+                else if (component == "false")
+                {
+                    component = false;
+                }
+                else {
+                    component = this.interpreter.getValue(context, component, component);
+                }
+
+                switch(operator)
+                {
+                    case '==':
+                        result = result == component;
+                        break;
+                    case '!=':
+                        result = result != component;
+                        break;
+                    case '&&':
+                        result = result && component;
+                        break;
+                    case '||':
+                        result = result || component;
+                        break;
+                    case '>':
+                        result = result > component;
+                        break;
+                    case '<':
+                        result = result < component;
+                        break;
+                    case '>=':
+                        result = result >= component;
+                        break;
+                    case '<=':
+                        result = result <= component;
+                        break;
+                }
+
+                break;
+        }
+    }
+
+    return result;
+};
+
+// Exports
+module.exports = ConditionEvaluator;
+},{}],4:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
 var ForInterpreter = function(storage)
@@ -214,12 +294,15 @@ ForInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = ForInterpreter;
-},{"./Interpreter":6}],4:[function(_dereq_,module,exports){
+},{"./Interpreter":7}],5:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
-var IfInterpreter = function(storage)
+var IfInterpreter = function(storage, conditionEvaluator)
 {
     Interpreter.call(this, storage);
+
+    this.conditionEvaluator = conditionEvaluator;
+    this.conditionEvaluator.interpreter = this;
 };
 
 IfInterpreter.prototype = Object.create(Interpreter.prototype);
@@ -233,7 +316,7 @@ IfInterpreter.prototype.interpret = function(command)
     }
 
     // Get value from storage
-    var value = this.getValue(command.context, command.getArgument(0), false);
+    var value = this.conditionEvaluator.evaluate(command.context, command.getArgument(0));
 
     // Process
     if (value)
@@ -248,7 +331,7 @@ IfInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = IfInterpreter;
-},{"./Interpreter":6}],5:[function(_dereq_,module,exports){
+},{"./Interpreter":7}],6:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
 var InputInterpreter = function(storage)
@@ -284,7 +367,7 @@ InputInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = InputInterpreter;
-},{"./Interpreter":6}],6:[function(_dereq_,module,exports){
+},{"./Interpreter":7}],7:[function(_dereq_,module,exports){
 var Interpreter = function(storage)
 {
     this.storage = storage || null;
@@ -362,7 +445,7 @@ Interpreter.prototype.getValue = function(context, path, defaultValue)
 
 // Exports
 module.exports = Interpreter;
-},{}],7:[function(_dereq_,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
 var SaveInterpreter = function(storage)
@@ -395,7 +478,7 @@ SaveInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = SaveInterpreter;
-},{"./Interpreter":6}],8:[function(_dereq_,module,exports){
+},{"./Interpreter":7}],9:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
 var TextInterpreter = function(storage)
@@ -424,7 +507,7 @@ TextInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = TextInterpreter;
-},{"./Interpreter":6}],9:[function(_dereq_,module,exports){
+},{"./Interpreter":7}],10:[function(_dereq_,module,exports){
 var Interpreter = _dereq_('./Interpreter');
 
 var UserDefinedInterpreter = function(storage, commandName, callback)
@@ -452,7 +535,7 @@ UserDefinedInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = UserDefinedInterpreter;
-},{"./Interpreter":6}],10:[function(_dereq_,module,exports){
+},{"./Interpreter":7}],11:[function(_dereq_,module,exports){
 var Storage = _dereq_('./Storage');
 
 var MockStorage = function(data)
@@ -507,7 +590,7 @@ MockStorage.prototype.save = function()
 
 // Exports
 module.exports = MockStorage;
-},{"./Storage":11}],11:[function(_dereq_,module,exports){
+},{"./Storage":12}],12:[function(_dereq_,module,exports){
 var Storage = function(data)
 {
     this.data = data;
@@ -551,7 +634,7 @@ Storage.prototype.save = function()
 
 // Exports
 module.exports = Storage;
-},{}],12:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 var Command = function(application, target, context, name, arguments)
 {
     this.application = application;
@@ -594,7 +677,7 @@ Command.prototype.toString = function()
 // Exports
 module.exports = Command;
 
-},{}],13:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 var Command = _dereq_('./Command');
 
 var CommandParser = function()
@@ -611,7 +694,7 @@ CommandParser.prototype.parse = function(application, target, context, input)
 
 // Exports
 module.exports = CommandParser;
-},{"./Command":12}],14:[function(_dereq_,module,exports){
+},{"./Command":13}],15:[function(_dereq_,module,exports){
 var CommandParser = _dereq_('./CommandParser');
 var Command = _dereq_('./Command');
 
@@ -642,7 +725,7 @@ KeyValueCommandParser.prototype.parse = function(application, target, context, i
 
 // Exports
 module.exports = KeyValueCommandParser;
-},{"./Command":12,"./CommandParser":13}],15:[function(_dereq_,module,exports){
+},{"./Command":13,"./CommandParser":14}],16:[function(_dereq_,module,exports){
 var DocumentParser = _dereq_('./DocumentParser');
 var VirtualNode = _dereq_('./VirtualNode');
 
@@ -724,7 +807,7 @@ CommentParser.prototype.getCommentValue = function (node) {
 
 // Exports
 module.exports = CommentParser;
-},{"./DocumentParser":16,"./VirtualNode":19}],16:[function(_dereq_,module,exports){
+},{"./DocumentParser":17,"./VirtualNode":20}],17:[function(_dereq_,module,exports){
 var DocumentParser = function()
 {
 
@@ -739,7 +822,7 @@ DocumentParser.prototype.parse = function(application, rootNode, context, hookNa
 // Exports
 module.exports = DocumentParser;
 
-},{}],17:[function(_dereq_,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 var DocumentParser = _dereq_('./DocumentParser');
 var NormalNode = _dereq_('./NormalNode');
 
@@ -773,7 +856,7 @@ DomParser.prototype.parse = function(application, rootNode, context, hookName)
 
 // Exports
 module.exports = DomParser;
-},{"./DocumentParser":16,"./NormalNode":18}],18:[function(_dereq_,module,exports){
+},{"./DocumentParser":17,"./NormalNode":19}],19:[function(_dereq_,module,exports){
 var NormalNode = function(node)
 {
     this.node = $(node);
@@ -837,7 +920,7 @@ NormalNode.prototype.show = function()
 
 // Exports
 module.exports = NormalNode;
-},{}],19:[function(_dereq_,module,exports){
+},{}],20:[function(_dereq_,module,exports){
 var VirtualNode = function (startComment, nodes, endComment)
 {
     this.startComment = $(startComment);
@@ -916,6 +999,7 @@ var Application = _dereq_('./Application');
 var CommentParser = _dereq_('./Parsing/DocumentParsers/CommentParser');
 var DomParser = _dereq_('./Parsing/DocumentParsers/DomParser');
 var KeyValueCommandParser = _dereq_('./Parsing/CommandParsers/KeyValueCommandParser');
+var ConditionEvaluator = _dereq_('./Execution/Interpreters/Evaluators/ConditionEvaluator');
 var AttributeInterpreter = _dereq_('./Execution/Interpreters/AttributeInterpreter');
 var ForInterpreter = _dereq_('./Execution/Interpreters/ForInterpreter');
 var IfInterpreter = _dereq_('./Execution/Interpreters/IfInterpreter');
@@ -965,10 +1049,10 @@ module.exports = {
         this.application.rootNode = rootNode;
         this.application.hookName = hookName;
         var standardInterpreters = [
-            new AttributeInterpreter(this.storage),
+            new AttributeInterpreter(this.storage, new ConditionEvaluator()),
             new ForInterpreter(this.storage),
             new InputInterpreter(this.storage),
-            new IfInterpreter(this.storage),
+            new IfInterpreter(this.storage, new ConditionEvaluator()),
             new SaveInterpreter(this.storage),
             new TextInterpreter(this.storage)
         ]
@@ -984,6 +1068,6 @@ module.exports = {
         return new MockStorage(data);
     }
 };
-},{"./Application":1,"./Execution/Interpreters/AttributeInterpreter":2,"./Execution/Interpreters/ForInterpreter":3,"./Execution/Interpreters/IfInterpreter":4,"./Execution/Interpreters/InputInterpreter":5,"./Execution/Interpreters/SaveInterpreter":7,"./Execution/Interpreters/TextInterpreter":8,"./Execution/Interpreters/UserDefinedInterpreter":9,"./Execution/Storages/MockStorage":10,"./Parsing/CommandParsers/KeyValueCommandParser":14,"./Parsing/DocumentParsers/CommentParser":15,"./Parsing/DocumentParsers/DomParser":17}]},{},["u88BNT"])
+},{"./Application":1,"./Execution/Interpreters/AttributeInterpreter":2,"./Execution/Interpreters/Evaluators/ConditionEvaluator":3,"./Execution/Interpreters/ForInterpreter":4,"./Execution/Interpreters/IfInterpreter":5,"./Execution/Interpreters/InputInterpreter":6,"./Execution/Interpreters/SaveInterpreter":8,"./Execution/Interpreters/TextInterpreter":9,"./Execution/Interpreters/UserDefinedInterpreter":10,"./Execution/Storages/MockStorage":11,"./Parsing/CommandParsers/KeyValueCommandParser":15,"./Parsing/DocumentParsers/CommentParser":16,"./Parsing/DocumentParsers/DomParser":18}]},{},["u88BNT"])
 ("u88BNT")
 });
