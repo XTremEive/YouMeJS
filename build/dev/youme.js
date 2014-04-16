@@ -183,9 +183,13 @@ ForInterpreter.prototype.interpret = function(command)
 
     for(var i = 0; i < value.length; ++i)
     {
+        var context = value[i];
+        context.parent = command.context;
+
+
         // Create new node and interpret it
         command.target.append(newElements[i]);
-        command.application.refresh(newElements[i], value[i]);
+        command.application.refresh(newElements[i], context);
     }
 
     return true;
@@ -298,7 +302,7 @@ Interpreter.prototype.getValue = function(context, path, defaultValue)
 
         while(keyPathComponents.length > 0)
         {
-            if((context == null) || (typeof context != 'object') || !(objectPathComponents[i] in context)) {
+            if((context != null) && (typeof context == 'object') && (keyPathComponents.join('.') in context)) {
                 result = context[keyPathComponents.join('.')]
                 break;
             }
