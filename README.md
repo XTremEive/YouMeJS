@@ -253,7 +253,6 @@ What is left to do in order to have a ready-to-use library? (todolist)
 ---
 
 - Add if evaluator
-- Add conditional attribute
-- Add a proper parent context
+- Add multiple attributes
 - ...
 
