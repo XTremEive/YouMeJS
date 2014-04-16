@@ -88,6 +88,11 @@ This part also aim at showcasing what we can do so far.
 -->
 
 <body>
+<style type="text/css">
+    .highlight {
+        background: #fee;
+    }
+</style>
 
 <h1>YouMe.JS demo</h1>
 <p>Don't just stare at this page, check its source code to understand what's happening.</p>
@@ -101,10 +106,15 @@ This part also aim at showcasing what we can do so far.
     <p data-mas="text: objectVariable.property">We can even access object properties</p>
 </div>
 
-
 <h2>Attribute binding</h2>
 <div>
     <a href="#" data-mas="attribute: {title: textVariable}">Mouse over to see a tooltip set using the binding system.</a>
+</div>
+
+<h2>Conditional attrbiute binding</h2>
+<div>
+    <a href="#" data-mas="attribute: {class: highlight}, {class: booleanTrueVariable}">This will display a CSS class as booleanTrueVariable is true</a><br />
+    <a href="#" data-mas="attribute: {class: highlight}, {class: booleanFalseVariable}">This will not add a CSS class as booleanFalseVariable is false..</a>
 </div>
 
 <h2>Control structures</h2>
@@ -138,7 +148,7 @@ This part also aim at showcasing what we can do so far.
 
 </div>
 
-<h2>Nested structures</h2>
+<h2>Nesting</h2>
 <div>
     <!-- mas if: booleanTrueVariable -->
         <p>This paragraph should be shown</p>
@@ -150,7 +160,7 @@ This part also aim at showcasing what we can do so far.
         <ul data-mas="for: arrayVariable">
             <li data-mas="text: context"></li>
             <ul data-mas="for: arrayWithObjectsVariable">
-                <li><b data-mas="text: context.id"></b> <span data-mas="text: context.name"></span></li>
+                <li><b data-mas="text: context.parent"></b> <span data-mas="text: context.name"></span></li>
             </ul>
         </ul>
 
@@ -159,7 +169,7 @@ This part also aim at showcasing what we can do so far.
             <li data-mas="text: context"></li>
             <ul>
                 <!-- mas for: arrayWithObjectsVariable -->
-                <li><b data-mas="text: context.id"></b> <span data-mas="text: context.name"></span></li>
+                <li><b data-mas="text: context.parent"></b> <span data-mas="text: context.name"></span></li>
                 <!-- /mas -->
             </ul>
             <!-- /mas -->
