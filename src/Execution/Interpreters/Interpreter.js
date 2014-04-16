@@ -32,8 +32,7 @@ Interpreter.prototype.getValue = function(context, path, defaultValue)
 
         while(keyPathComponents.length > 0)
         {
-            if(keyPathComponents.join('.') in context)
-            {
+            if((context == null) || (typeof context != 'object') || !(objectPathComponents[i] in context)) {
                 result = context[keyPathComponents.join('.')]
                 break;
             }

@@ -16,7 +16,7 @@ NormalNode.prototype.clear = function()
 
 NormalNode.prototype.createTemplate = function()
 {
-    return this.template.children().clone().get(0);
+    return this.template.children().clone();
 };
 NormalNode.prototype.getAttribute = function(name)
 {

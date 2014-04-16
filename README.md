@@ -13,6 +13,7 @@ What does it do?
 Here is a showcase of currently implemented features.
 
 ```html
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -106,7 +107,8 @@ This part also aim at showcasing what we can do so far.
     <a href="#" data-mas="attribute: {title: textVariable}">Mouse over to see a tooltip set using the binding system.</a>
 </div>
 
-<h2>If binding</h2>
+<h2>Control structures</h2>
+<h3>If statement</h3>
 <div>
     <!-- mas if: booleanTrueVariable -->
     <p>This paragraph should be shown</p>
@@ -118,7 +120,7 @@ This part also aim at showcasing what we can do so far.
     <p data-mas="if: booleanFalseVariable">But not this one.</p>
 </div>
 
-<h2>For binding</h2>
+<h2>For statement</h2>
 <div>
     <!-- mas for: arrayVariable -->
     <p>Current item <span data-mas="text: context"></span></p>
@@ -134,6 +136,35 @@ This part also aim at showcasing what we can do so far.
         <li><b data-mas="text: context.id"></b> <span data-mas="text: context.name"></span></li>
     </ul>
 
+</div>
+
+<h2>Nested structures</h2>
+<div>
+    <!-- mas if: booleanTrueVariable -->
+        <p>This paragraph should be shown</p>
+
+        <!-- mas if: booleanFalseVariable -->
+        <p>This paragraph should be hidden</p>
+        <!-- /mas -->
+
+        <ul data-mas="for: arrayVariable">
+            <li data-mas="text: context"></li>
+            <ul data-mas="for: arrayWithObjectsVariable">
+                <li><b data-mas="text: context.id"></b> <span data-mas="text: context.name"></span></li>
+            </ul>
+        </ul>
+
+        <ul>
+            <!-- mas for: arrayVariable -->
+            <li data-mas="text: context"></li>
+            <ul>
+                <!-- mas for: arrayWithObjectsVariable -->
+                <li><b data-mas="text: context.id"></b> <span data-mas="text: context.name"></span></li>
+                <!-- /mas -->
+            </ul>
+            <!-- /mas -->
+        </ul>
+    <!-- /mas -->
 </div>
 
 <h2>Input binding</h2>
@@ -221,6 +252,8 @@ If you want to modify and the library itself you might consider installing [Brow
 What is left to do in order to have a ready-to-use library? (todolist)
 ---
 
-- Add recursion in the comment parsing
+- Add if evaluator
+- Add conditional attribute
+- Add a proper parent context
 - ...
 

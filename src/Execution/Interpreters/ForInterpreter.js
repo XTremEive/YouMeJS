@@ -28,6 +28,7 @@ ForInterpreter.prototype.interpret = function(command)
 
     for(var i = 0; i < value.length; ++i)
     {
+        // Create new node and interpret it
         command.target.append(newElements[i]);
         command.application.refresh(newElements[i], value[i]);
     }

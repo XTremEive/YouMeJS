@@ -183,6 +183,7 @@ ForInterpreter.prototype.interpret = function(command)
 
     for(var i = 0; i < value.length; ++i)
     {
+        // Create new node and interpret it
         command.target.append(newElements[i]);
         command.application.refresh(newElements[i], value[i]);
     }
@@ -297,8 +298,7 @@ Interpreter.prototype.getValue = function(context, path, defaultValue)
 
         while(keyPathComponents.length > 0)
         {
-            if(keyPathComponents.join('.') in context)
-            {
+            if((context == null) || (typeof context != 'object') || !(objectPathComponents[i] in context)) {
                 result = context[keyPathComponents.join('.')]
                 break;
             }
@@ -594,27 +594,116 @@ module.exports = CommandParser;
 var CommandParser = _dereq_('./CommandParser');
 var Command = _dereq_('./Command');
 
-var SimpleCommandParser = function()
+var KeyValueCommandParser = function()
 {
     CommandParser.call(this);
 };
 
-SimpleCommandParser.prototype = Object.create(CommandParser.prototype);
+KeyValueCommandParser.prototype = Object.create(CommandParser.prototype);
 
-SimpleCommandParser.prototype.parse = function(application, target, context, input)
+KeyValueCommandParser.prototype.parse = function(application, target, context, input)
 {
     var commandComponents = input.split(':');
 
     var commandName = commandComponents[0].trim();
     commandComponents.shift();
-    var commandArguments = commandComponents.join(':').trim().split(',');
+    var commandArguments = commandComponents.join(':').split(',');
 
+    // Format arguments
+    for(var i = 0; i < commandArguments.length; ++i)
+    {
+        commandArguments[i] = commandArguments[i].trim();
+    }
+
+    // Return
     return new Command(application, target, context, commandName, commandArguments);
 };
 
 // Exports
-module.exports = SimpleCommandParser;
+module.exports = KeyValueCommandParser;
 },{"./Command":12,"./CommandParser":13}],15:[function(_dereq_,module,exports){
+var DocumentParser = _dereq_('./DocumentParser');
+var VirtualNode = _dereq_('./VirtualNode');
+
+var CommentParser = function()
+{
+    DocumentParser.call(this);
+
+    this.startCommentRegex = null;
+    this.endCommentRegex = null;
+    this._commentNodesHaveTextProperty = null;
+};
+
+CommentParser.prototype = Object.create(DocumentParser.prototype);
+
+CommentParser.prototype.parse = function(application, rootNode, context, hookName)
+{
+    var commands = [];
+    var self = this;
+
+    $(rootNode).each(function(index, element) {
+        var nodesToParse = [$(element).get(0)];
+
+        // Initialize parsing parameters
+        var htmlTagsWithOptionallyClosingChildren = { 'ul': true, 'ol': true };
+        self._commentNodesHaveTextProperty = document && document.createComment("test").text === "<!--test-->";
+        self._startCommentRegex = self._commentNodesHaveTextProperty ? new RegExp('^<!--\\s*' + hookName + '(?:\\s+([\\s\\S]+))?\\s*-->$')  : new RegExp('^\\s*' + hookName + '(?:\\s+([\\s\\S]+))?\\s*$');
+        self._endCommentRegex =  self._commentNodesHaveTextProperty ? new RegExp('^<!--\\s*\/' + hookName + '\\s*-->$') : new RegExp('^\\s*\/' + hookName + '\\s*$');
+
+        // Parsing
+        var scopes = [];
+        while(nodesToParse.length > 0)
+        {
+            var nodeToParse = nodesToParse.shift();
+
+            switch(true)
+            {
+                case self.isStartComment(nodeToParse):
+                    scopes.push({
+                        startNode: nodeToParse,
+                        commandString: self.getCommentValue(nodeToParse).substring(self.getCommentValue(nodeToParse).indexOf(hookName) + hookName.length, self.getCommentValue(nodeToParse).length).trim(),
+                        contentNodes: [],
+                        endNode: null
+                    });
+                    break;
+                case self.isEndComment(nodeToParse):
+                    scopes[scopes.length - 1].endNode = nodeToParse;
+                    var scope = scopes.pop();
+                    commands.push(application.commandParser.parse(application, new VirtualNode(scope.startNode, scope.contentNodes, scope.endNode), context, scope.commandString));
+                    break;
+                default:
+                    if (scopes.length > 0)
+                    {
+                        scopes[scopes.length - 1].contentNodes.push(nodeToParse);
+                    }
+                    break;
+            }
+
+            for(var i = 0, child; child = nodeToParse.childNodes[i]; ++i)
+            {
+                nodesToParse.push(child);
+            }
+        }
+    });
+
+    return commands;
+};
+
+CommentParser.prototype.isStartComment =  function (node) {
+    return (node.nodeType == 8) && this._startCommentRegex.test(this.getCommentValue(node));
+};
+
+CommentParser.prototype.isEndComment = function (node) {
+    return (node.nodeType == 8) && this._endCommentRegex.test(this.getCommentValue(node));
+};
+
+CommentParser.prototype.getCommentValue = function (node) {
+  return this._commentNodesHaveTextProperty ? node.text : node.nodeValue;
+};
+
+// Exports
+module.exports = CommentParser;
+},{"./DocumentParser":16,"./VirtualNode":19}],16:[function(_dereq_,module,exports){
 var DocumentParser = function()
 {
 
@@ -629,7 +718,41 @@ DocumentParser.prototype.parse = function(application, rootNode, context, hookNa
 // Exports
 module.exports = DocumentParser;
 
-},{}],16:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
+var DocumentParser = _dereq_('./DocumentParser');
+var NormalNode = _dereq_('./NormalNode');
+
+var DomParser = function()
+{
+    DocumentParser.call(this);
+
+    this._seenNodes = [];
+};
+
+DomParser.prototype = Object.create(DocumentParser.prototype);
+
+DomParser.prototype.parse = function(application, rootNode, context, hookName)
+{
+    var commands = [];
+
+    $(rootNode).each(function (index, element) {
+        var rootNodeAttribute = $(element).attr('data-' + hookName);
+        if (typeof rootNodeAttribute !== 'undefined' && rootNodeAttribute !== false)
+        {
+            commands.push(application.commandParser.parse(application, new NormalNode(element), context, rootNodeAttribute));
+        }
+
+        $(rootNode).find('[data-' + hookName + ']').each(function (index, element) {
+            commands.push(application.commandParser.parse(application, new NormalNode(element), context, $(element).attr('data-' + hookName)));
+        });
+    });
+
+    return commands;
+};
+
+// Exports
+module.exports = DomParser;
+},{"./DocumentParser":16,"./NormalNode":18}],18:[function(_dereq_,module,exports){
 var NormalNode = function(node)
 {
     this.node = $(node);
@@ -648,7 +771,7 @@ NormalNode.prototype.clear = function()
 
 NormalNode.prototype.createTemplate = function()
 {
-    return this.template.children().clone().get(0);
+    return this.template.children().clone();
 };
 NormalNode.prototype.getAttribute = function(name)
 {
@@ -693,119 +816,7 @@ NormalNode.prototype.show = function()
 
 // Exports
 module.exports = NormalNode;
-},{}],17:[function(_dereq_,module,exports){
-var DocumentParser = _dereq_('./DocumentParser');
-var VirtualNode = _dereq_('./VirtualNode');
-
-var SimpleCommentParser = function()
-{
-    DocumentParser.call(this);
-
-    this.startCommentRegex = null;
-    this.endCommentRegex = null;
-    this._commentNodesHaveTextProperty = null;
-};
-
-SimpleCommentParser.prototype = Object.create(DocumentParser.prototype);
-
-SimpleCommentParser.prototype.parse = function(application, rootNode, context, hookName)
-{
-    var commands = [];
-    var nodesToParse = [$(rootNode).get(0)];
-
-    // Initialize parsing parameters
-    var htmlTagsWithOptionallyClosingChildren = { 'ul': true, 'ol': true };
-    this._commentNodesHaveTextProperty = document && document.createComment("test").text === "<!--test-->";
-    this._startCommentRegex = this._commentNodesHaveTextProperty ? new RegExp('^<!--\\s*' + hookName + '(?:\\s+([\\s\\S]+))?\\s*-->$')  : new RegExp('^\\s*' + hookName + '(?:\\s+([\\s\\S]+))?\\s*$');
-    this._endCommentRegex =  this._commentNodesHaveTextProperty ? new RegExp('^<!--\\s*\/' + hookName + '\\s*-->$') : new RegExp('^\\s*\/' + hookName + '\\s*$');
-
-    // Parsing
-    var scopes = [];
-    while(nodesToParse.length > 0)
-    {
-        var nodeToParse = nodesToParse.shift();
-
-        switch(true)
-        {
-            case this.isStartComment(nodeToParse):
-                scopes.push({
-                    startNode: nodeToParse,
-                    commandString: this.getCommentValue(nodeToParse).substring(this.getCommentValue(nodeToParse).indexOf(hookName) + hookName.length, this.getCommentValue(nodeToParse).length).trim(),
-                    contentNodes: [],
-                    endNode: null
-                });
-                break;
-            case this.isEndComment(nodeToParse):
-                scopes[scopes.length - 1].endNode = nodeToParse;
-                var scope = scopes.pop();
-                commands.push(application.commandParser.parse(application, new VirtualNode(scope.startNode, scope.contentNodes, scope.endNode), context, scope.commandString));
-                break;
-            default:
-                if (scopes.length > 0)
-                {
-                    scopes[scopes.length - 1].contentNodes.push(nodeToParse);
-                }
-                break;
-        }
-
-        if (scopes.length == 0)
-        {
-            for(var i = 0, child; child = nodeToParse.childNodes[i]; ++i)
-            {
-                nodesToParse.push(child);
-            }
-        }
-    }
-
-    return commands;
-};
-
-SimpleCommentParser.prototype.isStartComment =  function (node) {
-    return (node.nodeType == 8) && this._startCommentRegex.test(this.getCommentValue(node));
-};
-
-SimpleCommentParser.prototype.isEndComment = function (node) {
-    return (node.nodeType == 8) && this._endCommentRegex.test(this.getCommentValue(node));
-};
-
-SimpleCommentParser.prototype.getCommentValue = function (node) {
-  return this._commentNodesHaveTextProperty ? node.text : node.nodeValue;
-};
-
-// Exports
-module.exports = SimpleCommentParser;
-},{"./DocumentParser":15,"./VirtualNode":19}],18:[function(_dereq_,module,exports){
-var DocumentParser = _dereq_('./DocumentParser');
-var NormalNode = _dereq_('./NormalNode');
-
-var SimpleDomParser = function()
-{
-    DocumentParser.call(this);
-
-    this._seenNodes = [];
-};
-
-SimpleDomParser.prototype = Object.create(DocumentParser.prototype);
-
-SimpleDomParser.prototype.parse = function(application, rootNode, context, hookName)
-{
-    var commands = [];
-
-    var rootNodeAttribute = $(rootNode).attr('data-' + hookName);
-    if (typeof rootNodeAttribute !== 'undefined' && rootNodeAttribute !== false)
-    {
-        commands.push(application.commandParser.parse(application, new NormalNode(rootNode), context, rootNodeAttribute));
-    }
-    $(rootNode).find('[data-' + hookName + ']').each(function (index, element) {
-        commands.push(application.commandParser.parse(application, new NormalNode(element), context, $(element).attr('data-' + hookName)));
-    });
-
-    return commands;
-};
-
-// Exports
-module.exports = SimpleDomParser;
-},{"./DocumentParser":15,"./NormalNode":16}],19:[function(_dereq_,module,exports){
+},{}],19:[function(_dereq_,module,exports){
 var VirtualNode = function (startComment, nodes, endComment)
 {
     this.startComment = $(startComment);
@@ -826,7 +837,7 @@ VirtualNode.prototype.clear = function()
 
 VirtualNode.prototype.createTemplate = function()
 {
-    return this.template.clone().get(0);
+    return this.template.clone();
 };
 
 
@@ -881,9 +892,9 @@ module.exports = VirtualNode;
 module.exports=_dereq_('u88BNT');
 },{}],"u88BNT":[function(_dereq_,module,exports){
 var Application = _dereq_('./Application');
-var SimpleCommentParser = _dereq_('./Parsing/DocumentParsers/SimpleCommentParser');
-var SimpleDomParser = _dereq_('./Parsing/DocumentParsers/SimpleDomParser');
-var SimpleCommandParser = _dereq_('./Parsing/CommandParsers/SimpleCommandParser');
+var CommentParser = _dereq_('./Parsing/DocumentParsers/CommentParser');
+var DomParser = _dereq_('./Parsing/DocumentParsers/DomParser');
+var KeyValueCommandParser = _dereq_('./Parsing/CommandParsers/KeyValueCommandParser');
 var AttributeInterpreter = _dereq_('./Execution/Interpreters/AttributeInterpreter');
 var ForInterpreter = _dereq_('./Execution/Interpreters/ForInterpreter');
 var IfInterpreter = _dereq_('./Execution/Interpreters/IfInterpreter');
@@ -896,9 +907,9 @@ var MockStorage = _dereq_('./Execution/Storages/MockStorage');
 // exports
 module.exports = {
     application: new Application([
-        new SimpleCommentParser(),
-        new SimpleDomParser()
-    ], new SimpleCommandParser()),
+        new CommentParser(),
+        new DomParser()
+    ], new KeyValueCommandParser()),
 
     storage: new MockStorage(),
 
@@ -952,6 +963,6 @@ module.exports = {
         return new MockStorage(data);
     }
 };
-},{"./Application":1,"./Execution/Interpreters/AttributeInterpreter":2,"./Execution/Interpreters/ForInterpreter":3,"./Execution/Interpreters/IfInterpreter":4,"./Execution/Interpreters/InputInterpreter":5,"./Execution/Interpreters/SaveInterpreter":7,"./Execution/Interpreters/TextInterpreter":8,"./Execution/Interpreters/UserDefinedInterpreter":9,"./Execution/Storages/MockStorage":10,"./Parsing/CommandParsers/SimpleCommandParser":14,"./Parsing/DocumentParsers/SimpleCommentParser":17,"./Parsing/DocumentParsers/SimpleDomParser":18}]},{},["u88BNT"])
+},{"./Application":1,"./Execution/Interpreters/AttributeInterpreter":2,"./Execution/Interpreters/ForInterpreter":3,"./Execution/Interpreters/IfInterpreter":4,"./Execution/Interpreters/InputInterpreter":5,"./Execution/Interpreters/SaveInterpreter":7,"./Execution/Interpreters/TextInterpreter":8,"./Execution/Interpreters/UserDefinedInterpreter":9,"./Execution/Storages/MockStorage":10,"./Parsing/CommandParsers/KeyValueCommandParser":14,"./Parsing/DocumentParsers/CommentParser":15,"./Parsing/DocumentParsers/DomParser":17}]},{},["u88BNT"])
 ("u88BNT")
 });

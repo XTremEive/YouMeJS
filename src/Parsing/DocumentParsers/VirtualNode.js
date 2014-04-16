@@ -18,7 +18,7 @@ VirtualNode.prototype.clear = function()
 
 VirtualNode.prototype.createTemplate = function()
 {
-    return this.template.clone().get(0);
+    return this.template.clone();
 };
 
 

@@ -1,7 +1,7 @@
 var Application = require('./Application');
-var SimpleCommentParser = require('./Parsing/DocumentParsers/SimpleCommentParser');
-var SimpleDomParser = require('./Parsing/DocumentParsers/SimpleDomParser');
-var SimpleCommandParser = require('./Parsing/CommandParsers/SimpleCommandParser');
+var CommentParser = require('./Parsing/DocumentParsers/CommentParser');
+var DomParser = require('./Parsing/DocumentParsers/DomParser');
+var KeyValueCommandParser = require('./Parsing/CommandParsers/KeyValueCommandParser');
 var AttributeInterpreter = require('./Execution/Interpreters/AttributeInterpreter');
 var ForInterpreter = require('./Execution/Interpreters/ForInterpreter');
 var IfInterpreter = require('./Execution/Interpreters/IfInterpreter');
@@ -14,9 +14,9 @@ var MockStorage = require('./Execution/Storages/MockStorage');
 // exports
 module.exports = {
     application: new Application([
-        new SimpleCommentParser(),
-        new SimpleDomParser()
-    ], new SimpleCommandParser()),
+        new CommentParser(),
+        new DomParser()
+    ], new KeyValueCommandParser()),
 
     storage: new MockStorage(),
 
