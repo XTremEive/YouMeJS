@@ -1,4 +1,16 @@
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.YouMe=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+/**
+ * The application class is simply the main class of YouMe.
+ * This is the class which will be first "run" on the end-user webpage and will inject your logic.
+ * But to do so it depends on some components.
+ *
+ * @param documentParsers An array of DocumentParser used to parse client's webpage.
+ * @param commandParser An instance of a CommandParser used to parse command strings.
+ * @param interpreters An array of interpreters used to execute parsed commands and run business logic.
+ * @param hookName This is the name of the hook define by the web widget developper
+ * @param rootNode This is the starting node (or the set of starting nodes) to begin our parsing.
+ * @constructor
+ */
 var Application = function (documentParsers, commandParser, interpreters, hookName, rootNode)
 {
     this.documentParsers = documentParsers || [];
@@ -8,26 +20,59 @@ var Application = function (documentParsers, commandParser, interpreters, hookNa
     this.rootNode = rootNode || 'body';
     this.debug = false;
     this.listeners = {};
-    this.commands = [];
+    this.initialCommands = [];
 };
 
+// Event management
+
+/**
+ * Add an event listener.
+ *
+ * @param event the event's name
+ * @param callback a callback to run when the event is triggered.
+ * @returns {Application} This
+ */
 Application.prototype.on = function(event, callback)
 {
+    // Maintain listeners index
     if (!(event in this.listeners))
     {
         this.listeners[event] = [];
     }
 
+    // Add the listenenr
     this.listeners[event].push(callback);
+
+    // Return
+    return this;
 };
 
+/**
+ * Remove an event listener.
+ *
+ * @param event The even'ts name
+ * @param callback The callback to be removed. If omitted all listeners to the given event will be removed.
+ * @returns {Application} This
+ */
 Application.prototype.off = function(event, callback)
 {
+    // Format arguments
+    callback = callback || null;
+
+    // Handle non-existing event
     if (!(event in this.listeners))
     {
         return;
     }
 
+    // Remove all listeners in case of null callback
+    if (null === callback)
+    {
+        delete this.listeners[event];
+        return;
+    }
+
+    // Remove a specific listener
     for(var i = 0; i < this.listeners[event].length; ++i)
     {
         if (this.listeners[event][i] == callback)
@@ -36,8 +81,17 @@ Application.prototype.off = function(event, callback)
             return;
         }
     }
+
+    // Return
+    return this;
 };
 
+/**
+ * Trigger an event. All listener currently listening to the given event will be triggered.
+ *
+ * @param event The event's name
+ * @param arguements The event's arguments.
+ */
 Application.prototype.trigger = function (event, arguements)
 {
     if (!(event in this.listeners))
@@ -51,6 +105,44 @@ Application.prototype.trigger = function (event, arguements)
     }
 };
 
+// Application's life cycle
+
+/**
+ * Start the application.
+ *
+ * @param givenArguments An object representing arguments.
+ * @returns {Application} This
+ */
+Application.prototype.run = function(givenArguments)
+{
+    givenArguments = givenArguments || {};
+
+    // Handle arguments
+    var defaultArguments = {
+        debug: true
+    };
+    var arguments = defaultArguments;
+    for(var argumentName in givenArguments)
+    {
+        arguments[argumentName] = givenArguments[argumentName];
+    }
+
+    // Run
+    this.debug = arguments.debug;
+    this.trigger('start', this);
+    this.refresh();
+
+    // Return
+    return this;
+};
+
+/**
+ * Refreshed the whole page (application) or a part of it. What I mean by refresh is re-parsing (if necessary) and re-interpreting a part of the page with new data (maybe).
+ *
+ * @param rootNode The node where we should start refreshing.
+ * @param context A refresh context, accessible for interpreters. Can contains context specifics variable.
+ * @param depth The current refresh depth, used to control recursion.
+ */
 Application.prototype.refresh = function(rootNode, context, depth)
 {
     depth = depth || 0;
@@ -64,7 +156,7 @@ Application.prototype.refresh = function(rootNode, context, depth)
     }
 
     // Parse
-    var commands = depth == 0 ? this.commands : [];
+    var commands = depth == 0 ? this.initialCommands : [];
     if (commands.length == 0)
     {
         for(var index = 0, documentParser; documentParser = this.documentParsers[index]; ++index)
@@ -98,29 +190,6 @@ Application.prototype.refresh = function(rootNode, context, depth)
     {
         this.trigger('afterRefresh', this);
     }
-};
-
-Application.prototype.run = function(givenArguments)
-{
-    givenArguments = givenArguments || {};
-
-    // Handle arguments
-    var defaultArguments = {
-        debug: true
-    };
-    var arguments = defaultArguments;
-    for(var argumentName in givenArguments)
-    {
-        arguments[argumentName] = givenArguments[argumentName];
-    }
-
-    // Run
-    this.debug = arguments.debug;
-    this.trigger('start', this);
-    this.refresh();
-
-    // Return
-    return this;
 };
 
 // Exports
@@ -560,17 +629,10 @@ UserDefinedInterpreter.prototype.interpret = function(command)
 // Exports
 module.exports = UserDefinedInterpreter;
 },{"./Interpreter":8}],12:[function(_dereq_,module,exports){
-var Storage = _dereq_('./Storage');
-
 var MockStorage = function(data)
 {
-    Storage.call(this);
-
     this.data = data || {};
-
 };
-
-MockStorage.prototype = Object.create(Storage.prototype);
 
 MockStorage.prototype.set = function(key, value)
 {
@@ -614,51 +676,7 @@ MockStorage.prototype.save = function()
 
 // Exports
 module.exports = MockStorage;
-},{"./Storage":13}],13:[function(_dereq_,module,exports){
-var Storage = function(data)
-{
-    this.data = data;
-
-};
-
-Storage.prototype = Object.create(Storage.prototype);
-
-Storage.prototype.set = function(key, value)
-{
-    throw "Not implemented!";
-
-    return this;
-};
-
-Storage.prototype.get = function(key, defaultValue)
-{
-    throw "Not implemented!";
-};
-
-Storage.prototype.unset = function(key)
-{
-    throw "Not implemented!";
-
-    return this;
-};
-
-Storage.prototype.has = function(key)
-{
-    throw "Not implemented!";
-
-    return false;
-};
-
-Storage.prototype.save = function()
-{
-    throw "Not implemented!";
-
-    return this;
-};
-
-// Exports
-module.exports = Storage;
-},{}],14:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 var Command = function(application, target, context, name, arguments)
 {
     this.application = application;
@@ -702,35 +720,15 @@ Command.prototype.toString = function()
 // Exports
 module.exports = Command;
 
-},{}],15:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
+// Require statements
 var Command = _dereq_('./Command');
 
 var CommandParser = function()
 {
-
 };
 
 CommandParser.prototype.parse = function(application, target, context, input)
-{
-    throw "Not implemented!";
-
-    return new Command();
-};
-
-// Exports
-module.exports = CommandParser;
-},{"./Command":14}],16:[function(_dereq_,module,exports){
-var CommandParser = _dereq_('./CommandParser');
-var Command = _dereq_('./Command');
-
-var KeyValueCommandParser = function()
-{
-    CommandParser.call(this);
-};
-
-KeyValueCommandParser.prototype = Object.create(CommandParser.prototype);
-
-KeyValueCommandParser.prototype.parse = function(application, target, context, input)
 {
     // Create comment variables
     var commandComponents = input.split(':');
@@ -750,21 +748,17 @@ KeyValueCommandParser.prototype.parse = function(application, target, context, i
 };
 
 // Exports
-module.exports = KeyValueCommandParser;
-},{"./Command":14,"./CommandParser":15}],17:[function(_dereq_,module,exports){
-var DocumentParser = _dereq_('./DocumentParser');
+module.exports = CommandParser;
+},{"./Command":13}],15:[function(_dereq_,module,exports){
+// Require statements
 var VirtualNode = _dereq_('./Nodes/VirtualNode');
 
 var CommentParser = function()
 {
-    DocumentParser.call(this);
-
     this.startCommentRegex = null;
     this.endCommentRegex = null;
     this._commentNodesHaveTextProperty = null;
 };
-
-CommentParser.prototype = Object.create(DocumentParser.prototype);
 
 CommentParser.prototype.parse = function(application, rootNode, context, hookName)
 {
@@ -833,35 +827,15 @@ CommentParser.prototype.getCommentValue = function (node) {
 
 // Exports
 module.exports = CommentParser;
-},{"./DocumentParser":18,"./Nodes/VirtualNode":21}],18:[function(_dereq_,module,exports){
+},{"./Nodes/VirtualNode":18}],16:[function(_dereq_,module,exports){
+// Require statements
+var NormalNode = _dereq_('./Nodes/NormalNode');
+
 var DocumentParser = function()
 {
-
 };
 
 DocumentParser.prototype.parse = function(application, rootNode, context, hookName)
-{
-    throw "Not implemented!";
-    return [];
-};
-
-// Exports
-module.exports = DocumentParser;
-
-},{}],19:[function(_dereq_,module,exports){
-var DocumentParser = _dereq_('./DocumentParser');
-var NormalNode = _dereq_('./Nodes/NormalNode');
-
-var DomParser = function()
-{
-    DocumentParser.call(this);
-
-    this._seenNodes = [];
-};
-
-DomParser.prototype = Object.create(DocumentParser.prototype);
-
-DomParser.prototype.parse = function(application, rootNode, context, hookName)
 {
     var commands = [];
 
@@ -881,8 +855,8 @@ DomParser.prototype.parse = function(application, rootNode, context, hookName)
 };
 
 // Exports
-module.exports = DomParser;
-},{"./DocumentParser":18,"./Nodes/NormalNode":20}],20:[function(_dereq_,module,exports){
+module.exports = DocumentParser;
+},{"./Nodes/NormalNode":17}],17:[function(_dereq_,module,exports){
 var NormalNode = function(node)
 {
     this.node = $(node);
@@ -951,7 +925,7 @@ NormalNode.prototype.show = function()
 
 // Exports
 module.exports = NormalNode;
-},{}],21:[function(_dereq_,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 var VirtualNode = function (startComment, nodes, endComment)
 {
     this.startComment = $(startComment);
@@ -1038,10 +1012,11 @@ module.exports = VirtualNode;
 },{}],"YouMe":[function(_dereq_,module,exports){
 module.exports=_dereq_('u88BNT');
 },{}],"u88BNT":[function(_dereq_,module,exports){
+// Require statements
 var Application = _dereq_('./Application');
 var CommentParser = _dereq_('./Parsing/DocumentParsers/CommentParser');
-var DomParser = _dereq_('./Parsing/DocumentParsers/DomParser');
-var KeyValueCommandParser = _dereq_('./Parsing/CommandParsers/KeyValueCommandParser');
+var DocumentParser = _dereq_('./Parsing/DocumentParsers/DocumentParser');
+var CommandParser = _dereq_('./Parsing/CommandParsers/CommandParser');
 var ConditionEvaluator = _dereq_('./Execution/Interpreters/Evaluators/ConditionEvaluator');
 var AttributeInterpreter = _dereq_('./Execution/Interpreters/AttributeInterpreter');
 var ForInterpreter = _dereq_('./Execution/Interpreters/ForInterpreter');
@@ -1058,8 +1033,8 @@ module.exports = {
 
     application: new Application([
         new CommentParser(),
-        new DomParser()
-    ], new KeyValueCommandParser()),
+        new DocumentParser()
+    ], new CommandParser()),
 
     storage: new MockStorage(),
 
@@ -1102,12 +1077,8 @@ module.exports = {
         return this;
     },
 
-    // Application build related methods
+    // Event management
 
-    addCommand: function(commandName, callback)
-    {
-        this.application.interpreters.push(new UserDefinedInterpreter(this.storage, commandName, callback));
-    },
     on: function(event, callback)
     {
         this.application.on(event, callback);
@@ -1119,6 +1090,13 @@ module.exports = {
     trigger: function(event)
     {
         this.application.trigger(event);
+    },
+
+    // Application related methods
+
+    addCommand: function(commandName, callback)
+    {
+        this.application.interpreters.push(new UserDefinedInterpreter(this.storage, commandName, callback));
     },
     fuse: function(rootNode, hookName, arguments)
     {
@@ -1145,6 +1123,6 @@ module.exports = {
         return this.application.run(arguments);
     }
 };
-},{"./Application":1,"./Execution/Interpreters/AttributeInterpreter":2,"./Execution/Interpreters/Evaluators/ConditionEvaluator":3,"./Execution/Interpreters/ForInterpreter":5,"./Execution/Interpreters/IfInterpreter":6,"./Execution/Interpreters/InputInterpreter":7,"./Execution/Interpreters/SaveInterpreter":9,"./Execution/Interpreters/TextInterpreter":10,"./Execution/Interpreters/UserDefinedInterpreter":11,"./Execution/Storages/MockStorage":12,"./Parsing/CommandParsers/KeyValueCommandParser":16,"./Parsing/DocumentParsers/CommentParser":17,"./Parsing/DocumentParsers/DomParser":19}]},{},["u88BNT"])
+},{"./Application":1,"./Execution/Interpreters/AttributeInterpreter":2,"./Execution/Interpreters/Evaluators/ConditionEvaluator":3,"./Execution/Interpreters/ForInterpreter":5,"./Execution/Interpreters/IfInterpreter":6,"./Execution/Interpreters/InputInterpreter":7,"./Execution/Interpreters/SaveInterpreter":9,"./Execution/Interpreters/TextInterpreter":10,"./Execution/Interpreters/UserDefinedInterpreter":11,"./Execution/Storages/MockStorage":12,"./Parsing/CommandParsers/CommandParser":14,"./Parsing/DocumentParsers/CommentParser":15,"./Parsing/DocumentParsers/DocumentParser":16}]},{},["u88BNT"])
 ("u88BNT")
 });

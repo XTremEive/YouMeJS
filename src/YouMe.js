@@ -1,7 +1,8 @@
+// Require statements
 var Application = require('./Application');
 var CommentParser = require('./Parsing/DocumentParsers/CommentParser');
-var DomParser = require('./Parsing/DocumentParsers/DomParser');
-var KeyValueCommandParser = require('./Parsing/CommandParsers/KeyValueCommandParser');
+var DocumentParser = require('./Parsing/DocumentParsers/DocumentParser');
+var CommandParser = require('./Parsing/CommandParsers/CommandParser');
 var ConditionEvaluator = require('./Execution/Interpreters/Evaluators/ConditionEvaluator');
 var AttributeInterpreter = require('./Execution/Interpreters/AttributeInterpreter');
 var ForInterpreter = require('./Execution/Interpreters/ForInterpreter');
@@ -18,8 +19,8 @@ module.exports = {
 
     application: new Application([
         new CommentParser(),
-        new DomParser()
-    ], new KeyValueCommandParser()),
+        new DocumentParser()
+    ], new CommandParser()),
 
     storage: new MockStorage(),
 
@@ -62,12 +63,8 @@ module.exports = {
         return this;
     },
 
-    // Application build related methods
+    // Event management
 
-    addCommand: function(commandName, callback)
-    {
-        this.application.interpreters.push(new UserDefinedInterpreter(this.storage, commandName, callback));
-    },
     on: function(event, callback)
     {
         this.application.on(event, callback);
@@ -79,6 +76,13 @@ module.exports = {
     trigger: function(event)
     {
         this.application.trigger(event);
+    },
+
+    // Application related methods
+
+    addCommand: function(commandName, callback)
+    {
+        this.application.interpreters.push(new UserDefinedInterpreter(this.storage, commandName, callback));
     },
     fuse: function(rootNode, hookName, arguments)
     {

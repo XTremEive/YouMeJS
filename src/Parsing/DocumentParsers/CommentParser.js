@@ -1,16 +1,12 @@
-var DocumentParser = require('./DocumentParser');
+// Require statements
 var VirtualNode = require('./Nodes/VirtualNode');
 
 var CommentParser = function()
 {
-    DocumentParser.call(this);
-
     this.startCommentRegex = null;
     this.endCommentRegex = null;
     this._commentNodesHaveTextProperty = null;
 };
-
-CommentParser.prototype = Object.create(DocumentParser.prototype);
 
 CommentParser.prototype.parse = function(application, rootNode, context, hookName)
 {

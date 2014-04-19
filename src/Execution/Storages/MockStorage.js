@@ -1,14 +1,7 @@
-var Storage = require('./Storage');
-
 var MockStorage = function(data)
 {
-    Storage.call(this);
-
     this.data = data || {};
-
 };
-
-MockStorage.prototype = Object.create(Storage.prototype);
 
 MockStorage.prototype.set = function(key, value)
 {

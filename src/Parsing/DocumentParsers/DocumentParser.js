@@ -1,12 +1,27 @@
+// Require statements
+var NormalNode = require('./Nodes/NormalNode');
+
 var DocumentParser = function()
 {
-
 };
 
 DocumentParser.prototype.parse = function(application, rootNode, context, hookName)
 {
-    throw "Not implemented!";
-    return [];
+    var commands = [];
+
+    $(rootNode).each(function (index, element) {
+        var rootNodeAttribute = $(element).attr('data-' + hookName);
+        if (typeof rootNodeAttribute !== 'undefined' && rootNodeAttribute !== false)
+        {
+            commands.push(application.commandParser.parse(application, new NormalNode(element), context, rootNodeAttribute));
+        }
+
+        $(rootNode).find('[data-' + hookName + ']').each(function (index, element) {
+            commands.push(application.commandParser.parse(application, new NormalNode(element), context, $(element).attr('data-' + hookName)));
+        });
+    });
+
+    return commands;
 };
 
 // Exports
