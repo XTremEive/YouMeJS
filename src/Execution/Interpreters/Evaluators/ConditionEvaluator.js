@@ -1,6 +1,8 @@
+var LogicEvaluator = require('./LogicEvaluator')
+
 var ConditionEvaluator = function(interpreter)
 {
-    this.interpreter = interpreter || null;
+    LogicEvaluator.call(this, interpreter);
 };
 
 ConditionEvaluator.prototype.evaluate = function(context, input)

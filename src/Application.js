@@ -7,7 +7,7 @@ var Application = function (documentParsers, commandParser, interpreters, hookNa
     this.rootNode = rootNode || 'body';
     this.debug = false;
     this.listeners = {};
-    this._refreshDepth = -1;
+    this.commands = [];
 };
 
 Application.prototype.on = function(event, callback)
@@ -50,44 +50,50 @@ Application.prototype.trigger = function (event, arguements)
     }
 };
 
-Application.prototype.refresh = function(rootNode, context)
+Application.prototype.refresh = function(rootNode, context, depth)
 {
+    depth = depth || 0;
     rootNode = rootNode || this.rootNode;
     context = context || {};
 
     // Handle pre events
-    if (++this._refreshDepth == 0)
+    if (depth == 0)
     {
         this.trigger('beforeRefresh', this);
     }
 
     // Parse
-    var commands = [];
-    for(var index = 0, documentParser; documentParser = this.documentParsers[index]; ++index)
+    var commands = depth == 0 ? this.commands : [];
+    if (commands.length == 0)
     {
-        var parsedCommands = documentParser.parse(this, rootNode, context, this.hookName);
-        for(var i = 0; i < parsedCommands.length; ++i)
+        for(var index = 0, documentParser; documentParser = this.documentParsers[index]; ++index)
         {
-            commands.push(parsedCommands[i]);
+            var parsedCommands = documentParser.parse(this, rootNode, context, this.hookName);
+            for(var i = 0; i < parsedCommands.length; ++i)
+            {
+                commands.push(parsedCommands[i]);
+            }
         }
     }
 
     // Interpret
     for(var i = 0; i < commands.length; ++i)
     {
-        commandWasInterpreted = false;
+        // Interpret command
         for(var index = 0, interpreter; interpreter = this.interpreters[index]; ++index)
         {
-            commandWasInterpreted = interpreter.interpret(commands[i]) || commandWasInterpreted;
+            commands[i].wasInterpreted = interpreter.interpret(commands[i], depth) || commands[i].wasInterpreted;
         }
-        if(this.debug && !commandWasInterpreted)
+
+        // Send user feedback in case of unknown command
+        if(this.debug && !commands[i].wasInterpreted)
         {
             console.log('YouMe WARNING: command ' + commands[i] +  ' unknown.');
         }
     }
 
     // Handle post events
-    if (this._refreshDepth-- == 0)
+    if (depth == 0)
     {
         this.trigger('afterRefresh', this);
     }

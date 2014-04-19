@@ -108,7 +108,7 @@ This part also aim at showcasing what we can do so far.
 
 <h2>Attribute binding</h2>
 <div>
-    <a href="#" data-mas="attribute: {title: textVariable}">Mouse over to see a tooltip set using the binding system.</a>
+    <a href="#" data-mas='attribute: {"title": "textVariable"}'>Mouse over to see a tooltip set using the binding system.</a>
 </div>
 
 <h2>Conditions</h2>
@@ -128,9 +128,9 @@ This part also aim at showcasing what we can do so far.
 
 <h2>Conditional attribute binding (the second parameter contains indexed conditions)</h2>
 <div>
-    <a href="#" data-mas="attribute: {class: highlight}, {class: booleanTrueVariable}">This will display a CSS class as booleanTrueVariable is true</a><br />
-    <a href="#" data-mas="attribute: {class: highlight}, {class: booleanFalseVariable}">This will not add a CSS class as booleanFalseVariable is false..</a><br />
-    <a href="#" data-mas="attribute: {class: highlight}, {class: arrayVariable.length > 2}">This will add a CSS class as arrayVariables contains more than 2 elements..</a>
+    <a href="#" data-mas='attribute: {"class": "highlight"}, {"class": "booleanTrueVariable"}'>This will display a CSS class as booleanTrueVariable is true</a><br />
+    <a href="#" data-mas='attribute: {"class": "highlight"}, {"class": "booleanFalseVariable"}'>This will not add a CSS class as booleanFalseVariable is false..</a><br />
+    <a href="#" data-mas='attribute: {"class": "highlight"}, {"class": "arrayVariable.length > 2"}'>This will add a CSS class as arrayVariables contains more than 2 elements..</a>
 </div>
 
 <h2>Loops</h2>
@@ -146,7 +146,8 @@ This part also aim at showcasing what we can do so far.
     <p>Id: <span data-mas="text: context.id"></span> <span data-mas="text: context.name"></span></p>
     <!-- /mas -->
     <ul data-mas="for: arrayWithObjectsVariable">
-        <li><b data-mas="text: context.id"></b> <span data-mas="text: context.name"></span></li>
+        <li><b data-mas="text: context.id"></b> <span data-mas="text: context.name"></span><br />
+        Loop index: <span data-mas="text: context.loopIndex"></span></li>
     </ul>
 
 </div>
@@ -203,10 +204,12 @@ This part also aim at showcasing what we can do so far.
     <p data-notMas="text: textVariable">This should stay visible</p>
 </div>
 
-<h2>Javascript hooks</h2>
-<p>There are some additional javascript hook (again check the source code of the page to see what's going on here)</p>
+<h2>Javascript controls</h2>
+<p data-mas="text: javascriptBoundVariable"></p>
 <script>
     $(window).load(function () {
+        // Javascript hooks
+
         MyAwesomeService.on('start', function () {
             alert("This javascript hook is triggered on application's start (but before any refresh)") ;
         });
@@ -223,6 +226,12 @@ This part also aim at showcasing what we can do so far.
         MyAwesomeService.on('afterSave', function () {
             alert("This javascript hook is triggered just after saving") ;
         });
+
+        // Javascript manipulation
+        MyAwesomeService.set('javascriptBoundVariable', new Date().getMilliseconds());
+        setInterval(function() {
+            MyAwesomeService.set('javascriptBoundVariable', new Date().getMilliseconds());
+        }, 10000);
     });
 </script>
 
@@ -242,6 +251,7 @@ This part also aim at showcasing what we can do so far.
 
 </body>
 </html>
+
 
 ```
 

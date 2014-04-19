@@ -10,6 +10,7 @@ KeyValueCommandParser.prototype = Object.create(CommandParser.prototype);
 
 KeyValueCommandParser.prototype.parse = function(application, target, context, input)
 {
+    // Create comment variables
     var commandComponents = input.split(':');
 
     var commandName = commandComponents[0].trim();

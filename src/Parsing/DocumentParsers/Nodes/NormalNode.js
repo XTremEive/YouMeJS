@@ -18,22 +18,27 @@ NormalNode.prototype.createTemplate = function()
 {
     return this.template.children().clone();
 };
+
 NormalNode.prototype.getAttribute = function(name)
 {
     return this.node.attr(name);
 };
+
 NormalNode.prototype.setAttribute = function(name, value)
 {
     return this.node.attr(name, value);
 };
+
 NormalNode.prototype.getHtml = function()
 {
     return this.node.html();
 };
+
 NormalNode.prototype.setHtml = function(htmlContent)
 {
     this.node.html(htmlContent);
 };
+
 NormalNode.prototype.setValue = function(value)
 {
     this.node.val(value);

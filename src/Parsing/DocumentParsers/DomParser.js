@@ -1,5 +1,5 @@
 var DocumentParser = require('./DocumentParser');
-var NormalNode = require('./NormalNode');
+var NormalNode = require('./Nodes/NormalNode');
 
 var DomParser = function()
 {

@@ -19,8 +19,8 @@ AttributeInterpreter.prototype.interpret = function(command)
     }
 
     // Process
-    var attributes = JSON.parse(command.getArgument(0).replace(/((\w|\s|[!|\.><&=])+)/g, '"$1"'));
-    var conditions = JSON.parse(command.getArgument(1, "{}").replace(/((\w|\s|[!|\.><&=])+)/g, '"$1"'));
+    var attributes = JSON.parse(command.getArgument(0));
+    var conditions = JSON.parse(command.getArgument(1, "{}"));
 
     // Format parameters
     for(var i in attributes)

@@ -5,6 +5,7 @@ var Command = function(application, target, context, name, arguments)
     this.context = context;
     this.name = name || '';
     this.arguments = arguments || {};
+    this.wasInterpreted  = false;
 };
 
 Command.prototype.getArgument = function(index, defaultValue)

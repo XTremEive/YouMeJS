@@ -14,6 +14,8 @@ var MockStorage = require('./Execution/Storages/MockStorage');
 
 // exports
 module.exports = {
+    // Object members
+
     application: new Application([
         new CommentParser(),
         new DomParser()
@@ -21,26 +23,63 @@ module.exports = {
 
     storage: new MockStorage(),
 
+    // Storage related methods
+
+    createMockStorage: function(data)
+    {
+        return new MockStorage(data);
+    },
+    set: function(key, value)
+    {
+        this.storage.set(key, value);
+        this.application.refresh();
+
+        return this;
+    },
+    unset: function(key)
+    {
+        this.storage.unset(key);
+        this.application.refresh();
+
+        return this;
+    },
+    get: function(key, defaultValue)
+    {
+        this.storage.get(key, defaultValue);
+
+        return this;
+    },
+    has: function(key)
+    {
+        this.storage.has(key);
+
+        return this;
+    },
+    save: function()
+    {
+        this.storage.save();
+
+        return this;
+    },
+
+    // Application build related methods
+
     addCommand: function(commandName, callback)
     {
         this.application.interpreters.push(new UserDefinedInterpreter(this.storage, commandName, callback));
     },
-
     on: function(event, callback)
     {
         this.application.on(event, callback);
     },
-
     off: function(event, callback)
     {
         this.application.off(event, callback);
     },
-
     trigger: function(event)
     {
         this.application.trigger(event);
     },
-
     fuse: function(rootNode, hookName, arguments)
     {
         // Format parameters
@@ -64,10 +103,5 @@ module.exports = {
             this.application.interpreters.push(interpreter);
         }
         return this.application.run(arguments);
-    },
-
-    createMockStorage: function(data)
-    {
-        return new MockStorage(data);
     }
 };

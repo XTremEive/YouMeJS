@@ -7,7 +7,7 @@ var ForInterpreter = function(storage)
 
 ForInterpreter.prototype = Object.create(Interpreter.prototype);
 
-ForInterpreter.prototype.interpret = function(command)
+ForInterpreter.prototype.interpret = function(command, depth)
 {
     // Discard any command that has nothing to do with this interpreter
     if (command.name != 'for')
@@ -30,10 +30,11 @@ ForInterpreter.prototype.interpret = function(command)
     {
         var context = value[i];
         context.parent = command.context;
+        context.loopIndex = i;
 
         // Create new node and interpret it
         command.target.append(newElements[i]);
-        command.application.refresh(newElements[i], context);
+        command.application.refresh(newElements[i], context, depth + 1);
     }
 
     return true;

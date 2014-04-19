@@ -1,5 +1,5 @@
 var DocumentParser = require('./DocumentParser');
-var VirtualNode = require('./VirtualNode');
+var VirtualNode = require('./Nodes/VirtualNode');
 
 var CommentParser = function()
 {
