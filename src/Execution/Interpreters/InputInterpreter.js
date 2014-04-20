@@ -1,6 +1,13 @@
 // Require statements
 var Interpreter = require('./Interpreter');
 
+/**
+ * The InputInterpreter is specially geared for Node targetting form elements as it binds their values to a storage
+ * variable.
+ *
+ * @param storage A Storage class.
+ * @constructor
+ */
 var InputInterpreter = function(storage)
 {
     Interpreter.call(this, storage);

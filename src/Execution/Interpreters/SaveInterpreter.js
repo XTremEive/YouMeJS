@@ -1,6 +1,12 @@
 // Require statements
 var Interpreter = require('./Interpreter');
 
+/**
+ * On click, this interpreter will trigger the save method of the given storage.
+ *
+ * @param storage A Storage object to save.
+ * @constructor
+ */
 var SaveInterpreter = function(storage)
 {
     Interpreter.call(this, storage);

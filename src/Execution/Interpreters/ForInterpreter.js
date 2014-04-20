@@ -1,6 +1,13 @@
 // Require statements
 var Interpreter = require('./Interpreter');
 
+/**
+ * The ForInterpreter create loops. it will duplicated the child element of a node based on a variable stored in the Storage.
+ * Those newly created child node will be parsed and interpreted by the application within a context.
+ *
+ * @param storage A Storage boejct.
+ * @constructor
+ */
 var ForInterpreter = function(storage)
 {
     Interpreter.call(this, storage);

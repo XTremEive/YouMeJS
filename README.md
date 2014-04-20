@@ -44,8 +44,6 @@ var Storage = function(data)
 
 };
 
-Storage.prototype = Object.create(Storage.prototype);
-
 Storage.prototype.set = function(key, value)
 {
     throw "This will be called when your application tries to set a variable in the storage.";

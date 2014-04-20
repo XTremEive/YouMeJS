@@ -1,6 +1,13 @@
 // Require statements
 var Interpreter = require('./Interpreter');
 
+/**
+ * The text interpreter set the HTML of a node based on the argument provided.
+ * The main us of this interpreter is to display storage variable somewhere on the end-user page.
+ *
+ * @param storage A Storage object to take variables from.
+ * @constructor
+ */
 var TextInterpreter = function(storage)
 {
     Interpreter.call(this, storage);

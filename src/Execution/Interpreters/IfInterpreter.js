@@ -1,6 +1,14 @@
 // Require statements
 var Interpreter = require('./Interpreter');
 
+/**
+ * This interpreter will show or hide a node (or a set of node) based on a condition.
+ * Condition operand can be take from storage, context or can just be plain strings.
+ *
+ * @param storage A Storage class
+ * @param conditionEvaluator A ConditionEvaluator to help with logic parsing.
+ * @constructor
+ */
 var IfInterpreter = function(storage, conditionEvaluator)
 {
     Interpreter.call(this, storage);

@@ -1,6 +1,15 @@
 // Require statements
 var Interpreter = require('./Interpreter');
 
+/**
+ * Attrbiuts interpreter will change a set of HTMLAttribute on the targeted Node.
+ * The value of the attribute can be take from storage, but can also be plain strings.
+ * Additionally the end user can provide a set of condition to bring logic the the attribute injection.
+ *
+ * @param storage A Storage object
+ * @param conditionEvaluator A helper class to handle the condition evaluation logic.
+ * @constructor
+ */
 var AttributeInterpreter = function(storage, conditionEvaluator)
 {
     Interpreter.call(this, storage);
