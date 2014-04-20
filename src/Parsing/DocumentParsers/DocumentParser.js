@@ -1,6 +1,11 @@
 // Require statements
 var NormalNode = require('./Nodes/NormalNode');
 
+/**
+ * The document parser constructs a set of commands based on HTMLElements in the DOM.
+ *
+ * @constructor
+ */
 var DocumentParser = function()
 {
 };

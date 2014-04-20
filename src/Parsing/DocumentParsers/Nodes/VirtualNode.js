@@ -1,3 +1,12 @@
+/**
+ *
+ * This class represents a node created from an HTML comment (Knockout's style).
+ * A node is basically a DOM abstraction that our library will consider as the lowest component of a web page.
+ * They basically abstract DOM manipulation.
+ *
+ * @param node An HTMLElement
+ * @constructor
+ */
 var VirtualNode = function (startComment, nodes, endComment)
 {
     this.startComment = $(startComment);

@@ -1,6 +1,12 @@
 // Require statements
 var Command = require('./Command');
 
+/**
+ * The command parser class helps DocumentParser and CommentParser classes in building comments.
+ * Its role is simply to take a string representation of the command (what the end-user will write on its webpage) and create a command object.
+ *
+ * @constructor
+ */
 var CommandParser = function()
 {
 };

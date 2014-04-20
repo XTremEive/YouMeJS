@@ -1,3 +1,10 @@
+/**
+ * The Mock storage is the default storage provided by our library. It's their for the sake of providing a sandbox
+ * for testing the library. A web widget developer will typically write a class which looks like this one.
+ *
+ * @param data
+ * @constructor
+ */
 var MockStorage = function(data)
 {
     this.data = data || {};

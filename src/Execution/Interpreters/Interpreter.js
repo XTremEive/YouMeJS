@@ -1,3 +1,9 @@
+/**
+ * Interpreter objects are the one doing the job of taking one command an running the logic on HTMLNode and Storage class.
+ *
+ * @param storage
+ * @constructor
+ */
 var Interpreter = function(storage)
 {
     this.storage = storage || null;
@@ -12,7 +18,7 @@ Interpreter.prototype.interpret = function(command)
 
 /**
  * This method expects to get a path in the form "key.of.my.object.them.path.to.the.property". One part of the path will be resolved through storage and context. But the other part
- * might get resolved in the object itself
+ * might get resolved in the object itself.
  * @param context A context object
  * @param path The path.to.the.property.
  * @param defaultValue A default value to return in case of not found.

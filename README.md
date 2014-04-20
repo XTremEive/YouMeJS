@@ -4,31 +4,39 @@ YouMeJS
 What is it?
 ---
 
-YouMe is a [Knockout](https://github.com/knockout/knockout) inspired library create to help web widget developers injecting logic into their partners websites.
+YouMe is a [Knockout](https://github.com/knockout/knockout) inspired Javascript library created to help web widget developers injecting logic into their partners websites.
 
 
 What does it do?
 ---
 
-Check out the source code of */demo/index.html*.
+Check out the source code in `/demo/index.html`.
 
 Requirements
 ---
 
--[jQuery](https://github.com/jquery/jquery) on the client's page.
+- [jQuery](https://github.com/jquery/jquery) on the client's page.
 
 Can I use it in production?
 ---
 
-**At your own risk**.
-This project is a work in progress, and as such it has yet to be documented or even tested in a production environment.
-However a build of the library is available in the `/build/release/` folder.
-If you really want to play with those kind of features I encourage you to use [Knockout](https://github.com/knockout/knockout) instead.
+**Not really, no.**. This project is a work in progress, and as such it has yet to be documented or even tested in a production environment.
+
+
+But I want to use it anyway.
+---
+
+A build of the library is available in the `/build/release/` folder. But I encourage you to use [Knockout](https://github.com/knockout/knockout) instead for this kind of work.
 
 Developer additional documentation
 ---
 
 ### A typical storage class
+
+Even if YouMe works out of the box with the MockStorage. You will have to provide thie library with your own "Storage" in order to make it useful.
+Here is an example of a storage class. You can additionally take a look at the MockStorage class for more informations.
+
+
 ```js
 var Storage = function(data)
 {

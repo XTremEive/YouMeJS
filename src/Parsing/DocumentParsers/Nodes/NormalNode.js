@@ -1,3 +1,12 @@
+/**
+ *
+ * This class represents a node created from a simple (or a set of simple) HTMLElements.
+ * A node is basically a DOM abstraction that our library will consider as the lowest component of a web page.
+ * They basically abstract DOM manipulation.
+ *
+ * @param node An HTMLElement
+ * @constructor
+ */
 var NormalNode = function(node)
 {
     this.node = $(node);

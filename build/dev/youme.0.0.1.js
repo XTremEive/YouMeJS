@@ -196,6 +196,7 @@ Application.prototype.refresh = function(rootNode, context, depth)
 module.exports = Application;
 
 },{}],2:[function(_dereq_,module,exports){
+// Require statements
 var Interpreter = _dereq_('./Interpreter');
 
 var AttributeInterpreter = function(storage, conditionEvaluator)
@@ -247,12 +248,10 @@ AttributeInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = AttributeInterpreter;
-},{"./Interpreter":8}],3:[function(_dereq_,module,exports){
-var LogicEvaluator = _dereq_('./LogicEvaluator')
-
+},{"./Interpreter":7}],3:[function(_dereq_,module,exports){
 var ConditionEvaluator = function(interpreter)
 {
-    LogicEvaluator.call(this, interpreter);
+    this.interpreter = interpreter || null;
 };
 
 ConditionEvaluator.prototype.evaluate = function(context, input)
@@ -327,22 +326,8 @@ ConditionEvaluator.prototype.evaluate = function(context, input)
 
 // Exports
 module.exports = ConditionEvaluator;
-},{"./LogicEvaluator":4}],4:[function(_dereq_,module,exports){
-var LogicEvaluator = function(interpreter)
-{
-    this.interpreter = interpreter || null;
-};
-
-LogicEvaluator.prototype.evaluate = function(context, input)
-{
-    throw "Not implemented!";
-
-    return false;
-};
-
-// Exports
-module.exports = LogicEvaluator;
-},{}],5:[function(_dereq_,module,exports){
+},{}],4:[function(_dereq_,module,exports){
+// Require statements
 var Interpreter = _dereq_('./Interpreter');
 
 var ForInterpreter = function(storage)
@@ -387,7 +372,8 @@ ForInterpreter.prototype.interpret = function(command, depth)
 
 // Exports
 module.exports = ForInterpreter;
-},{"./Interpreter":8}],6:[function(_dereq_,module,exports){
+},{"./Interpreter":7}],5:[function(_dereq_,module,exports){
+// Require statements
 var Interpreter = _dereq_('./Interpreter');
 
 var IfInterpreter = function(storage, conditionEvaluator)
@@ -424,7 +410,8 @@ IfInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = IfInterpreter;
-},{"./Interpreter":8}],7:[function(_dereq_,module,exports){
+},{"./Interpreter":7}],6:[function(_dereq_,module,exports){
+// Require statements
 var Interpreter = _dereq_('./Interpreter');
 
 var InputInterpreter = function(storage)
@@ -460,7 +447,13 @@ InputInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = InputInterpreter;
-},{"./Interpreter":8}],8:[function(_dereq_,module,exports){
+},{"./Interpreter":7}],7:[function(_dereq_,module,exports){
+/**
+ * Interpreter objects are the one doing the job of taking one command an running the logic on HTMLNode and Storage class.
+ *
+ * @param storage
+ * @constructor
+ */
 var Interpreter = function(storage)
 {
     this.storage = storage || null;
@@ -475,7 +468,7 @@ Interpreter.prototype.interpret = function(command)
 
 /**
  * This method expects to get a path in the form "key.of.my.object.them.path.to.the.property". One part of the path will be resolved through storage and context. But the other part
- * might get resolved in the object itself
+ * might get resolved in the object itself.
  * @param context A context object
  * @param path The path.to.the.property.
  * @param defaultValue A default value to return in case of not found.
@@ -538,7 +531,8 @@ Interpreter.prototype.getValue = function(context, path, defaultValue)
 
 // Exports
 module.exports = Interpreter;
-},{}],9:[function(_dereq_,module,exports){
+},{}],8:[function(_dereq_,module,exports){
+// Require statements
 var Interpreter = _dereq_('./Interpreter');
 
 var SaveInterpreter = function(storage)
@@ -571,7 +565,8 @@ SaveInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = SaveInterpreter;
-},{"./Interpreter":8}],10:[function(_dereq_,module,exports){
+},{"./Interpreter":7}],9:[function(_dereq_,module,exports){
+// Require statements
 var Interpreter = _dereq_('./Interpreter');
 
 var TextInterpreter = function(storage)
@@ -600,7 +595,8 @@ TextInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = TextInterpreter;
-},{"./Interpreter":8}],11:[function(_dereq_,module,exports){
+},{"./Interpreter":7}],10:[function(_dereq_,module,exports){
+// Require statements
 var Interpreter = _dereq_('./Interpreter');
 
 var UserDefinedInterpreter = function(storage, commandName, callback)
@@ -628,7 +624,14 @@ UserDefinedInterpreter.prototype.interpret = function(command)
 
 // Exports
 module.exports = UserDefinedInterpreter;
-},{"./Interpreter":8}],12:[function(_dereq_,module,exports){
+},{"./Interpreter":7}],11:[function(_dereq_,module,exports){
+/**
+ * The Mock storage is the default storage provided by our library. It's their for the sake of providing a sandbox
+ * for testing the library. A web widget developer will typically write a class which looks like this one.
+ *
+ * @param data
+ * @constructor
+ */
 var MockStorage = function(data)
 {
     this.data = data || {};
@@ -676,7 +679,17 @@ MockStorage.prototype.save = function()
 
 // Exports
 module.exports = MockStorage;
-},{}],13:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
+/**
+ * Command objects store all elements which might be useful to Interpreter classes in order to do their job.
+ *
+ * @param application Our main application
+ * @param target The target on which the command should be appllied
+ * @param context The context of the command: A set of variable (for instance in a "for" loop, the context would be the current element and index...)
+ * @param name The name of the command.
+ * @param arguments The parameters of this command.
+ * @constructor
+ */
 var Command = function(application, target, context, name, arguments)
 {
     this.application = application;
@@ -720,10 +733,16 @@ Command.prototype.toString = function()
 // Exports
 module.exports = Command;
 
-},{}],14:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 // Require statements
 var Command = _dereq_('./Command');
 
+/**
+ * The command parser class helps DocumentParser and CommentParser classes in building comments.
+ * Its role is simply to take a string representation of the command (what the end-user will write on its webpage) and create a command object.
+ *
+ * @constructor
+ */
 var CommandParser = function()
 {
 };
@@ -749,10 +768,15 @@ CommandParser.prototype.parse = function(application, target, context, input)
 
 // Exports
 module.exports = CommandParser;
-},{"./Command":13}],15:[function(_dereq_,module,exports){
+},{"./Command":12}],14:[function(_dereq_,module,exports){
 // Require statements
 var VirtualNode = _dereq_('./Nodes/VirtualNode');
 
+/**
+ * The comment parser construct set of commands based on HTML comments. To do it rely on the VirtualNode class.
+ *
+ * @constructor
+ */
 var CommentParser = function()
 {
     this.startCommentRegex = null;
@@ -827,10 +851,15 @@ CommentParser.prototype.getCommentValue = function (node) {
 
 // Exports
 module.exports = CommentParser;
-},{"./Nodes/VirtualNode":18}],16:[function(_dereq_,module,exports){
+},{"./Nodes/VirtualNode":17}],15:[function(_dereq_,module,exports){
 // Require statements
 var NormalNode = _dereq_('./Nodes/NormalNode');
 
+/**
+ * The document parser constructs a set of commands based on HTMLElements in the DOM.
+ *
+ * @constructor
+ */
 var DocumentParser = function()
 {
 };
@@ -856,7 +885,16 @@ DocumentParser.prototype.parse = function(application, rootNode, context, hookNa
 
 // Exports
 module.exports = DocumentParser;
-},{"./Nodes/NormalNode":17}],17:[function(_dereq_,module,exports){
+},{"./Nodes/NormalNode":16}],16:[function(_dereq_,module,exports){
+/**
+ *
+ * This class represents a node created from a simple (or a set of simple) HTMLElements.
+ * A node is basically a DOM abstraction that our library will consider as the lowest component of a web page.
+ * They basically abstract DOM manipulation.
+ *
+ * @param node An HTMLElement
+ * @constructor
+ */
 var NormalNode = function(node)
 {
     this.node = $(node);
@@ -925,7 +963,16 @@ NormalNode.prototype.show = function()
 
 // Exports
 module.exports = NormalNode;
-},{}],18:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
+/**
+ *
+ * This class represents a node created from an HTML comment (Knockout's style).
+ * A node is basically a DOM abstraction that our library will consider as the lowest component of a web page.
+ * They basically abstract DOM manipulation.
+ *
+ * @param node An HTMLElement
+ * @constructor
+ */
 var VirtualNode = function (startComment, nodes, endComment)
 {
     this.startComment = $(startComment);
@@ -1123,6 +1170,6 @@ module.exports = {
         return this.application.run(arguments);
     }
 };
-},{"./Application":1,"./Execution/Interpreters/AttributeInterpreter":2,"./Execution/Interpreters/Evaluators/ConditionEvaluator":3,"./Execution/Interpreters/ForInterpreter":5,"./Execution/Interpreters/IfInterpreter":6,"./Execution/Interpreters/InputInterpreter":7,"./Execution/Interpreters/SaveInterpreter":9,"./Execution/Interpreters/TextInterpreter":10,"./Execution/Interpreters/UserDefinedInterpreter":11,"./Execution/Storages/MockStorage":12,"./Parsing/CommandParsers/CommandParser":14,"./Parsing/DocumentParsers/CommentParser":15,"./Parsing/DocumentParsers/DocumentParser":16}]},{},["u88BNT"])
+},{"./Application":1,"./Execution/Interpreters/AttributeInterpreter":2,"./Execution/Interpreters/Evaluators/ConditionEvaluator":3,"./Execution/Interpreters/ForInterpreter":4,"./Execution/Interpreters/IfInterpreter":5,"./Execution/Interpreters/InputInterpreter":6,"./Execution/Interpreters/SaveInterpreter":8,"./Execution/Interpreters/TextInterpreter":9,"./Execution/Interpreters/UserDefinedInterpreter":10,"./Execution/Storages/MockStorage":11,"./Parsing/CommandParsers/CommandParser":13,"./Parsing/DocumentParsers/CommentParser":14,"./Parsing/DocumentParsers/DocumentParser":15}]},{},["u88BNT"])
 ("u88BNT")
 });

@@ -1,6 +1,11 @@
 // Require statements
 var VirtualNode = require('./Nodes/VirtualNode');
 
+/**
+ * The comment parser construct set of commands based on HTML comments. To do it rely on the VirtualNode class.
+ *
+ * @constructor
+ */
 var CommentParser = function()
 {
     this.startCommentRegex = null;
