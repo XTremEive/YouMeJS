@@ -13,7 +13,7 @@ var TextInterpreter = function(storage)
     Interpreter.call(this, storage);
 };
 
-TextInterpreter.prototype = Object.create(Interpreter.prototype);
+TextInterpreter.prototype = new Interpreter();
 
 TextInterpreter.prototype.interpret = function(command)
 {

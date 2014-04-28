@@ -18,13 +18,22 @@ var Command = function(application, target, context, name, arguments)
     this.wasInterpreted  = false;
 };
 
+/**
+ * Get an argument's value specifying its name or index.
+ *
+ * @param index The index of the argument.
+ * @param defaultValue A default value to return if the argument wasn't found.
+ * @returns {*}
+ */
 Command.prototype.getArgument = function(index, defaultValue)
 {
+    // Try to find the argument by its name.
     if (index in this.arguments)
     {
         return this.arguments[index];
     }
 
+    // Try to find the argument by its index.
     var argumentIndex = 0;
     for(var argumentKey in this.arguments)
     {
@@ -35,12 +44,8 @@ Command.prototype.getArgument = function(index, defaultValue)
         ++argumentIndex;
     }
 
+    // Return the default value otherwise.
     return defaultValue;
-};
-
-Command.prototype.getArgumentByName = function(name, defaultValue)
-{
-    return (index in this.arguments) ? this.arguments[name] : defaultValue;
 };
 
 Command.prototype.toString = function()

@@ -13,7 +13,7 @@ var ForInterpreter = function(storage)
     Interpreter.call(this, storage);
 };
 
-ForInterpreter.prototype = Object.create(Interpreter.prototype);
+ForInterpreter.prototype = new Interpreter();
 
 ForInterpreter.prototype.interpret = function(command, depth)
 {

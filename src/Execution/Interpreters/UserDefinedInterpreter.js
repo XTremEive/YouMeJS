@@ -18,7 +18,7 @@ var UserDefinedInterpreter = function(storage, commandName, callback)
     this.callback = callback;
 };
 
-UserDefinedInterpreter.prototype = Object.create(Interpreter.prototype);
+UserDefinedInterpreter.prototype = new Interpreter();
 
 UserDefinedInterpreter.prototype.interpret = function(command)
 {

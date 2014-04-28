@@ -11,13 +11,19 @@ var CommandParser = function()
 {
 };
 
+/**
+ * Parse a string and obtain a Command object to be used during the interpretation phase.
+ * @param application Our application
+ * @param target The target node which will as the command's target.
+ * @param context A context for the command.
+ * @param input The string to parse.
+ * @returns {Command} A new command object.
+ */
 CommandParser.prototype.parse = function(application, target, context, input)
 {
-    // Create comment variables
+    // Create command's variables
     var commandComponents = input.split(':');
-
-    var commandName = commandComponents[0].trim();
-    commandComponents.shift();
+    var commandName = commandComponents.shift().trim();
     var commandArguments = commandComponents.join(':').split(',');
 
     // Format arguments

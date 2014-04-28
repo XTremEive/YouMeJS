@@ -199,15 +199,23 @@ module.exports = Application;
 // Require statements
 var Interpreter = _dereq_('./Interpreter');
 
+/**
+ * Attrbiuts interpreter will change a set of HTMLAttribute on the targeted Node.
+ * The value of the attribute can be take from storage, but can also be plain strings.
+ * Additionally the end user can provide a set of condition to bring logic the the attribute injection.
+ *
+ * @param storage A Storage object
+ * @param conditionEvaluator A helper class to handle the condition evaluation logic.
+ * @constructor
+ */
 var AttributeInterpreter = function(storage, conditionEvaluator)
 {
     Interpreter.call(this, storage);
 
     this.conditionEvaluator = conditionEvaluator;
-    this.conditionEvaluator.interpreter = this;
 };
 
-AttributeInterpreter.prototype = Object.create(Interpreter.prototype);
+AttributeInterpreter.prototype = new Interpreter();
 
 AttributeInterpreter.prototype.interpret = function(command)
 {
@@ -229,7 +237,7 @@ AttributeInterpreter.prototype.interpret = function(command)
 
     for(var i in conditions)
     {
-        conditions[i] = this.conditionEvaluator.evaluate(command.context, conditions[i].trim());
+        conditions[i] = this.conditionEvaluator.evaluate(this, command.context, conditions[i].trim());
     }
 
     for(var attributeName in attributes)
@@ -249,12 +257,27 @@ AttributeInterpreter.prototype.interpret = function(command)
 // Exports
 module.exports = AttributeInterpreter;
 },{"./Interpreter":7}],3:[function(_dereq_,module,exports){
-var ConditionEvaluator = function(interpreter)
+/**
+ * This a basic condition evaluator. It should be improved to be honest.
+ * But it allows the end user to write simple logical expressions.
+ * This class is mean to be used within an interpreter as it works with interpreter's varaibles.
+ *
+ * @param interpreter An Interpreter object.
+ * @constructor
+ */
+var ConditionEvaluator = function()
 {
-    this.interpreter = interpreter || null;
 };
 
-ConditionEvaluator.prototype.evaluate = function(context, input)
+/**
+ * Evaluate a logical expression using the bound interpreter, its storage and a given context. And will return TRUE or FALSE..
+ *
+ * @param interpreter An interpreter to use in the evaluation.
+ * @param context An evaluation context.
+ * @param input The string to parse and evaluate as TRUE or FALSE.
+ * @returns {boolean}
+ */
+ConditionEvaluator.prototype.evaluate = function(interpreter, context, input)
 {
     var result = true;
     var components = input.split(' ');
@@ -286,7 +309,7 @@ ConditionEvaluator.prototype.evaluate = function(context, input)
                     component = false;
                 }
                 else {
-                    component = this.interpreter.getValue(context, component, component);
+                    component = interpreter.getValue(context, component, component);
                 }
 
                 switch(operator)
@@ -330,12 +353,19 @@ module.exports = ConditionEvaluator;
 // Require statements
 var Interpreter = _dereq_('./Interpreter');
 
+/**
+ * The ForInterpreter create loops. it will duplicated the child element of a node based on a variable stored in the Storage.
+ * Those newly created child node will be parsed and interpreted by the application within a context.
+ *
+ * @param storage A Storage boejct.
+ * @constructor
+ */
 var ForInterpreter = function(storage)
 {
     Interpreter.call(this, storage);
 };
 
-ForInterpreter.prototype = Object.create(Interpreter.prototype);
+ForInterpreter.prototype = new Interpreter();
 
 ForInterpreter.prototype.interpret = function(command, depth)
 {
@@ -376,6 +406,14 @@ module.exports = ForInterpreter;
 // Require statements
 var Interpreter = _dereq_('./Interpreter');
 
+/**
+ * This interpreter will show or hide a node (or a set of node) based on a condition.
+ * Condition operand can be take from storage, context or can just be plain strings.
+ *
+ * @param storage A Storage class
+ * @param conditionEvaluator A ConditionEvaluator to help with logic parsing.
+ * @constructor
+ */
 var IfInterpreter = function(storage, conditionEvaluator)
 {
     Interpreter.call(this, storage);
@@ -384,7 +422,7 @@ var IfInterpreter = function(storage, conditionEvaluator)
     this.conditionEvaluator.interpreter = this;
 };
 
-IfInterpreter.prototype = Object.create(Interpreter.prototype);
+IfInterpreter.prototype = new Interpreter();
 
 IfInterpreter.prototype.interpret = function(command)
 {
@@ -395,7 +433,7 @@ IfInterpreter.prototype.interpret = function(command)
     }
 
     // Get value from storage
-    var value = this.conditionEvaluator.evaluate(command.context, command.getArgument(0));
+    var value = this.conditionEvaluator.evaluate(this, command.context, command.getArgument(0));
 
     // Process
     if (value)
@@ -414,12 +452,19 @@ module.exports = IfInterpreter;
 // Require statements
 var Interpreter = _dereq_('./Interpreter');
 
+/**
+ * The InputInterpreter is specially geared for Node targetting form elements as it binds their values to a storage
+ * variable.
+ *
+ * @param storage A Storage class.
+ * @constructor
+ */
 var InputInterpreter = function(storage)
 {
     Interpreter.call(this, storage);
 };
 
-InputInterpreter.prototype = Object.create(Interpreter.prototype);
+InputInterpreter.prototype = new Interpreter();
 
 InputInterpreter.prototype.interpret = function(command)
 {
@@ -535,12 +580,18 @@ module.exports = Interpreter;
 // Require statements
 var Interpreter = _dereq_('./Interpreter');
 
+/**
+ * On click, this interpreter will trigger the save method of the given storage.
+ *
+ * @param storage A Storage object to save.
+ * @constructor
+ */
 var SaveInterpreter = function(storage)
 {
     Interpreter.call(this, storage);
 };
 
-SaveInterpreter.prototype = Object.create(Interpreter.prototype);
+SaveInterpreter.prototype = new Interpreter();
 
 SaveInterpreter.prototype.interpret = function(command)
 {
@@ -569,12 +620,19 @@ module.exports = SaveInterpreter;
 // Require statements
 var Interpreter = _dereq_('./Interpreter');
 
+/**
+ * The text interpreter set the HTML of a node based on the argument provided.
+ * The main us of this interpreter is to display storage variable somewhere on the end-user page.
+ *
+ * @param storage A Storage object to take variables from.
+ * @constructor
+ */
 var TextInterpreter = function(storage)
 {
     Interpreter.call(this, storage);
 };
 
-TextInterpreter.prototype = Object.create(Interpreter.prototype);
+TextInterpreter.prototype = new Interpreter();
 
 TextInterpreter.prototype.interpret = function(command)
 {
@@ -599,14 +657,24 @@ module.exports = TextInterpreter;
 // Require statements
 var Interpreter = _dereq_('./Interpreter');
 
+/**
+ * The UserDefined interpreter class is simply an interpreter which work based on a callbck.
+ * So why is it not "CallbackInterpreter" well the callback is usually provided by this library user through Application.addCommand() method.
+ *
+ * @param storage A Storage object
+ * @param commandName The commandName to handle
+ * @param callback The callback to execute.
+ * @constructor
+ */
 var UserDefinedInterpreter = function(storage, commandName, callback)
 {
     Interpreter.call(this, storage);
+
     this.commandName = commandName;
     this.callback = callback;
 };
 
-UserDefinedInterpreter.prototype = Object.create(Interpreter.prototype);
+UserDefinedInterpreter.prototype = new Interpreter();
 
 UserDefinedInterpreter.prototype.interpret = function(command)
 {
@@ -637,6 +705,13 @@ var MockStorage = function(data)
     this.data = data || {};
 };
 
+/**
+ * Set a value in this storage.
+ * Additionally you can a do a "flag" set, by calling set with only one parameter. The value will be set to one.
+ * @param key The name of the variable to set in the storage.
+ * @param value The value to store in the set varaible.
+ * @returns {MockStorage} This
+ */
 MockStorage.prototype.set = function(key, value)
 {
     // Handle "flag" set.
@@ -645,21 +720,39 @@ MockStorage.prototype.set = function(key, value)
         value = 1;
     }
 
+    // Store the value
     this.data[key] = value;
 
+    // Return
     return this;
 };
 
+/**
+ * Get a value from this storage. If not found it will return the provided defaultValue
+ * @param key The name of the variable to retrieve from this storage.
+ * @param defaultValue A default value to return if the variable wasn't found. (optional)
+ * @returns {*} The stored variable.
+ */
 MockStorage.prototype.get = function(key, defaultValue)
 {
     return this.data[key] ? this.data[key] : defaultValue;
 };
 
+/**
+ * Return whether this storage contains the given variable or not.
+ * @param key The name of the variable to check.
+ * @returns {boolean} TRUE if the variable exists, FALSE otherwise.
+ */
 MockStorage.prototype.has = function(key)
 {
     return key in this.data;
 };
 
+/**
+ * Delete a varaible from this storage.
+ * @param key The name of the variable to delete.
+ * @returns {MockStorage} This
+ */
 MockStorage.prototype.unset = function(key)
 {
     delete this.data[key];
@@ -667,6 +760,11 @@ MockStorage.prototype.unset = function(key)
     return this;
 };
 
+/**
+ * Persist the storage.
+ *
+ * @returns {MockStorage}
+ */
 MockStorage.prototype.save = function()
 {
     var message = "YouMe's MockStorage is now saving: " + JSON.stringify(this.data);
@@ -700,13 +798,22 @@ var Command = function(application, target, context, name, arguments)
     this.wasInterpreted  = false;
 };
 
+/**
+ * Get an argument's value specifying its name or index.
+ *
+ * @param index The index of the argument.
+ * @param defaultValue A default value to return if the argument wasn't found.
+ * @returns {*}
+ */
 Command.prototype.getArgument = function(index, defaultValue)
 {
+    // Try to find the argument by its name.
     if (index in this.arguments)
     {
         return this.arguments[index];
     }
 
+    // Try to find the argument by its index.
     var argumentIndex = 0;
     for(var argumentKey in this.arguments)
     {
@@ -717,12 +824,8 @@ Command.prototype.getArgument = function(index, defaultValue)
         ++argumentIndex;
     }
 
+    // Return the default value otherwise.
     return defaultValue;
-};
-
-Command.prototype.getArgumentByName = function(name, defaultValue)
-{
-    return (index in this.arguments) ? this.arguments[name] : defaultValue;
 };
 
 Command.prototype.toString = function()
@@ -747,13 +850,19 @@ var CommandParser = function()
 {
 };
 
+/**
+ * Parse a string and obtain a Command object to be used during the interpretation phase.
+ * @param application Our application
+ * @param target The target node which will as the command's target.
+ * @param context A context for the command.
+ * @param input The string to parse.
+ * @returns {Command} A new command object.
+ */
 CommandParser.prototype.parse = function(application, target, context, input)
 {
-    // Create comment variables
+    // Create command's variables
     var commandComponents = input.split(':');
-
-    var commandName = commandComponents[0].trim();
-    commandComponents.shift();
+    var commandName = commandComponents.shift().trim();
     var commandArguments = commandComponents.join(':').split(',');
 
     // Format arguments
@@ -1064,7 +1173,7 @@ var Application = _dereq_('./Application');
 var CommentParser = _dereq_('./Parsing/DocumentParsers/CommentParser');
 var DocumentParser = _dereq_('./Parsing/DocumentParsers/DocumentParser');
 var CommandParser = _dereq_('./Parsing/CommandParsers/CommandParser');
-var ConditionEvaluator = _dereq_('./Execution/Interpreters/Evaluators/ConditionEvaluator');
+var ConditionEvaluator = _dereq_('./Execution/Interpreters/ConditionEvaluator');
 var AttributeInterpreter = _dereq_('./Execution/Interpreters/AttributeInterpreter');
 var ForInterpreter = _dereq_('./Execution/Interpreters/ForInterpreter');
 var IfInterpreter = _dereq_('./Execution/Interpreters/IfInterpreter');
@@ -1170,6 +1279,6 @@ module.exports = {
         return this.application.run(arguments);
     }
 };
-},{"./Application":1,"./Execution/Interpreters/AttributeInterpreter":2,"./Execution/Interpreters/Evaluators/ConditionEvaluator":3,"./Execution/Interpreters/ForInterpreter":4,"./Execution/Interpreters/IfInterpreter":5,"./Execution/Interpreters/InputInterpreter":6,"./Execution/Interpreters/SaveInterpreter":8,"./Execution/Interpreters/TextInterpreter":9,"./Execution/Interpreters/UserDefinedInterpreter":10,"./Execution/Storages/MockStorage":11,"./Parsing/CommandParsers/CommandParser":13,"./Parsing/DocumentParsers/CommentParser":14,"./Parsing/DocumentParsers/DocumentParser":15}]},{},["u88BNT"])
+},{"./Application":1,"./Execution/Interpreters/AttributeInterpreter":2,"./Execution/Interpreters/ConditionEvaluator":3,"./Execution/Interpreters/ForInterpreter":4,"./Execution/Interpreters/IfInterpreter":5,"./Execution/Interpreters/InputInterpreter":6,"./Execution/Interpreters/SaveInterpreter":8,"./Execution/Interpreters/TextInterpreter":9,"./Execution/Interpreters/UserDefinedInterpreter":10,"./Execution/Storages/MockStorage":11,"./Parsing/CommandParsers/CommandParser":13,"./Parsing/DocumentParsers/CommentParser":14,"./Parsing/DocumentParsers/DocumentParser":15}]},{},["u88BNT"])
 ("u88BNT")
 });

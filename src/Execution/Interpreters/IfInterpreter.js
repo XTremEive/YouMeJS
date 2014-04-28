@@ -17,7 +17,7 @@ var IfInterpreter = function(storage, conditionEvaluator)
     this.conditionEvaluator.interpreter = this;
 };
 
-IfInterpreter.prototype = Object.create(Interpreter.prototype);
+IfInterpreter.prototype = new Interpreter();
 
 IfInterpreter.prototype.interpret = function(command)
 {
@@ -28,7 +28,7 @@ IfInterpreter.prototype.interpret = function(command)
     }
 
     // Get value from storage
-    var value = this.conditionEvaluator.evaluate(command.context, command.getArgument(0));
+    var value = this.conditionEvaluator.evaluate(this, command.context, command.getArgument(0));
 
     // Process
     if (value)

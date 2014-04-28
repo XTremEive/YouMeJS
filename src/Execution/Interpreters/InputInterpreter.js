@@ -13,7 +13,7 @@ var InputInterpreter = function(storage)
     Interpreter.call(this, storage);
 };
 
-InputInterpreter.prototype = Object.create(Interpreter.prototype);
+InputInterpreter.prototype = new Interpreter();
 
 InputInterpreter.prototype.interpret = function(command)
 {

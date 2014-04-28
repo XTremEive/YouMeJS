@@ -12,7 +12,7 @@ var SaveInterpreter = function(storage)
     Interpreter.call(this, storage);
 };
 
-SaveInterpreter.prototype = Object.create(Interpreter.prototype);
+SaveInterpreter.prototype = new Interpreter();
 
 SaveInterpreter.prototype.interpret = function(command)
 {

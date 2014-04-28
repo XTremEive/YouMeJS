@@ -15,10 +15,9 @@ var AttributeInterpreter = function(storage, conditionEvaluator)
     Interpreter.call(this, storage);
 
     this.conditionEvaluator = conditionEvaluator;
-    this.conditionEvaluator.interpreter = this;
 };
 
-AttributeInterpreter.prototype = Object.create(Interpreter.prototype);
+AttributeInterpreter.prototype = new Interpreter();
 
 AttributeInterpreter.prototype.interpret = function(command)
 {
@@ -40,7 +39,7 @@ AttributeInterpreter.prototype.interpret = function(command)
 
     for(var i in conditions)
     {
-        conditions[i] = this.conditionEvaluator.evaluate(command.context, conditions[i].trim());
+        conditions[i] = this.conditionEvaluator.evaluate(this, command.context, conditions[i].trim());
     }
 
     for(var attributeName in attributes)
