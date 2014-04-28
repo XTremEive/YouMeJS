@@ -1,16 +1,74 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset='utf-8'>
-    <title>Youmejs by XTremEive</title>
-  </head>
+    <title>YouMeJS by XTremEive</title>
+    <link rel="stylesheet/less" type="text/css" href="/less/style.less"/>
+    <script src="/js/less-1.7.0.min.js" type="text/javascript"></script>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/dark.min.css">
+    <script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/js/mas.js"></script>
+    <script>
+        MyAwesomeService.load(function() {
+            // Start the service
+            MyAwesomeService.start(true, '.demo');
+        });
+    </script>
+</head>
 
-  <body>
-	<p>Under construction...</p>
+<body>
+    <header>
+        <div class="container">
+            <a href="https://github.com/XTremEive/YouMeJS" class="button">Get it on Github!</a>
+            <h1>YouMeJS &hearts;</h1>
+            <p>The <em>simple</em> library to help developers creating <em>powerful</em> web widgets.</p>
+        </div>
+    </header>
 
-        <footer>
-          Youmejs is maintained by <a href="https://github.com/XTremEive">XTremEive</a>.
-        </footer>
-        
-  </body>
+    <div class="body">
+
+        <div class="darker">
+            <section class="container">
+                <h2>Features</h2>
+                <ul>
+                    <li>Simple variable binding.</li>
+                    <li>...</li>
+                </ul>
+            </section>
+        </div>
+
+
+        <div class="dark">
+            <section class="container">
+                <h2>Display a simple variable</h2>
+                <p>As web widget developer, when you create your <em>Storage</em> class, you will define a <em>set</em> and <em>get</em> method. The body of those methods can contains Ajax calls, or just refer to existing variables, but the purpose stays the same: <b>Provide the client with information</b></p>
+                <dl class="storage">
+                    <dt>aSimpleVariable:</dt>
+                    <dd class="demo" data-mas="text: aSimpleVariable">---</dd>
+                    <dt>aSimpleObject:</dt>
+                    <dd class="demo" data-mas="text: aSimpleObject">---</dd>
+                </dl>
+                <p>Here is how the client will display those content.</p>
+                <pre><code>&lt;p data-mas=&quot;text: aSimpleVariable&quot;&gt;&lt;/p&gt;<br />&lt;p data-mas=&quot;text: aSimpleObject&quot;&gt;&lt;/p&gt;<br />&lt;p data-mas=&quot;text: aSimpleObject.name&quot;&gt;&lt;/p&gt;</code></pre>
+                <div class="demo">
+                    <p data-mas="text: aSimpleVariable"></p>
+                    <p data-mas="text: aSimpleObject"></p>
+                    <p data-mas="text: aSimpleObject.name"></p>
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    <footer>
+        <div class="container">
+            YouMeJS is maintained by <a href="https://github.com/XTremEive">XTremEive</a>.
+        </div>
+    </footer>
+
+</body>
 </html>

@@ -1,0 +1,176 @@
+@mainColor: #c18;
+
+
+@bodyBackgroundColor: #FaF8F5;
+@exampleWidth: 500px;
+@fontSize: 13px;
+@font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+@headBackgroundColor: #fff;
+@headingColor: #111;
+@lineHeight: 20px;
+@linkColor: @mainColor;
+@secondaryColor: #444444;
+@spacing: 14px;
+@textColor: #555;
+
+a {
+  color: @linkColor;
+  font-weight: bold;
+  text-decoration: none;
+
+  &:hover {
+    color: darken(@linkColor, 20%);
+    text-decoration: underline;
+  }
+}
+
+body {
+  background: @bodyBackgroundColor;
+  color: @textColor;
+  font: @fontSize @font;
+  line-height: @lineHeight;
+  margin: 0;
+}
+
+footer {
+  font-style: italic;
+  padding: @spacing;
+  text-align: right;
+}
+
+header {
+  background: @headBackgroundColor;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  padding: @spacing;
+
+  h1 {
+    color: @mainColor;
+    margin-bottom: @spacing;
+  }
+}
+
+h1, h2, h3 {
+  color: @headingColor;
+  font-weight: 500;
+  margin: 0;
+}
+
+p, pre {
+  margin: 0;
+}
+
+ul, li {
+  margin: 0;
+  list-style: inside;
+}
+
+ul {
+  padding: 0;
+
+  li {
+    padding-left: @spacing;
+  }
+}
+
+section {
+  padding: @spacing;
+
+  dl {
+    background: white;
+    border:1px solid @secondaryColor;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+    width: @exampleWidth + @spacing * 2;
+
+    dt {
+      background: @secondaryColor;
+      border-bottom: 1px solid @secondaryColor;
+      display: block;
+      clear: left;
+      color: lighten(@mainColor, 50%);
+      float: left;
+      font-weight: bold;
+      margin-right: @spacing;
+      padding: @spacing / 2 @spacing;
+      width: 120px;
+    }
+    dd {
+      border-bottom: 1px solid @secondaryColor;
+      display: block;
+      margin: 0;
+      padding: @spacing / 2 @spacing;
+    }
+  }
+
+  em {
+    background: #fff;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    display: inline-block;
+    font-style: italic;
+    padding: 0 4px;
+  }
+
+  h2 {
+    border-bottom: 1px solid @mainColor;
+    margin-bottom: @spacing;
+    padding: @spacing 0;
+  }
+
+  ul, p {
+    margin-bottom: @spacing;
+  }
+
+  pre {
+    code {
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+      margin: 0;
+      padding: @spacing !important;
+      width: @exampleWidth;
+    }
+  }
+
+  div.demo {
+    background: white;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    margin: 0;
+    padding: @spacing;
+    width: @exampleWidth;
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+.button {
+  display: block;
+  float: right;
+  color: white;
+  margin: @spacing 0;
+  padding: @spacing / 4;
+  background: @mainColor;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  text-shadow: black 1px 1px 2px;
+  width: 120px;
+
+  &:hover {
+    color: white;
+    background: lighten(@mainColor, 20%);
+    text-decoration: none;
+  }
+}
+
+.dark {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.darker {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.container {
+  margin: auto;
+  width: 1170px;
+}
