@@ -77,7 +77,9 @@ section {
 
   dl {
     background: white;
-    border:1px solid @secondaryColor;
+    border-top:1px solid @secondaryColor;
+    border-left:1px solid @secondaryColor;
+    border-right:1px solid @secondaryColor;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     overflow: auto;
     width: @exampleWidth + @spacing * 2;
@@ -133,7 +135,7 @@ section {
   div.demo {
     background: white;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-    margin: 0;
+    margin-bottom: @spacing;
     padding: @spacing;
     width: @exampleWidth;
 
