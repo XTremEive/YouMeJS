@@ -26,14 +26,8 @@ TextInterpreter.prototype.interpret = function(command)
     // Get value from storage
     var value = this.getValue(command.context, command.getArgument(0), 'undefined');
 
-    // Handle object representation
-    if (value !== null && typeof value === 'object')
-    {
-        value = JSON.stringify(value);
-    }
-
     // Process
-    command.target.setHtml(value);
+    command.target.setHtml(value + "");
 
     return true;
 };
