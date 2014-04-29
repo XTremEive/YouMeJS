@@ -3,15 +3,19 @@
 <head>
     <meta charset='utf-8'>
     <title>YouMeJS by XTremEive</title>
-    <link rel="stylesheet/less" type="text/css" href="less/style.less"/>
-    <script src="js/less-1.7.0.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="less/style.css" />
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-    <link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/dark.min.css">
+    <link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/sunburst.min.css">
     <script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>
-    <script>
-        hljs.initHighlightingOnLoad();
-    </script>
     <script src="js/mas.js"></script>
+    <script>
+        $(function() {
+            hljs.configure({useBR: true, tabReplace: '    '});
+
+            $('code.html').each(function(i, e) {hljs.highlightBlock(e, 'html')});
+            $('code.js').each(function(i, e) {hljs.highlightBlock(e, 'js')});
+        });
+    </script>
     <script>
         MyAwesomeService.load(function() {
             // Start the service
@@ -21,55 +25,127 @@
 </head>
 
 <body>
-    <header>
-        <div class="container">
-            <a href="https://github.com/XTremEive/YouMeJS" class="button">Get it on Github!</a>
-            <h1>YouMeJS &hearts;</h1>
-            <p>The <em>simple</em> library to help developers creating <em>powerful</em> web widgets.</p>
-        </div>
-    </header>
+<header>
+    <div class="container">
+        <a href="https://github.com/XTremEive/YouMeJS" class="button">Get it on Github!</a>
+        <h1>YouMeJS &hearts;</h1>
+        <p>The <em>simple</em> library to help developers creating <em>powerful</em> web widgets.</p>
+    </div>
+</header>
 
-    <div class="body">
-
-        <div class="darker">
-            <section class="container">
-                <h2>Features</h2>
-                <ul>
-                    <li>Simple variable binding.</li>
-                    <li>...</li>
-                </ul>
-            </section>
-        </div>
-
-
-        <div class="dark">
-            <section class="container">
-                <h2>Display a simple variable</h2>
-                <p>As web widget developer, when you create your <em>Storage</em> class, you will define a <em>set</em> and <em>get</em> method. The body of those methods can contains Ajax calls, or just refer to existing variables, but the purpose stays the same: <b>Provide the client with information</b></p>
-                <dl class="storage">
-                    <dt>aSimpleVariable:</dt>
-                    <dd class="demo" data-mas="text: aSimpleVariable">---</dd>
-                    <dt>aSimpleObject:</dt>
-                    <dd class="demo" data-mas="text: aSimpleObject">---</dd>
-                </dl>
-                <p>Here is how the client will display those content.</p>
-                <pre><code>&lt;p data-mas=&quot;text: aSimpleVariable&quot;&gt;&lt;/p&gt;<br />&lt;p data-mas=&quot;text: aSimpleObject&quot;&gt;&lt;/p&gt;<br />&lt;p data-mas=&quot;text: aSimpleObject.name&quot;&gt;&lt;/p&gt;</code></pre>
-                <div class="demo">
-                    <p data-mas="text: aSimpleVariable"></p>
-                    <p data-mas="text: aSimpleObject"></p>
-                    <p data-mas="text: aSimpleObject.name"></p>
-                </div>
-                <p>You can also rewrite html attributes... But that's a story for another time.</p>
-            </section>
-        </div>
-
+<div class="body">
+    <div class="">
+        <section class="container">
+            <h2>So... What is it?</h2>
+            <p><b>YouMeJS</b> is a little library designed for web widget developers, also known as &quot;People who make software for other people who make software&quot;.<br />
+                As such it provides developers with tools to create web widgets or use those widgets and all this for <b>FREE</b>.</p>
+            <h3>Features</h3>
+            <ul>
+                <li>Simple variable binding.</li>
+                <li>...</li>
+            </ul>
+            <h3>Requirements and compatibility.</h3>
+            <p>For now YouMeJS requires <a href="http://jquery.com/">jQuery</a> on the client side and as yet to be tested on different browser.<br />
+                But if this interactive guide works for you, then YouMeJS is probably compatible with your browser.</p>
+        </section>
     </div>
 
-    <footer>
-        <div class="container">
-            YouMeJS is maintained by <a href="https://github.com/XTremEive">XTremEive</a>.
-        </div>
-    </footer>
+    <div class="dark">
+        <section class="container">
+            <h2>Getting started.</h2>
+            <p>
+                As a web widget developer, keep in mind that your role is to create a service (an API, a widget or whatever interface), to provide additional logic to the website of your fellow developer.
+                In this guide we will develop a Javascript object called <em>MyAwesomeService</em> which will work as such interface. So lets get started with some Javascript code.
+            </p>
+            <code class="js">
+                // /js/mas.js<br />
+                MyAwesomeService = {};
+            </code>
+            <p>That's it you're done congratulation. Now the client can load your code and get access to <em>MyAwesomeService</em></p>
+            <code class="js">
+                &lt;script src=&quot;js/mas.js&quot;&gt;&lt;/script&gt;<br />
+                &lt;script&gt;<br />
+                    console.log(MyAwesomeService);<br />
+                &lt;/script&gt;<br />
+            </code>
+            <p>It's usually a good idea to let the client start the service when his page is ready. That why we're going to expose a load function which transform our dumb object into a really awesome service.<p>
+            <code class="js">
+                /**<br />
+                &nbsp;* Widget developer's code (that's you!).<br />
+                &nbsp;* You might consider moving such code to your own server so the client can access it using<br />
+                &nbsp;* &lt;script src=&quot;http://myawesomedomain.com/api/mas.js&quot;&gt;&lt;/script&gt; or something.<br />
+                */<br />
+                <br />
+                // We expose a communication interface in the global space.<br />
+                MyAwesomeService = {<br />
+                &nbsp;&nbsp;<br />
+                &nbsp;&nbsp;// The load function will our client's entry point.<br />
+                &nbsp;&nbsp;load: function()<br />
+                &nbsp;&nbsp;{<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;// For the sake of the demo we're using jQuery to load the origin YouMe,<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;// but in a real case scenario youme.x.x.x.min.js and mas.js would be one file.<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;var YouMePath = 'js/youme.0.0.2.min.js';<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;$.getScript(YouMePath, function() {<br />
+                <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// We transform our communication interface in an advance communication interface using YouMe<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// We could use YouMe directly, but that's lame.<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MyAwesomeService = YouMe;<br />
+                <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Then you define some function to be exposed to our client.<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// For the sake of the demo the parameter provided is a debug flag... But it doesn't have to be exposed in a real case..<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// We also provide a selector to work only on the demo part of the document... Think about the possibilities.<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MyAwesomeService.start = function(debug, selector) {<br />
+                <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Finally you call &quot;fuse&quot; (a function from the initial YouMe object)<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The first argument is a selector<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The second argument is an name to use in parsing. Here it's &quot;mas&quot;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The third parameter is a set of options.<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.fuse(selector, 'mas', { // &quot;mas&quot; stands for &quot;MyAwesomeService&quot;... Obviously.<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;debug: debug<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;};<br />
+                <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;});<br />
+                &nbsp;&nbsp;}<br />
+                };
+            </code>
+            <p>It's a lot of comments but it's only 7 lines of code... Really.</p>
+        </section>
+    </div>
+
+    <div class="darker">
+        <section class="container">
+            <h2>Display a simple variable</h2>
+
+            As web widget developer, when you create your <em>Storage</em> class, you will define a <em>set</em> and <em>get</em> method. The body of those methods can contains Ajax calls, or just refer to existing variables, but the purpose stays the same: <b>Provide the client with information</b></p>
+            <dl class="storage">
+                <dt>aSimpleVariable:</dt>
+                <dd class="demo" data-mas="text: aSimpleVariable">---</dd>
+                <dt>aSimpleObject:</dt>
+                <dd class="demo" data-mas="text: aSimpleObject">---</dd>
+            </dl>
+            <p>Here is how the client will display those content.</p>
+            <code class="html">
+                &lt;p data-mas=&quot;text: aSimpleVariable&quot;&gt;&lt;/p&gt;<br />
+                &lt;p data-mas=&quot;text: aSimpleObject&quot;&gt;&lt;/p&gt;<br />
+                &lt;p data-mas=&quot;text: aSimpleObject.name&quot;&gt;&lt;/p&gt;
+            </code>
+            <div class="demo">
+                <p data-mas="text: aSimpleVariable"></p>
+                <p data-mas="text: aSimpleObject"></p>
+                <p data-mas="text: aSimpleObject.name"></p>
+            </div>
+            <p>You can also rewrite html attributes... But that's a story for another time.</p>
+        </section>
+    </div>
+
+</div>
+
+<footer>
+    <div class="container">
+        YouMeJS is maintained by <a href="https://github.com/XTremEive">XTremEive</a>.
+    </div>
+</footer>
 
 </body>
 </html>

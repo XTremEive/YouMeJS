@@ -1,15 +1,13 @@
-@mainColor: #c18;
-
+@mainColor: #3399FF;
 
 @bodyBackgroundColor: #FaF8F5;
-@exampleWidth: 500px;
 @fontSize: 13px;
-@font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+@font: 'Open Sans', sans-serif;
 @headBackgroundColor: #fff;
 @headingColor: #111;
 @lineHeight: 20px;
 @linkColor: @mainColor;
-@secondaryColor: #444444;
+@secondaryColor: #000000;
 @spacing: 14px;
 @textColor: #555;
 
@@ -53,6 +51,7 @@ h1, h2, h3 {
   color: @headingColor;
   font-weight: 500;
   margin: 0;
+  font: 'Open Sans Light',Arial,Helvetica,sans-serif;
 }
 
 p, pre {
@@ -82,7 +81,6 @@ section {
     border-right:1px solid @secondaryColor;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     overflow: auto;
-    width: @exampleWidth + @spacing * 2;
 
     dt {
       background: @secondaryColor;
@@ -123,13 +121,10 @@ section {
     margin-bottom: @spacing;
   }
 
-  pre {
-    code {
-      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-      margin: 0;
-      padding: @spacing !important;
-      width: @exampleWidth;
-    }
+  code {
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: @spacing;
+    padding: @spacing !important;
   }
 
   div.demo {
@@ -137,7 +132,6 @@ section {
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     margin-bottom: @spacing;
     padding: @spacing;
-    width: @exampleWidth;
 
     p {
       margin: 0;
@@ -159,11 +153,10 @@ section {
 
   &:hover {
     color: white;
-    background: lighten(@mainColor, 20%);
+    background: lighten(@mainColor, 10%);
     text-decoration: none;
   }
 }
-
 
 .container {
   margin: auto;

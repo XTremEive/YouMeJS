@@ -1,0 +1,140 @@
+a {
+  color: #3399ff;
+  font-weight: bold;
+  text-decoration: none;
+}
+a:hover {
+  color: #0066cc;
+  text-decoration: underline;
+}
+body {
+  background: #faf8f5;
+  color: #555555;
+  font: 13px 'Open Sans', sans-serif;
+  line-height: 20px;
+  margin: 0;
+}
+footer {
+  font-style: italic;
+  padding: 14px;
+  text-align: right;
+}
+header {
+  background: #ffffff;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  padding: 14px;
+}
+header h1 {
+  color: #3399ff;
+  margin-bottom: 14px;
+}
+h1,
+h2,
+h3 {
+  color: #111111;
+  font-weight: 500;
+  margin: 0;
+  font: 'Open Sans Light', Arial, Helvetica, sans-serif;
+}
+p,
+pre {
+  margin: 0;
+}
+ul,
+li {
+  margin: 0;
+  list-style: inside;
+}
+ul {
+  padding: 0;
+}
+ul li {
+  padding-left: 14px;
+}
+section {
+  padding: 14px;
+}
+section dl {
+  background: white;
+  border-top: 1px solid #000000;
+  border-left: 1px solid #000000;
+  border-right: 1px solid #000000;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+}
+section dl dt {
+  background: #000000;
+  border-bottom: 1px solid #000000;
+  display: block;
+  clear: left;
+  color: #ffffff;
+  float: left;
+  font-weight: bold;
+  margin-right: 14px;
+  padding: 7px 14px;
+  width: 120px;
+}
+section dl dd {
+  border-bottom: 1px solid #000000;
+  display: block;
+  margin: 0;
+  padding: 7px 14px;
+}
+section em {
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  display: inline-block;
+  font-style: italic;
+  padding: 0 4px;
+}
+section h2 {
+  border-bottom: 1px solid #3399ff;
+  margin-bottom: 14px;
+  padding: 14px 0;
+}
+section ul,
+section p {
+  margin-bottom: 14px;
+}
+section code {
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 14px;
+  padding: 14px !important;
+}
+section div.demo {
+  background: white;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 14px;
+  padding: 14px;
+}
+section div.demo p {
+  margin: 0;
+}
+.button {
+  display: block;
+  float: right;
+  color: white;
+  margin: 14px 0;
+  padding: 3.5px;
+  background: #3399ff;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  text-shadow: black 1px 1px 2px;
+  width: 120px;
+}
+.button:hover {
+  color: white;
+  background: #66b2ff;
+  text-decoration: none;
+}
+.container {
+  margin: auto;
+  max-width: 1170px;
+}
+.dark {
+  background: rgba(0, 0, 0, 0.05);
+}
+.darker {
+  background: rgba(0, 0, 0, 0.08);
+}
