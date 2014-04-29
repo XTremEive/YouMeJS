@@ -14,98 +14,101 @@ var UserDefinedInterpreter = require('./Execution/Interpreters/UserDefinedInterp
 var MockStorage = require('./Execution/Storages/MockStorage');
 
 // exports
-module.exports = {
-    // Object members
+module.exports = function(storage)
+{
+    return {
+        // Object members
 
-    application: new Application([
-        new CommentParser(),
-        new DocumentParser()
-    ], new CommandParser()),
+        application: new Application([
+            new CommentParser(),
+            new DocumentParser()
+        ], new CommandParser()),
 
-    storage: new MockStorage(),
+        storage: storage || new MockStorage(),
 
-    // Storage related methods
+        // Storage related methods
 
-    createMockStorage: function(data)
-    {
-        return new MockStorage(data);
-    },
-    set: function(key, value)
-    {
-        this.storage.set(key, value);
-        this.application.refresh();
-
-        return this;
-    },
-    unset: function(key)
-    {
-        this.storage.unset(key);
-        this.application.refresh();
-
-        return this;
-    },
-    get: function(key, defaultValue)
-    {
-        this.storage.get(key, defaultValue);
-
-        return this;
-    },
-    has: function(key)
-    {
-        this.storage.has(key);
-
-        return this;
-    },
-    save: function()
-    {
-        this.storage.save();
-
-        return this;
-    },
-
-    // Event management
-
-    on: function(event, callback)
-    {
-        this.application.on(event, callback);
-    },
-    off: function(event, callback)
-    {
-        this.application.off(event, callback);
-    },
-    trigger: function(event)
-    {
-        this.application.trigger(event);
-    },
-
-    // Application related methods
-
-    addCommand: function(commandName, callback)
-    {
-        this.application.interpreters.push(new UserDefinedInterpreter(this.storage, commandName, callback));
-    },
-    fuse: function(rootNode, hookName, arguments)
-    {
-        // Format parameters
-        rootNode || 'body';
-        hookName = hookName || 'youme';
-        arguments = arguments || {};
-
-        // Build application
-        this.application.rootNode = rootNode;
-        this.application.hookName = hookName;
-        var standardInterpreters = [
-            new AttributeInterpreter(this.storage, new ConditionEvaluator()),
-            new ForInterpreter(this.storage),
-            new InputInterpreter(this.storage),
-            new IfInterpreter(this.storage, new ConditionEvaluator()),
-            new SaveInterpreter(this.storage),
-            new TextInterpreter(this.storage)
-        ]
-        for(var i = 0, interpreter; interpreter = standardInterpreters[i]; ++i)
+        createMockStorage: function(data)
         {
-            this.application.interpreters.push(interpreter);
+            return new MockStorage(data);
+        },
+        set: function(key, value)
+        {
+            this.storage.set(key, value);
+            this.application.refresh();
+
+            return this;
+        },
+        unset: function(key)
+        {
+            this.storage.unset(key);
+            this.application.refresh();
+
+            return this;
+        },
+        get: function(key, defaultValue)
+        {
+            this.storage.get(key, defaultValue);
+
+            return this;
+        },
+        has: function(key)
+        {
+            this.storage.has(key);
+
+            return this;
+        },
+        save: function()
+        {
+            this.storage.save();
+
+            return this;
+        },
+
+        // Event management
+
+        on: function(event, callback)
+        {
+            this.application.on(event, callback);
+        },
+        off: function(event, callback)
+        {
+            this.application.off(event, callback);
+        },
+        trigger: function(event)
+        {
+            this.application.trigger(event);
+        },
+
+        // Application related methods
+
+        addCommand: function(commandName, callback)
+        {
+            this.application.interpreters.push(new UserDefinedInterpreter(this.storage, commandName, callback));
+        },
+        fuse: function(rootNode, hookName, arguments)
+        {
+            // Format parameters
+            rootNode || 'body';
+            hookName = hookName || 'youme';
+            arguments = arguments || {};
+
+            // Build application
+            this.application.rootNode = rootNode;
+            this.application.hookName = hookName;
+            var standardInterpreters = [
+                new AttributeInterpreter(this.storage, new ConditionEvaluator()),
+                new ForInterpreter(this.storage),
+                new InputInterpreter(this.storage),
+                new IfInterpreter(this.storage, new ConditionEvaluator()),
+                new SaveInterpreter(this.storage),
+                new TextInterpreter(this.storage)
+            ]
+            for(var i = 0, interpreter; interpreter = standardInterpreters[i]; ++i)
+            {
+                this.application.interpreters.push(interpreter);
+            }
+            return this.application.run(arguments);
         }
-        return this.application.run(arguments);
-    }
+    };
 };

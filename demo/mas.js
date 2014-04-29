@@ -9,14 +9,14 @@ MyAwesomeService = {
     load: function(callback)
     {
         // Build the service
-        var YouMePath = '../build/release/youme.0.0.2.min.js';
+        var YouMePath = '../build/release/youme.0.0.3.min.js';
         $.getScript(YouMePath, function() {
 
             // You don't want to say that you used a kick-ass library so you create an alias.
-            MyAwesomeService = YouMe;
+            MyAwesomeService = YouMe();
 
             // Here we're using a mock storage built-in YouMe. But this typically the class (or object) that you want to write on your own to handle API call
-            MyAwesomeService.storage = YouMe.createMockStorage({
+            MyAwesomeService.storage = MyAwesomeService.createMockStorage({
                 'textVariable': 'This is a simple text',
                 'booleanTrueVariable': true,
                 'booleanFalseVariable': false,
