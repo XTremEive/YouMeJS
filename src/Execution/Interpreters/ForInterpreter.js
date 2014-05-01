@@ -40,7 +40,7 @@ ForInterpreter.prototype.interpret = function(command, depth)
         var context = {
           item: value[i],
           parent: command.context,
-          oopIndex: i,
+          loopIndex: i,
           loopLength: value.length
         };
 
