@@ -48,6 +48,18 @@ Command.prototype.getArgument = function(index, defaultValue)
     return defaultValue;
 };
 
+Command.prototype.getArguments = function()
+{
+    var arrayArguments = [];
+
+    for(var name in this.arguments)
+    {
+        arrayArguments.push(this.arguments[name]);
+    }
+
+    return arrayArguments;
+};
+
 Command.prototype.toString = function()
 {
     return this.name + '(' + JSON.stringify(this.arguments) + ')';

@@ -433,7 +433,7 @@ IfInterpreter.prototype.interpret = function(command)
     }
 
     // Get value from storage
-    var value = this.conditionEvaluator.evaluate(this, command.context, command.getArgument(0));
+    var value = this.conditionEvaluator.evaluate(this, command.context, command.getArguments().join(' '));
 
     // Process
     if (value)
@@ -826,6 +826,18 @@ Command.prototype.getArgument = function(index, defaultValue)
 
     // Return the default value otherwise.
     return defaultValue;
+};
+
+Command.prototype.getArguments = function()
+{
+    var arrayArguments = [];
+
+    for(var name in this.arguments)
+    {
+        arrayArguments.push(this.arguments[name]);
+    }
+
+    return arrayArguments;
 };
 
 Command.prototype.toString = function()

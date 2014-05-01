@@ -28,7 +28,7 @@ IfInterpreter.prototype.interpret = function(command)
     }
 
     // Get value from storage
-    var value = this.conditionEvaluator.evaluate(this, command.context, command.getArgument(0));
+    var value = this.conditionEvaluator.evaluate(this, command.context, command.getArguments().join(' '));
 
     // Process
     if (value)
