@@ -97,11 +97,11 @@ This part also aim at showcasing what we can do so far.
         </ul>
 
         <!-- mas for: arrayWithObjectsVariable -->
-        <p>Id: <span data-mas="text: context.id"></span> <span data-mas="text: context.name"></span></p>
+        <p>Id: <span data-mas="text: context.id"></span> <span data-mas="text: context.item.name"></span></p>
         <!-- /mas -->
         <ul data-mas="for: arrayWithObjectsVariable">
-            <li><b data-mas="text: context.id"></b> <span data-mas="text: context.name"></span><br />
-            Loop index: <span data-mas="text: context._loopIndex"></span> <span data-mas="text: context._loopLength"></span></li>
+            <li><b data-mas="text: context.item.id"></b> <span data-mas="text: context.item.name"></span><br />
+            Loop index: <span data-mas="text: context.loopIndex"></span> <span data-mas="text: context.loopLength"></span></li>
         </ul>
 
     </div>
@@ -116,18 +116,18 @@ This part also aim at showcasing what we can do so far.
             <!-- /mas -->
 
             <ul data-mas="for: arrayVariable">
-                <li><span data-mas="text: context"></span></li>
+                <li><span data-mas="text: context.item"></span></li>
                 <ul data-mas="for: arrayWithObjectsVariable">
-                    <li><b data-mas="text: context._parent"></b> <span data-mas="text: context.name"></span></li>
+                    <li><b data-mas="text: context.parent.item"></b> <span data-mas="text: context.item.name"></span></li>
                 </ul>
             </ul>
 
             <ul>
                 <!-- mas for: arrayVariable -->
-                <li data-mas="text: context"></li>
+                <li data-mas="text: context.item"></li>
                 <ul>
                     <!-- mas for: arrayWithObjectsVariable -->
-                    <li><b data-mas="text: context._parent"></b> <span data-mas="text: context.name"></span></li>
+                    <li><b data-mas="text: context.parent.item"></b> <span data-mas="text: context.item.name"></span></li>
                     <!-- /mas -->
                 </ul>
                 <!-- /mas -->

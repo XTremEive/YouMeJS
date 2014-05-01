@@ -25,7 +25,7 @@ DocumentParser.prototype.parse = function(application, rootNode, context, hookNa
             }
         }
 
-        $(rootNode).find('[data-' + hookName + ']').each(function (index, element) {
+        $(element).find('[data-' + hookName + ']').each(function (index, element) {
             var parsedCommands = application.commandParser.parse(application, new NormalNode(element), context, $(element).attr('data-' + hookName));
             for(var i = 0; i < parsedCommands.length; ++i)
             {
