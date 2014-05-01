@@ -291,14 +291,11 @@
             <p>Loops is the second present given to your client pages, without needing you to provide any additional line of code. Here are some examples:</p>
             <code class="html">
                 &lt;!-- mas for: aSimpleArray --&gt;<br />
-                &lt;p&gt;Current item &lt;span data-mas=&quot;text: context&quot;&gt;&lt;/span&gt;&lt;/p&gt;<br />
+                &lt;p data-mas=&quot;text: context.item&quot;&gt;&lt;/p&gt;<br />
                 &lt;!-- /mas --&gt;<br />
-                &lt;ul data-mas=&quot;for: aSimpleArray&quot;&gt;<br />
-                &nbsp;&nbsp;&lt;li data-mas=&quot;text: context.length&quot;&gt;&lt;/li&gt;<br />
-                &lt;/ul&gt;<br />
                 <br />
                 &lt;ul data-mas=&quot;for: aSimpleArray&quot;&gt;<br />
-                &nbsp;&nbsp;&lt;li&gt;Loop index: &lt;span data-mas=&quot;text: context.loopIndex&quot;&gt;&lt;/span&gt;&lt;/li&gt;<br />
+                &nbsp;&nbsp;&lt;li&gt;Index: &lt;span data-mas=&quot;text: context.loopIndex&quot;&gt;&lt;/span&gt; / Length: &lt;span data-mas=&quot;text: context.loopLength&quot;&gt;&lt;/span&gt;&lt;/li&gt;<br />
                 &lt;/ul&gt;
             </code>
             <p>And the results</p>
@@ -308,12 +305,11 @@
                 <!-- /mas -->
 
                 <ul data-mas="for: aSimpleArray">
-                    <li>Item: <span data-mas="text: context.loopIndex"></span> / <span data-mas="text: context.loopLength"></span></li>
+                    <li>Index: <span data-mas="text: context.loopIndex"></span> / Length: <span data-mas="text: context.loopLength"></span></li>
                 </ul>
             </div>
-            <p>Loops works for any array variables. But in loop a special variable named <em>context</em> makes its debut. It contains the current loop item.<br />
-            In our example <em>context</em> is a string, but in a real case it can be anything.<br />
-            Additionally the context variable exposes <em>context._loopIndex</em> and <em>context._loopLength</em> properties.<br />
+            <p>Loops works for any array variables. But in loop a special variable named <em>context</em> makes its debut.<br />
+            The context variable exposes <em>context.item</em>, <em>context.loopIndex</em> and <em>context.loopLength</em> properties.<br />
             Finally, as for conditions, the comment syntax is also available.</p>
         </section>
     </div>
@@ -321,7 +317,13 @@
     <div class="dark">
         <section class="container">
             <h2>Set variables and save</h2>
-            <p>Coming soon...</p>
+            <p>For some widgets it can be important to allow the user to input some information. Here is how a developer would set this up in his HTML page.</p>
+            <div class="demo">
+                <form methd="get" action="">
+                    <input name="aSimpleVariable" type="text" value="" data-mas="input: aSimpleVariable" />
+                    <input type="button" data-mas="save" value="Save" />
+                </form>
+            </div>
         </section>
     </div>
 
