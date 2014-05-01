@@ -66,11 +66,9 @@ section dl {
   overflow: auto;
 }
 section dl dt {
-  background: #000000;
-  border-bottom: 1px solid #000000;
   display: block;
   clear: left;
-  color: #ffffff;
+  color: #000000;
   float: left;
   font-size: 13px;
   font-weight: bold;

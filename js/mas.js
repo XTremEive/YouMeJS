@@ -11,7 +11,7 @@ MyAwesomeService = {
     load: function(callback)
     {
         // For the sake of the demo we're using jQuery to load the origin YouMe, but in a real case scenario youme.x.x.x.min.js and mas.js would be one file.
-        var YouMePath = 'js/youme.0.0.3.min.js';
+        var YouMePath = 'js/youme.0.0.4.min.js';
         $.getScript(YouMePath, function() {
 
             // We transform our application interface in an advanced application interface using YouMe

@@ -184,7 +184,8 @@
                 <dt>aSimpleObject:</dt>
                 <dd class="demo" data-mas="text: aSimpleObject">---</dd>
             </dl>
-            <p>Doing so will make them available for client, here is how your fellow developer will access those variables in his HTML page.</p>
+
+            <p>Doing so will make them available for client, here is how your fellow developer will access those variables in his HTML page (please not the use of <b>mas</b> keyword which is your own defined namespace).</p>
             <code class="html">
                 &lt;p data-mas='text: aSimpleVariable'&gt;&lt;/p&gt;<br />
                 &lt;p data-mas='text: aSimpleObject'&gt;&lt;/p&gt;<br />
@@ -193,10 +194,10 @@
                 &lt;p&gt;&lt;img src=&quot;&quot; alt=&quot;&quot; data-mas='attribute: {&quot;src&quot;: &quot;aSimpleObject.image&quot;, &quot;alt&quot;: &quot;aSimpleObject.name&quot;}' /&gt;&lt;/p&gt;<br />
                 &lt;p&gt;&lt;a href=&quot;#&quot; data-mas='text: aSimpleObject.name, attribute: {&quot;href&quot;: &quot;aSimpleObject.url&quot;}'&gt;&lt;/a&gt;&lt;/p&gt;
             </code>
-            <p>And the result...</p>
 
-            <!-- Display a variable -->
+            <p>And the result...</p>
             <div class="demo">
+                <!-- Display a variable -->
                 <p data-mas='text: aSimpleVariable'></p>
                 <p data-mas='text: aSimpleObject'></p>
                 <p data-mas='text: aSimpleObject.id'></p>
