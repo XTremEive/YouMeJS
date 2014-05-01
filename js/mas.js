@@ -60,6 +60,18 @@ MyAwesomeService = {
                 });
             };
 
+            // Here we add a custom command
+            MyAwesomeService.addCommand('sum', function (command) {
+                // We listen to the lick event
+                command.target.on('click', function () {
+                    // We do the operation using to command interface provided by YouMe
+                    var sum = parseInt(command.getArgument(0)) + parseInt(command.getArgument(1));
+
+                    // We set the HTML of the target HTML element
+                    command.target.setHtml(sum);
+                });
+            });
+
             // Call user entry function if provided
             if (callback)
             {

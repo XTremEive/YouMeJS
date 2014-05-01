@@ -18,6 +18,27 @@
     </script>
     <script>
         MyAwesomeService.load(function() {
+
+            // Here are some user defined listeners
+
+            MyAwesomeService.on('start', function () {
+                console.log("This javascript listener is triggered on application's start (but before any refresh)") ;
+            });
+
+            MyAwesomeService.on('beforeRefresh', function () {
+                console.log("This javascript listener is triggered just before refreshing") ;
+            });
+            MyAwesomeService.on('afterRefresh', function () {
+                console.log("This javascript listener is triggered just after refreshing") ;
+            });
+
+            MyAwesomeService.on('beforeSave', function () {
+                console.log("This javascript listener is triggered just before saving") ;
+            });
+            MyAwesomeService.on('afterSave', function () {
+                console.log("This javascript listener is triggered just after saving") ;
+            });
+
             // Start the service
             MyAwesomeService.start(true, '.demo');
         });
@@ -40,8 +61,11 @@
             <p><b>YouMeJS</b> is a <a href="http://knockoutjs.com/">Knockout</a> inspired library, designed for web widget developers, also known as &quot;People who make software for other people who make software&quot;.</p>
             <h3>Features</h3>
             <ul>
-                <li><a href="http://knockoutjs.com/">Knockout</a> inspired template syntax including display, conditions, loops, nesting, input...</li>
-                <li>...</li>
+                <li><a href="http://knockoutjs.com/">Knockout</a> inspired template syntax</li>
+                <li>Seamless refresh</li>
+                <li>Events</li>
+                <li>Customizable and extensible</li>
+                <li>Developer friendly</li>
             </ul>
             <h3>Requirements and compatibility.</h3>
             <p>For now YouMeJS requires <a href="http://jquery.com/">jQuery</a> on the client side and as yet to be tested on different browser. But if this interactive guide works for you, then YouMeJS is probably compatible with your browser.</p>
@@ -318,15 +342,103 @@
         <section class="container">
             <h2>Set variables and save</h2>
             <p>For some widgets it can be important to allow the user to input some information. Here is how a developer would set this up in his HTML page.</p>
+            <code class="html">
+                &lt;form methd=&quot;get&quot; action=&quot;&quot;&gt;<br />
+                &nbsp;&nbsp;&lt;input name=&quot;aSimpleVariable&quot; type=&quot;text&quot; value=&quot;&quot; data-mas=&quot;input: aSimpleVariable&quot; /&gt;<br />
+                &nbsp;&nbsp;&lt;input type=&quot;button&quot; data-mas=&quot;save&quot; value=&quot;Save&quot; /&gt;<br />
+                &lt;/form&gt;
+            </code>
+            <p>And the result</p>
             <div class="demo">
                 <form methd="get" action="">
                     <input name="aSimpleVariable" type="text" value="" data-mas="input: aSimpleVariable" />
                     <input type="button" data-mas="save" value="Save" />
                 </form>
             </div>
+            <p>What <em>input</em> does is just calling the save <em>Storage.set()</em> function of your storage update. As for <em>save</em> it just calls your <em>Storage.save</em> method.<br />
+            Even though we used a proper form, <em>input</em> can be added to any HTML control, as for <em>save</em> it can be added to any clickable HTML element.<br />
+            Scroll up to see how your changed affected this document itself.</p>
         </section>
     </div>
 
+    <div class="">
+        <section class="container">
+            <h2>Expose events and actions</h2>
+            <p>YouMe exposes some useful events to listen to in your client web page. Here are some of them:</p>
+            <code class="js">
+                MyAwesomeService.on('start', function () {<br />
+                &nbsp;&nbsp;console.log(&quot;This javascript listener is triggered on application's start (but before any refresh)&quot;) ;<br />
+                });<br />
+                <br />
+                MyAwesomeService.on('beforeRefresh', function () {<br />
+                &nbsp;&nbsp;console.log(&quot;This javascript listener is triggered just before refreshing&quot;) ;<br />
+                });<br />
+                MyAwesomeService.on('afterRefresh', function () {<br />
+                &nbsp;&nbsp;console.log(&quot;This javascript listener is triggered just after refreshing&quot;) ;<br />
+                });<br />
+                <br />
+                MyAwesomeService.on('beforeSave', function () {<br />
+                &nbsp;&nbsp;console.log(&quot;This javascript listener is triggered just before saving&quot;) ;<br />
+                });<br />
+                MyAwesomeService.on('afterSave', function () {<br />
+                &nbsp;&nbsp;console.log(&quot;This javascript listener is triggered just after saving&quot;) ;<br />
+                });
+            </code>
+            <p>
+                This events are exposed through your own application interface, but can only be accessed after YouMe is loaded... That's why exposed the <em>load()</em> function.
+                To see them in action, you can take a look at the source code of this page and at your developer console.
+            </p>
+
+            <p>
+                In Javascript nothing is really private, so you should keep that in mind when creating a web widget. As such a client if free to call your <em>Storage</em> object functions whenever he wants.<br />
+                And YouMe is making it even easier for them as your interface will expose the same <em>set()</em>, <em>unset()</em>, <em>has()</em>, <em>get()</em>, and <em>save()</em> functions as your storage but will additionally trigger a seemless refresh of the webpage.
+            </p>
+            <code class="js">
+                MyAwesomeService.set(&quot;someVariable&quot;, &quot;Some value&quot;);<br />
+                MyAwesomeService.get(&quot;aSimpleVariable&quot;, &quot;A default value&quot;);<br />
+                MyAwesomeService.has(&quot;aSimpleVariable&quot;);<br />
+                MyAwesomeService.unset(&quot;aVariable&quot;);<br />
+                MyAwesomeService.save();
+            </code>
+            <p>Calling those instead of the storage's one will also trigger events as an added bonus.</p>
+        </section>
+    </div>
+
+    <div class="darker">
+        <section class="container">
+            <h2>Extending YouMe</h2>
+            <p>YouMe provide a simple way to provide additional feature, designed by you to your clients. You can create your own commands interpreter with the same tools we used to create the built-in terpreters that we shown so far. Here is an example: </p>
+            <code class="js">
+                // /js/mas.js (After calling YouMe())
+                // Here we add a custom command<br />
+                MyAwesomeService.addCommand('sum', function (command) {<br />
+                &nbsp;&nbsp;// We listen to the lick event<br />
+                &nbsp;&nbsp;command.target.on('click', function () {<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;// We do the operation using to command interface provided by YouMe<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;var sum = parseInt(command.getArgument(0)) + parseInt(command.getArgument(1));<br />
+                <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;// We set the HTML of the target HTML element<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;command.target.setHtml(sum);<br />
+                &nbsp;&nbsp;});<br />
+                });
+            </code>
+            <p>And here is how your client will use it.</p>
+            <code class="html">
+                &lt;p data-mas=&quot;sum: 1 3&quot;&gt;Click to see sum in action!&lt;/p&gt;
+            </code>
+            <p>See it action</p>
+            <div class="demo">
+                <p data-mas="sum: 1 3">Click to see sum in action!</p>
+            </div>
+        </section>
+    </div>
+
+    <div class="dark">
+        <section class="container">
+            <h2>That's all folks!</h2>
+            <p>Thanks for taking the time to go that far, I hope you will have as much using this little library as I had writing it.</p>
+        </section>
+    </div>
 </div>
 
 <footer>
