@@ -172,9 +172,15 @@ Application.prototype.refresh = function(rootNode, context, depth)
     for(var i = 0; i < commands.length; ++i)
     {
         // Interpret command
+        commands[i].wasInterpreted = false;
         for(var index = 0, interpreter; interpreter = this.interpreters[index]; ++index)
         {
             commands[i].wasInterpreted = interpreter.interpret(commands[i], depth) || commands[i].wasInterpreted;
+        }
+
+        if (commands[i].wasInterpreted)
+        {
+            ++commands[i].executionCount;
         }
 
         // Send user feedback in case of unknown command

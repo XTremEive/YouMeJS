@@ -22,6 +22,12 @@ SaveInterpreter.prototype.interpret = function(command)
         return false;
     }
 
+    // ...
+    if (command.executionCount > 0)
+    {
+        return true;
+    }
+
     // Process
     (function(application, instance) {
         command.target.on('click', function()

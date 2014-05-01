@@ -173,9 +173,15 @@ Application.prototype.refresh = function(rootNode, context, depth)
     for(var i = 0; i < commands.length; ++i)
     {
         // Interpret command
+        commands[i].wasInterpreted = false;
         for(var index = 0, interpreter; interpreter = this.interpreters[index]; ++index)
         {
             commands[i].wasInterpreted = interpreter.interpret(commands[i], depth) || commands[i].wasInterpreted;
+        }
+
+        if (commands[i].wasInterpreted)
+        {
+            ++commands[i].executionCount;
         }
 
         // Send user feedback in case of unknown command
@@ -605,6 +611,12 @@ SaveInterpreter.prototype.interpret = function(command)
         return false;
     }
 
+    // ...
+    if (command.executionCount > 0)
+    {
+        return true;
+    }
+
     // Process
     (function(application, instance) {
         command.target.on('click', function()
@@ -800,6 +812,7 @@ var Command = function(application, target, context, name, arguments)
     this.name = name || '';
     this.arguments = arguments || {};
     this.wasInterpreted  = false;
+    this.executionCount = 0;
 };
 
 /**

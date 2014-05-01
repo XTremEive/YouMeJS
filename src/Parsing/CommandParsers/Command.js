@@ -16,6 +16,7 @@ var Command = function(application, target, context, name, arguments)
     this.name = name || '';
     this.arguments = arguments || {};
     this.wasInterpreted  = false;
+    this.executionCount = 0;
 };
 
 /**
