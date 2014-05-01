@@ -36,10 +36,13 @@ ForInterpreter.prototype.interpret = function(command, depth)
 
     for(var i = 0; i < value.length; ++i)
     {
-        var context = value[i];
-        context._parent = command.context;
-        context._loopIndex = i;
-        context._loopLength = value.length;
+        // Build the context
+        var context = {
+          item: value[i],
+          parent: command.context,
+          oopIndex: i,
+          loopLength: value.length
+        };
 
         // Create new node and interpret it
         command.target.append(newElements[i]);
