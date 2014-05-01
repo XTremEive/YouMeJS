@@ -304,15 +304,15 @@
             <p>And the results</p>
             <div class="demo">
                 <!-- mas for: aSimpleArray -->
-                <p><span data-mas="text: context"></span>: <span data-mas="text: context.length"></span></p>
+                <p data-mas="text: context.item"></p>
                 <!-- /mas -->
 
                 <ul data-mas="for: aSimpleArray">
-                    <li>Item: <span data-mas="text: context._loopIndex"></span> / <span data-mas="text: context._loopLength"></span></li>
+                    <li>Item: <span data-mas="text: context.loopIndex"></span> / <span data-mas="text: context.loopLength"></span></li>
                 </ul>
             </div>
-            <p>Loops works for any array variables. But in loop a special variable named <em>context</em> makes its debut. It contains the current element.<br />
-            In our example <em>context</em> is a string, thus making the length attribute available. But in a real case it can be anything.<br />
+            <p>Loops works for any array variables. But in loop a special variable named <em>context</em> makes its debut. It contains the current loop item.<br />
+            In our example <em>context</em> is a string, but in a real case it can be anything.<br />
             Additionally the context variable exposes <em>context._loopIndex</em> and <em>context._loopLength</em> properties.<br />
             Finally, as for conditions, the comment syntax is also available.</p>
         </section>
