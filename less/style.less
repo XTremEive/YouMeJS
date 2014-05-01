@@ -1,8 +1,8 @@
 @mainColor: #3399FF;
 
 @bodyBackgroundColor: #FaF8F5;
-@fontSize: 13px;
 @font: 'Open Sans', sans-serif;
+@fontSize: 13px;
 @headBackgroundColor: #fff;
 @headingColor: #111;
 @lineHeight: 20px;
@@ -10,6 +10,10 @@
 @secondaryColor: #000000;
 @spacing: 14px;
 @textColor: #555;
+
+em {
+  font-size: @fontSize;
+}
 
 a {
   color: @linkColor;
@@ -89,11 +93,13 @@ section {
       clear: left;
       color: lighten(@mainColor, 50%);
       float: left;
+      font-size: @fontSize;
       font-weight: bold;
       margin-right: @spacing;
       padding: @spacing / 2 @spacing;
       width: 120px;
     }
+
     dd {
       border-bottom: 1px solid @secondaryColor;
       display: block;

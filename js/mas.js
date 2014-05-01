@@ -4,28 +4,33 @@
  * <script src="http://myawesomedomain.com/api/mas.js"></script> or something.
  */
 
-// We expose a communication interface in the global space.
+// We expose a application interface in the global space.
 MyAwesomeService = {
 
     // The load function will our client's entry point.
     load: function(callback)
     {
         // For the sake of the demo we're using jQuery to load the origin YouMe, but in a real case scenario youme.x.x.x.min.js and mas.js would be one file.
-        var YouMePath = 'js/youme.0.0.2.min.js';
+        var YouMePath = 'js/youme.0.0.3.min.js';
         $.getScript(YouMePath, function() {
 
-            // We transform our communication interface in an advance communication interface using YouMe (You could use YouMe directly, but that's lame).
-            MyAwesomeService = YouMe;
+            // We transform our application interface in an advanced application interface using YouMe
+            MyAwesomeService = YouMe();
 
             // For the sake of the demo we're using a mock storage built-in YouMe.
-            // But this is typically the  object that you want to replace with your own to handle API call.
-            MyAwesomeService.storage = YouMe.createMockStorage({
+            MyAwesomeService.storage.data = {
                 'aSimpleVariable': 'Buuh!',
                 'aSimpleObject': {
                     id: 25,
-                    name: "Pikachu"
+                    name: "Pikachu",
+                    url: "http://en.wikipedia.org/wiki/Pikachu",
+                    image: "http://upload.wikimedia.org/wikipedia/en/thumb/f/f7/Sugimoris025.png/200px-Sugimoris025.png",
+                    toString: function()
+                    {
+                        return JSON.stringify(this);
+                    }
                 }
-            });
+            };
 
             // Then you define some function to be exposed to our client.
             // For the sake of the demo the parameter provided is a debug flag... But it doesn't have to be exposed in a real case..
