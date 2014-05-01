@@ -101,7 +101,7 @@ This part also aim at showcasing what we can do so far.
         <!-- /mas -->
         <ul data-mas="for: arrayWithObjectsVariable">
             <li><b data-mas="text: context.id"></b> <span data-mas="text: context.name"></span><br />
-            Loop index: <span data-mas="text: context.loopIndex"></span></li>
+            Loop index: <span data-mas="text: context._loopIndex"></span> <span data-mas="text: context._loopLength"></span></li>
         </ul>
 
     </div>
@@ -116,9 +116,9 @@ This part also aim at showcasing what we can do so far.
             <!-- /mas -->
 
             <ul data-mas="for: arrayVariable">
-                <li data-mas="text: context"></li>
+                <li><span data-mas="text: context"></span></li>
                 <ul data-mas="for: arrayWithObjectsVariable">
-                    <li><b data-mas="text: context.parent"></b> <span data-mas="text: context.name"></span></li>
+                    <li><b data-mas="text: context._parent"></b> <span data-mas="text: context.name"></span></li>
                 </ul>
             </ul>
 
@@ -127,7 +127,7 @@ This part also aim at showcasing what we can do so far.
                 <li data-mas="text: context"></li>
                 <ul>
                     <!-- mas for: arrayWithObjectsVariable -->
-                    <li><b data-mas="text: context.parent"></b> <span data-mas="text: context.name"></span></li>
+                    <li><b data-mas="text: context._parent"></b> <span data-mas="text: context.name"></span></li>
                     <!-- /mas -->
                 </ul>
                 <!-- /mas -->
