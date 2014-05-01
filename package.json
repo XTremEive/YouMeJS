@@ -2,7 +2,7 @@
   "name": "youme",
   "description": "YouMe is a library created to help web widget developers injecting logic in their partners websites.",
   "author": "Eive Devheart <xtremive@gmail.com>",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": "git@github.com:XTremEive/YouMeJS.git",
   "devDependencies": {
     "browserify": "^3.44.0",

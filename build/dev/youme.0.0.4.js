@@ -856,19 +856,92 @@ var CommandParser = function()
  * @param target The target node which will as the command's target.
  * @param context A context for the command.
  * @param input The string to parse.
- * @returns {Command} A new command object.
+ * @returns {array} An array of new command objects
  */
 CommandParser.prototype.parse = function(application, target, context, input)
+{
+    var commands = [];
+    var commandString = "";
+    var jsonDepth = 0;
+    for(var i = 0; i < input.length; ++i)
+    {
+        var character = input[i];
+
+        switch(character)
+        {
+            case '{':
+                ++jsonDepth;
+                commandString += character;
+                break;
+            case '}':
+                --jsonDepth;
+                commandString += character;
+                break;
+            case ',':
+                if (jsonDepth == 0)
+                {
+                    commands.push(this.parseCommandString(application, target, context, commandString));
+                    commandString = "";
+                } else {
+                    commandString += character;
+                }
+                break;
+            default:
+                commandString += character;
+                break;
+        }
+    }
+    commands.push(this.parseCommandString(application, target, context, commandString));
+
+    return commands;
+};
+
+CommandParser.prototype.parseCommandString = function(application, target, context, input)
 {
     // Create command's variables
     var commandComponents = input.split(':');
     var commandName = commandComponents.shift().trim();
-    var commandArguments = commandComponents.join(':').split(',');
+    var commandArguments = [];
+    var argumentsString = commandComponents.join(':');
+    var argumentString = "";
+    var jsonDepth = 0;
 
-    // Format arguments
-    for(var i = 0; i < commandArguments.length; ++i)
+    // parse arguments
+    for(var i = 0; i < argumentsString.length; ++i)
     {
-        commandArguments[i] = commandArguments[i].trim();
+        var character = argumentsString[i];
+
+        switch(character)
+        {
+            case '{':
+                ++jsonDepth;
+                argumentString += character;
+                break;
+            case '}':
+                --jsonDepth;
+                argumentString += character;
+                break;
+            case ' ':
+                if (jsonDepth == 0)
+                {
+                   if (argumentString.length != 0)
+                   {
+                       commandArguments.push(argumentString);
+                   }
+                    argumentString = "";
+                } else {
+                    argumentString += character;
+                }
+                break;
+            default:
+                argumentString += character;
+                break;
+        }
+    }
+
+    if (argumentString.length != 0)
+    {
+        commandArguments.push(argumentString);
     }
 
     // Return
@@ -926,7 +999,11 @@ CommentParser.prototype.parse = function(application, rootNode, context, hookNam
                 case self.isEndComment(nodeToParse):
                     scopes[scopes.length - 1].endNode = nodeToParse;
                     var scope = scopes.pop();
-                    commands.push(application.commandParser.parse(application, new VirtualNode(scope.startNode, scope.contentNodes, scope.endNode), context, scope.commandString));
+                    var parsedCommands = application.commandParser.parse(application, new VirtualNode(scope.startNode, scope.contentNodes, scope.endNode), context, scope.commandString);
+                    for(var i = 0; i < parsedCommands.length; ++i)
+                    {
+                        commands.push(parsedCommands[i]);
+                    }
                     break;
                 default:
                     if (scopes.length > 0)
@@ -981,11 +1058,19 @@ DocumentParser.prototype.parse = function(application, rootNode, context, hookNa
         var rootNodeAttribute = $(element).attr('data-' + hookName);
         if (typeof rootNodeAttribute !== 'undefined' && rootNodeAttribute !== false)
         {
-            commands.push(application.commandParser.parse(application, new NormalNode(element), context, rootNodeAttribute));
+            var parsedCommands = application.commandParser.parse(application, new NormalNode(element), context, rootNodeAttribute);
+            for(var i = 0; i < parsedCommands.length; ++i)
+            {
+                commands.push(parsedCommands[i]);
+            }
         }
 
         $(rootNode).find('[data-' + hookName + ']').each(function (index, element) {
-            commands.push(application.commandParser.parse(application, new NormalNode(element), context, $(element).attr('data-' + hookName)));
+            var parsedCommands = application.commandParser.parse(application, new NormalNode(element), context, $(element).attr('data-' + hookName));
+            for(var i = 0; i < parsedCommands.length; ++i)
+            {
+                commands.push(parsedCommands[i]);
+            }
         });
     });
 

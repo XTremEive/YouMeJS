@@ -82,9 +82,9 @@ This part also aim at showcasing what we can do so far.
 
     <h2>Conditional attribute binding (the second parameter contains indexed conditions)</h2>
     <div>
-        <a href="#" data-mas='attribute: {"class": "highlight"}, {"class": "booleanTrueVariable"}'>This will display a CSS class as booleanTrueVariable is true</a><br />
-        <a href="#" data-mas='attribute: {"class": "highlight"}, {"class": "booleanFalseVariable"}'>This will not add a CSS class as booleanFalseVariable is false..</a><br />
-        <a href="#" data-mas='attribute: {"class": "highlight"}, {"class": "arrayVariable.length > 2"}'>This will add a CSS class as arrayVariables contains more than 2 elements..</a>
+        <a href="#" data-mas='attribute: {"class": "highlight"} {"class": "booleanTrueVariable"}'>This will display a CSS class as booleanTrueVariable is true</a><br />
+        <a href="#" data-mas='attribute: {"class": "highlight"} {"class": "booleanFalseVariable"}'>This will not add a CSS class as booleanFalseVariable is false..</a><br />
+        <a href="#" data-mas='attribute: {"class": "highlight"} {"class": "arrayVariable.length > 2"}'>This will add a CSS class as arrayVariables contains more than 2 elements..</a>
     </div>
 
     <h2>Loops</h2>
@@ -167,6 +167,6 @@ This part also aim at showcasing what we can do so far.
         <p>This will be overwritten</p>
     <!-- /mas -->
 
-    <p data-mas="add: 1, 3">Click here to see how much is 1 + 3</p>
+    <p data-mas="add: 1 3">Click here to see how much is 1 + 3</p>
 </body>
 </html>

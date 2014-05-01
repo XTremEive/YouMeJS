@@ -46,7 +46,11 @@ CommentParser.prototype.parse = function(application, rootNode, context, hookNam
                 case self.isEndComment(nodeToParse):
                     scopes[scopes.length - 1].endNode = nodeToParse;
                     var scope = scopes.pop();
-                    commands.push(application.commandParser.parse(application, new VirtualNode(scope.startNode, scope.contentNodes, scope.endNode), context, scope.commandString));
+                    var parsedCommands = application.commandParser.parse(application, new VirtualNode(scope.startNode, scope.contentNodes, scope.endNode), context, scope.commandString);
+                    for(var i = 0; i < parsedCommands.length; ++i)
+                    {
+                        commands.push(parsedCommands[i]);
+                    }
                     break;
                 default:
                     if (scopes.length > 0)

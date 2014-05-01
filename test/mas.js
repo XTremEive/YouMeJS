@@ -9,7 +9,7 @@ MyAwesomeService = {
     load: function(callback)
     {
         // Build the service
-        var YouMePath = '../build/release/youme.0.0.3.min.js';
+        var YouMePath = '../build/release/youme.0.0.4.min.js';
         $.getScript(YouMePath, function() {
 
             // You don't want to say that you used a kick-ass library so you create an alias.
