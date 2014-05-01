@@ -37,7 +37,7 @@
     <div class="">
         <section class="container">
             <h2>So... What is it?</h2>
-            <p><b>YouMeJS</b> is a little library designed for web widget developers, also known as &quot;People who make software for other people who make software&quot;.</p>
+            <p><b>YouMeJS</b> is a <a href="http://knockoutjs.com/">Knockout</a> inspired library, designed for web widget developers, also known as &quot;People who make software for other people who make software&quot;.</p>
             <h3>Features</h3>
             <ul>
                 <li>Simple variable binding.</li>
@@ -48,9 +48,15 @@
         </section>
     </div>
 
+    <!--
+    ------------------------------------------------------------------------------------------------------------------------------------
+    Getting started:
+        You can check js/mas.js on this server to see a more realistic example.
+    ------------------------------------------------------------------------------------------------------------------------------------
+    -->
     <div class="dark">
         <section class="container">
-            <h2>Getting started.</h2>
+            <h2>Getting started</h2>
             <p>
                 As a web widget developer, keep in mind that your job is to create a service (an API, a widget or whatever interface), to bring additional logic to your fellow developer's website.
                 In this guide we will develop a Javascript object called <em>MyAwesomeService</em> which will act as such interface. So lets get started.
@@ -112,30 +118,39 @@
         </section>
     </div>
 
+    <!--
+    ------------------------------------------------------------------------------------------------------------------------------------
+    Expose and display variables:
+        If you check /js/mas.js you'll notice that we're using the built-in mock storage for this demo.
+        Even though a Mock storage is useless in a production environment, it expose a clean view of our model, perfect for teaching.
+    ------------------------------------------------------------------------------------------------------------------------------------
+    -->
     <div class="darker">
-
-        <!--
-        ------------------------------------------------------------------------------------------------------------------------------------
-        Expose and display variables:
-            If you check /js/mas.js you'll notice that we're using the built-in mock storage for this demo.
-            Even though a Mock storage is useless in a production environment, it expose a clean view of our model, perfect for teaching.
-        ------------------------------------------------------------------------------------------------------------------------------------
-        -->
         <section class="container">
             <h2>Expose and display variables</h2>
             <p>
-                As web widget developer you must know that YouMe will take care of exposing a comprehensive language to your client, so you can focus on providing backend and customisation.<br />
-                To do so you must provide YouMe with a <em>Storage</em> object. Here is an example:
+                As web widget developer you must know that YouMe will take care of exposing a comprehensive language to your client, but it's you who decides on the backend of this language.<br />
+                To do so you must provide the <em>YouMe()</em> function with a <em>Storage</em> object as a parameter. Like so:
             </p>
             <code class="js">
+                // /js/mas.js<br />
+                <br />
+                // [...]<br />
+                var myStorage = /* Put here your code to create your own storage object */;<br />
+                MyAwesomeService = YouMe(myStorage);<br />
+                // [...]
+            </code>
+
+            <p>Here is an example of a minimal <em>Storage</em> object:</p>
+            <code class="js">
                 // A constructor, fill free to add parameters such API key, options or whatever.<br />
-                var Storage = function()<br />
+                var MyStorage = function()<br />
                 {<br />
                 &nbsp;&nbsp;// Insert your own code here<br />
                 };<br />
                 <br />
                 // Set is called when YouMe tries to store a new variable in this storage.<br />
-                Storage.prototype.set = function(name, value)<br />
+                MyStorage.prototype.set = function(name, value)<br />
                 {<br />
                 &nbsp;&nbsp;// Insert your own code here<br />
                 <br />
@@ -143,7 +158,7 @@
                 };<br />
                 <br />
                 // Get is called when YouMe tries to retrieve a variable from this storage.<br />
-                Storage.prototype.get = function(name, defaultValue)<br />
+                MyStorage.prototype.get = function(name, defaultValue)<br />
                 {<br />
                 &nbsp;&nbsp;// Insert your own code here<br />
                 <br />
@@ -151,7 +166,7 @@
                 };<br />
                 <br />
                 // Unset is called when YouMe tries to erase a variable from this storage.<br />
-                Storage.prototype.unset = function(key)<br />
+                MyStorage.prototype.unset = function(key)<br />
                 {<br />
                 &nbsp;&nbsp;// Insert your own code here<br />
                 <br />
@@ -159,7 +174,7 @@
                 };<br />
                 <br />
                 // Has will be called when YouMe wants to know if a variable exists in this storage.<br />
-                Storage.prototype.has = function(key)<br />
+                MyStorage.prototype.has = function(key)<br />
                 {<br />
                 &nbsp;&nbsp;// Insert your own code here<br />
                 <br />
@@ -168,7 +183,7 @@
                 <br />
                 // Save is called whenever YouMe ask for storage to be persisted.<br />
                 // It's usually when you send variables to your server.<br />
-                Storage.prototype.save = function()<br />
+                MyStorage.prototype.save = function()<br />
                 {<br />
                 &nbsp;&nbsp;// Insert your own code here<br />
                 <br />
@@ -181,6 +196,12 @@
             <dl class="storage">
                 <dt>aSimpleVariable:</dt>
                 <dd class="demo" data-mas="text: aSimpleVariable">---</dd>
+                <dt>aSimpleTrueBoolean:</dt>
+                <dd class="demo" data-mas="text: aSimpleTrueBoolean">---</dd>
+                <dt>aSimpleFalseBoolean:</dt>
+                <dd class="demo" data-mas="text: aSimpleFalseBoolean">---</dd>
+                <dt>aSimpleArray:</dt>
+                <dd class="demo" data-mas="text: aSimpleArray">---</dd>
                 <dt>aSimpleObject:</dt>
                 <dd class="demo" data-mas="text: aSimpleObject">---</dd>
             </dl>
@@ -188,6 +209,9 @@
             <p>Doing so will make them available for client, here is how your fellow developer will access those variables in his HTML page (please not the use of <b>mas</b> keyword which is your own defined namespace).</p>
             <code class="html">
                 &lt;p data-mas='text: aSimpleVariable'&gt;&lt;/p&gt;<br />
+                &lt;p data-mas='text: aSimpleArray'&gt;&lt;/p&gt;<br />
+                &lt;p data-mas='text: aSimpleArray.0'&gt;&lt;/p&gt;<br />
+                &lt;p data-mas='text: aSimpleArray.length'&gt;&lt;/p&gt;<br />
                 &lt;p data-mas='text: aSimpleObject'&gt;&lt;/p&gt;<br />
                 &lt;p data-mas='text: aSimpleObject.id'&gt;&lt;/p&gt;<br />
                 &lt;p&gt;&lt;a href=&quot;#&quot; data-mas='attribute: {&quot;href&quot;: &quot;aSimpleObject.url&quot;}'&gt;A simple link&lt;/a&gt;&lt;/p&gt;<br />
@@ -199,6 +223,9 @@
             <div class="demo">
                 <!-- Display a variable -->
                 <p data-mas='text: aSimpleVariable'></p>
+                <p data-mas='text: aSimpleArray'></p>
+                <p data-mas='text: aSimpleArray.3'></p>
+                <p data-mas='text: aSimpleArray.length'></p>
                 <p data-mas='text: aSimpleObject'></p>
                 <p data-mas='text: aSimpleObject.id'></p>
                 <p><a href="#" data-mas='attribute: {"href": "aSimpleObject.url"}'>A simple link</a></p>
@@ -207,6 +234,61 @@
             </div>
 
             <p>To be continued...</p>
+        </section>
+    </div>
+
+    <div class="">
+        <section class="container">
+            <h2>Conditions</h2>
+            <p>Without asking to change the storage that you declared so far, YouMe offers the possibility for your client to declare conditions in his HTML page.</p>
+
+            <p>Here are some condition examples</p>
+            <code class="html">
+                &lt;p data-mas=&quot;if: aSimpleTrueBoolean&quot;&gt;This paragraph should be shown&lt;/p&gt;<br />
+                &lt;!-- mas if: aSimpleTrueBoolean --&gt;<br />
+                &lt;p&gt;This paragraph will be shown because aSimpleTrueBoolean is evaluated as true.&lt;/p&gt;<br />
+                &lt;!-- /mas --&gt;<br />
+                <br />
+                &lt;p data-mas=&quot;if: aSimpleFalseBoolean&quot;&gt;But not this one.&lt;/p&gt;<br />
+                &lt;!-- mas if: aSimpleFalseBoolean --&gt;<br />
+                &lt;p&gt;This paragraph will be hidden because aSimpleFalseBoolean is evaluated as false.&lt;/p&gt;<br />
+                &lt;!-- /mas --&gt;<br />
+                <br />
+                &lt;p data-mas=&quot;if: aSimpleTrueBoolean &amp;&amp; aSimpleFalseBoolean&quot;&gt;This paragraph will be hidden, thanks to our simple logic evaluation.&lt;/p&gt;<br />
+                &lt;p data-mas=&quot;if: aSimpleTrueBoolean || aSimpleFalseBoolean&quot;&gt;This paragraph will be visible, thanks to our simple logic evaluation.&lt;/p&gt;<br />
+                <br />
+                &lt;p&gt;&lt;a href=&quot;#&quot; data-mas='attribute: {&quot;title&quot;: &quot;I am a tooltip!&quot;} {&quot;title&quot;: &quot;aSimpleArray.length &gt; 3&quot;}'&gt;This link will have tooltip&lt;/a&gt;&lt;/p&gt;<br />
+                &lt;p&gt;&lt;a href=&quot;#&quot; data-mas='attribute: {&quot;title&quot;: &quot;I am a tooltip!&quot;} {&quot;title&quot;: &quot;aSimpleArray.length == 3&quot;}'&gt;This link will not have a tooltip&lt;/a&gt;&lt;/p&gt;
+            </code>
+            <p>And the result...</p>
+            <div class="demo">
+                <p data-mas="if: aSimpleTrueBoolean">This paragraph should be shown</p>
+                <!-- mas if: aSimpleTrueBoolean -->
+                <p>This paragraph will be shown because aSimpleTrueBoolean is evaluated as true.</p>
+                <!-- /mas -->
+
+                <p data-mas="if: aSimpleFalseBoolean">But not this one.</p>
+                <!-- mas if: aSimpleFalseBoolean -->
+                <p>This paragraph will be hidden because aSimpleFalseBoolean is evaluated as false.</p>
+                <!-- /mas -->
+
+                <p data-mas="if: aSimpleTrueBoolean && aSimpleFalseBoolean">This paragraph will be hidden, thanks to our simple logic evaluation.</p>
+                <p data-mas="if: aSimpleTrueBoolean || aSimpleFalseBoolean">This paragraph will be visible, thanks to our simple logic evaluation.</p>
+
+                <p><a href="#" data-mas='attribute: {"title": "I am a tooltip!"} {"title": "aSimpleArray.length > 3"}'>This link will have tooltip</a></p>
+                <p><a href="#" data-mas='attribute: {"title": "I am a tooltip!"} {"title": "aSimpleArray.length == 3"}'>This link will not have a tooltip</a></p>
+            </div>
+            <p>For the sake of brevity. We did not repeat the alternative comment syntaxes, but keep in mind that they are available.<br />
+               For the same reason we did not expand all operators, but keep in mind that <em>==</em>, <em>!=</em> <em>&gt;</em> <em>&lt;</em> <em>&gt;=</em> <em>&lt;=</em> <em>||</em> and <em>&amp;&amp;</em> are all available.<br />
+               Conditional attributes are a little bit tricky. Think of them as two JSON separated by a space: one for attributes, the other one for conditions.<br />
+               ... And yes conditions can be nested.</p>
+        </section>
+    </div>
+
+    <div class="darker">
+        <section class="container">
+            <h2>Loops</h2>
+            <p>Coming soon...</p>
         </section>
     </div>
 

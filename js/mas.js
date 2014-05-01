@@ -20,6 +20,20 @@ MyAwesomeService = {
             // For the sake of the demo we're using a mock storage built-in YouMe.
             MyAwesomeService.storage.data = {
                 'aSimpleVariable': 'Buuh!',
+                'aSimpleTrueBoolean': true,
+                'aSimpleFalseBoolean': false,
+                'aSimpleArray': [
+                    "Grass",
+                    "Fire",
+                    "Water",
+                    "Electric",
+                    "Ice",
+                    "Dark",
+                    "Psychic",
+                    "Dragon",
+                    "Ghost",
+                    "Rock"
+                ],
                 'aSimpleObject': {
                     id: 25,
                     name: "Pikachu",
