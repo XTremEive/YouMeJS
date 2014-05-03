@@ -1,35 +1,32 @@
-@mainColor: #3399FF;
+@color1: #5072a6;
+@color2: #72a650;
 
 @bodyBackgroundColor: #FaF8F5;
-@font: 'Open Sans', sans-serif;
-@fontSize: 13px;
+@font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+@textSize: 0.9em;
+@headingColor: black;
+@headingSize: 24px;
 @headBackgroundColor: #fff;
-@headingColor: #111;
-@lineHeight: 20px;
-@linkColor: @mainColor;
+@invertedHeadingColor: white;
+@invertedTextColor: #f3f3f3;
+@lineHeight: 1.6em;
+@linkColor: @color1;
 @secondaryColor: #000000;
 @spacing: 14px;
 @textColor: #555;
 
-em {
-  font-size: @fontSize;
-}
-
 a {
-  color: @linkColor;
   font-weight: bold;
-  text-decoration: none;
+  text-decoration: underline;
 
   &:hover {
-    color: darken(@linkColor, 20%);
     text-decoration: underline;
   }
 }
 
 body {
   background: @bodyBackgroundColor;
-  color: @textColor;
-  font: @fontSize @font;
+  font: @textSize @font;
   line-height: @lineHeight;
   margin: 0;
 }
@@ -38,22 +35,57 @@ footer {
   font-style: italic;
   padding: @spacing;
   text-align: right;
+
+  a {
+    color: @color2;
+  }
 }
 
 header {
   background: @headBackgroundColor;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-  padding: @spacing;
+  padding: @spacing 0;
+  position: fixed;
+  z-index: 1;
+  width: 100%;
+
+  em {
+    font-weight: bold;
+  }
 
   h1 {
-    color: @mainColor;
-    margin-bottom: @spacing;
+    color: @color1;
+    display: inline;
+    font-size: @headingSize;
+  }
+
+  p {
+    color: @textColor;
+    display: inline;
+  }
+
+  .button {
+    border-radius: 6px;
+    display: block;
+    float: right;
+    color: white;
+    padding: @spacing / 4 @spacing / 2;
+    background: @color1;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    text-decoration: none;
+    text-shadow: black 1px 1px 2px;
+    width: 120px;
+
+    &:hover {
+      color: white;
+      background: lighten(@color1, 10%);
+      text-decoration: none;
+    }
   }
 }
 
 h1, h2, h3 {
-  color: @headingColor;
-  font-weight: 500;
   margin: 0;
   font: 'Open Sans Light',Arial,Helvetica,sans-serif;
 }
@@ -76,7 +108,7 @@ ul {
 }
 
 section {
-  padding: @spacing;
+  padding: @spacing * 2 @spacing @spacing @spacing;
 
   dl {
     background: white;
@@ -89,9 +121,9 @@ section {
     dt {
       display: block;
       clear: left;
-      color: @secondaryColor;
+      color: @headingColor;
       float: left;
-      font-size: @fontSize;
+      font-size: @textSize;
       font-weight: bold;
       margin-right: @spacing;
       padding: @spacing / 2 @spacing;
@@ -100,6 +132,7 @@ section {
 
     dd {
       border-bottom: 1px solid @secondaryColor;
+      color: @textColor;
       display: block;
       margin: 0;
       padding: @spacing / 2 @spacing;
@@ -107,18 +140,22 @@ section {
   }
 
   em {
-    background: #fff;
+    background: white;
     border-radius: 6px;
     border: 1px solid #ccc;
+    color: black;
     display: inline-block;
+    font-size: @textSize;
     font-style: italic;
+    line-height: @lineHeight * 0.9;
     padding: 0 4px;
   }
 
   h2 {
-    border-bottom: 1px solid @mainColor;
+    font-size: @textSize * 2.3;
+    font-weight: 600;
+    line-height: 1em;
     margin-bottom: @spacing;
-    padding: @spacing 0;
   }
 
   ul, p {
@@ -134,8 +171,13 @@ section {
   div.demo {
     background: white;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    color: @textColor;
     margin-bottom: @spacing;
     padding: @spacing;
+
+    a {
+      color: blue;
+    }
 
     p {
       margin: 0;
@@ -143,23 +185,8 @@ section {
   }
 }
 
-.button {
-  display: block;
-  float: right;
-  color: white;
-  margin: @spacing 0;
-  padding: @spacing / 4;
-  background: @mainColor;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  text-shadow: black 1px 1px 2px;
-  width: 120px;
-
-  &:hover {
-    color: white;
-    background: lighten(@mainColor, 10%);
-    text-decoration: none;
-  }
+.body {
+  padding-top: @spacing * 2 + @headingSize;
 }
 
 .container {
@@ -167,10 +194,53 @@ section {
   max-width: 1170px;
 }
 
-.dark {
-  background: rgba(0, 0, 0, 0.05);
+.strip-bright {
+  color: @textColor;
+
+  a {
+    color: black;
+  }
+
+  h1, h2, h3 {
+    color: @headingColor;
+  }
 }
 
-.darker {
-  background: rgba(0, 0, 0, 0.08);
+.strip-dark {
+  color: @invertedTextColor;
+  background: #313131;
+
+  a {
+    color: white;
+  }
+
+  h1, h2, h3 {
+    color: @invertedHeadingColor;
+  }
+}
+
+.strip-color1 {
+  color: @invertedTextColor;
+  background: @color1;
+
+  a {
+    color: white;
+  }
+
+  h1, h2, h3 {
+    color: @invertedHeadingColor;
+  }
+}
+
+.strip-color2 {
+  color: @invertedTextColor;
+  background: @color2;
+
+  a {
+    color: white;
+  }
+
+  h1, h2, h3 {
+    color: @invertedHeadingColor;
+  }
 }

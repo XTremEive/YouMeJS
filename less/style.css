@@ -1,20 +1,14 @@
-em {
-  font-size: 13px;
-}
 a {
-  color: #3399ff;
   font-weight: bold;
-  text-decoration: none;
+  text-decoration: underline;
 }
 a:hover {
-  color: #0066cc;
   text-decoration: underline;
 }
 body {
   background: #faf8f5;
-  color: #555555;
-  font: 13px 'Open Sans', sans-serif;
-  line-height: 20px;
+  font: 0.9em 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  line-height: 1.6em;
   margin: 0;
 }
 footer {
@@ -22,20 +16,50 @@ footer {
   padding: 14px;
   text-align: right;
 }
+footer a {
+  color: #72a650;
+}
 header {
   background: #ffffff;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-  padding: 14px;
+  padding: 14px 0;
+  position: fixed;
+  z-index: 1;
+  width: 100%;
+}
+header em {
+  font-weight: bold;
 }
 header h1 {
-  color: #3399ff;
-  margin-bottom: 14px;
+  color: #5072a6;
+  display: inline;
+  font-size: 24px;
+}
+header p {
+  color: #555555;
+  display: inline;
+}
+header .button {
+  border-radius: 6px;
+  display: block;
+  float: right;
+  color: white;
+  padding: 3.5px 7px;
+  background: #5072a6;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  text-decoration: none;
+  text-shadow: black 1px 1px 2px;
+  width: 120px;
+}
+header .button:hover {
+  color: white;
+  background: #6f8dba;
+  text-decoration: none;
 }
 h1,
 h2,
 h3 {
-  color: #111111;
-  font-weight: 500;
   margin: 0;
   font: 'Open Sans Light', Arial, Helvetica, sans-serif;
 }
@@ -55,7 +79,7 @@ ul li {
   padding-left: 14px;
 }
 section {
-  padding: 14px;
+  padding: 28px 14px 14px 14px;
 }
 section dl {
   background: white;
@@ -70,7 +94,7 @@ section dl dt {
   clear: left;
   color: #000000;
   float: left;
-  font-size: 13px;
+  font-size: 0.9em;
   font-weight: bold;
   margin-right: 14px;
   padding: 7px 14px;
@@ -78,22 +102,27 @@ section dl dt {
 }
 section dl dd {
   border-bottom: 1px solid #000000;
+  color: #555555;
   display: block;
   margin: 0;
   padding: 7px 14px;
 }
 section em {
-  background: #fff;
+  background: white;
   border-radius: 6px;
   border: 1px solid #ccc;
+  color: black;
   display: inline-block;
+  font-size: 0.9em;
   font-style: italic;
+  line-height: 1.44em;
   padding: 0 4px;
 }
 section h2 {
-  border-bottom: 1px solid #3399ff;
+  font-size: 2.07em;
+  font-weight: 600;
+  line-height: 1em;
   margin-bottom: 14px;
-  padding: 14px 0;
 }
 section ul,
 section p {
@@ -107,36 +136,67 @@ section code {
 section div.demo {
   background: white;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  color: #555555;
   margin-bottom: 14px;
   padding: 14px;
+}
+section div.demo a {
+  color: blue;
 }
 section div.demo p {
   margin: 0;
 }
-.button {
-  display: block;
-  float: right;
-  color: white;
-  margin: 14px 0;
-  padding: 3.5px;
-  background: #3399ff;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  text-shadow: black 1px 1px 2px;
-  width: 120px;
-}
-.button:hover {
-  color: white;
-  background: #66b2ff;
-  text-decoration: none;
+.body {
+  padding-top: 52px;
 }
 .container {
   margin: auto;
   max-width: 1170px;
 }
-.dark {
-  background: rgba(0, 0, 0, 0.05);
+.strip-bright {
+  color: #555555;
 }
-.darker {
-  background: rgba(0, 0, 0, 0.08);
+.strip-bright a {
+  color: black;
+}
+.strip-bright h1,
+.strip-bright h2,
+.strip-bright h3 {
+  color: #000000;
+}
+.strip-dark {
+  color: #f3f3f3;
+  background: #313131;
+}
+.strip-dark a {
+  color: white;
+}
+.strip-dark h1,
+.strip-dark h2,
+.strip-dark h3 {
+  color: #ffffff;
+}
+.strip-color1 {
+  color: #f3f3f3;
+  background: #5072a6;
+}
+.strip-color1 a {
+  color: white;
+}
+.strip-color1 h1,
+.strip-color1 h2,
+.strip-color1 h3 {
+  color: #ffffff;
+}
+.strip-color2 {
+  color: #f3f3f3;
+  background: #72a650;
+}
+.strip-color2 a {
+  color: white;
+}
+.strip-color2 h1,
+.strip-color2 h2,
+.strip-color2 h3 {
+  color: #ffffff;
 }
