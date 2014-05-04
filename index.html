@@ -4,18 +4,8 @@
     <meta charset='utf-8'>
     <title>YouMeJS by XTremEive</title>
     <link rel="stylesheet" type="text/css" href="less/style.css" />
-    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-    <link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/sunburst.min.css">
-    <script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>
     <script src="js/mas.js"></script>
-    <script>
-        $(function() {
-            hljs.configure({useBR: true, tabReplace: '    '});
 
-            $('code.html').each(function(i, e) {hljs.highlightBlock(e, 'html')});
-            $('code.js').each(function(i, e) {hljs.highlightBlock(e, 'js')});
-        });
-    </script>
     <!--
     ------------------------------------------------------------------------------------------------------------------------------------
     Events:
@@ -25,7 +15,6 @@
     -->
     <script>
         MyAwesomeService.load(function() {
-
             // Here are some user defined listeners
 
             MyAwesomeService.on('start', function () {
@@ -93,7 +82,8 @@
                 <li>Developer friendly</li>
             </ul>
             <h3>Requirements and compatibility.</h3>
-            <p>YouMeJS requires <a href="http://jquery.com/">jQuery</a> on the client side and as yet to be tested on different browsers. If this interactive guide works for you, then YouMeJS is probably compatible with your browser.</p>
+            <p>YouMe doesn't require any library but will inject <a href="http://jquery.com/">jQuery</a> in noConflict mode on the client side. <br />
+                Keep in mind that this library as yet to be tested on different browser, but. if this interactive guide works for you, then YouMeJS is probably compatible with your browser.</p>
         </section>
     </div>
 
