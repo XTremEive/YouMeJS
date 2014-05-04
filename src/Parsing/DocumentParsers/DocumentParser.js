@@ -14,19 +14,19 @@ DocumentParser.prototype.parse = function(application, rootNode, context, hookNa
 {
     var commands = [];
 
-    $(rootNode).each(function (index, element) {
-        var rootNodeAttribute = $(element).attr('data-' + hookName);
+    application.$(rootNode).each(function (index, element) {
+        var rootNodeAttribute = application.$(element).attr('data-' + hookName);
         if (typeof rootNodeAttribute !== 'undefined' && rootNodeAttribute !== false)
         {
-            var parsedCommands = application.commandParser.parse(application, new NormalNode(element), context, rootNodeAttribute);
+            var parsedCommands = application.commandParser.parse(application, new NormalNode(application.$, element), context, rootNodeAttribute);
             for(var i = 0; i < parsedCommands.length; ++i)
             {
                 commands.push(parsedCommands[i]);
             }
         }
 
-        $(element).find('[data-' + hookName + ']').each(function (index, element) {
-            var parsedCommands = application.commandParser.parse(application, new NormalNode(element), context, $(element).attr('data-' + hookName));
+        application.$(element).find('[data-' + hookName + ']').each(function (index, element) {
+            var parsedCommands = application.commandParser.parse(application, new NormalNode(application.$, element), context, application.$(element).attr('data-' + hookName));
             for(var i = 0; i < parsedCommands.length; ++i)
             {
                 commands.push(parsedCommands[i]);

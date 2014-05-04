@@ -14,7 +14,6 @@ This part also aim at showcasing what we can do so far.
     </style>
 
     <!-- User will start the service like so -->
-    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="./mas.js"></script>
     <script>
         MyAwesomeService.load(function() {
@@ -90,10 +89,10 @@ This part also aim at showcasing what we can do so far.
     <h2>Loops</h2>
     <div>
         <!-- mas for: arrayVariable -->
-        <p>Current item <span data-mas="text: context"></span></p>
+        <p>Current item <span data-mas="text: context.item"></span></p>
         <!-- /mas -->
         <ul data-mas="for: arrayVariable">
-            <li data-mas="text: context"></li>
+            <li data-mas="text: context.item"></li>
         </ul>
 
         <!-- mas for: arrayWithObjectsVariable -->

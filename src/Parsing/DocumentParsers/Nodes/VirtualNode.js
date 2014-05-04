@@ -7,8 +7,9 @@
  * @param node An HTMLElement
  * @constructor
  */
-var VirtualNode = function (startComment, nodes, endComment)
+var VirtualNode = function ($, startComment, nodes, endComment)
 {
+    this.$ = $;
     this.startComment = $(startComment);
     this.nodes = nodes;
     this.endComment = $(endComment);
@@ -51,11 +52,11 @@ VirtualNode.prototype.setHtml = function(htmlContent)
 {
     for(var i = 0; i < this.nodes.length; ++i)
     {
-        $(this.nodes[i]).remove();
+        this.$(this.nodes[i]).remove();
     }
     this.nodes = [];
 
-    $content = $(htmlContent);
+    $content = this.$(htmlContent);
     this.startComment.after($content);
     this.nodes.push($content);
 };
@@ -64,28 +65,28 @@ VirtualNode.prototype.setValue = function(value)
 {
     for(var i = 0; i < this.nodes.length; ++i)
     {
-        $(this.nodes[i]).val(value);
+        this.$(this.nodes[i]).val(value);
     }
 };
 
 VirtualNode.prototype.getValue = function()
 {
-    return $(this.nodes).val();
+    return this.$(this.nodes).val();
 };
 
 VirtualNode.prototype.hide = function()
 {
-    $(this.nodes).hide();
+    this.$(this.nodes).hide();
 };
 
 VirtualNode.prototype.on = function(eventName, callback)
 {
-    $(this.nodes).on(eventName, callback);
+    this.$(this.nodes).on(eventName, callback);
 };
 
 VirtualNode.prototype.show = function()
 {
-    $(this.nodes).show();
+    this.$(this.nodes).show();
 };
 
 // Exports

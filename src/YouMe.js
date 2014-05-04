@@ -70,10 +70,14 @@ module.exports = function(storage)
         on: function(event, callback)
         {
             this.application.on(event, callback);
+
+            return this;
         },
         off: function(event, callback)
         {
             this.application.off(event, callback);
+
+            return this;
         },
         trigger: function(event)
         {
@@ -85,6 +89,26 @@ module.exports = function(storage)
         addCommand: function(commandName, callback)
         {
             this.application.interpreters.push(new UserDefinedInterpreter(this.storage, commandName, callback));
+
+            return this;
+        },
+        addScriptDependency: function(url, check, success)
+        {
+            // Format parameters
+            check = check || function() {return true;}
+
+            this.application.addDependency('script', url, check);
+
+            return this;
+        },
+        addStyleDependency: function(url, check, success)
+        {
+            // Format parameters
+            check = check || function() {return true;}
+
+            this.application.addDependency('style', url, check, success);
+
+            return this;
         },
         fuse: function(rootNode, hookName, arguments)
         {

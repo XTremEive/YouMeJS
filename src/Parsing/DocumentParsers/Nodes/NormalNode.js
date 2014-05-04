@@ -7,7 +7,7 @@
  * @param node An HTMLElement
  * @constructor
  */
-var NormalNode = function(node)
+var NormalNode = function($, node)
 {
     this.node = $(node);
     this.template = this.node.clone();

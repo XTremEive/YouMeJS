@@ -10,7 +10,7 @@ module.exports = function(grunt) {
         },
         uglify: {
             options: {
-                banner: '/*! <%= pkg.name %> v<%= pkg.version %> (<%= grunt.template.today("mm/dd/yyyy") %>) */\n'
+                banner: '/* <%= pkg.name %> v<%= pkg.version %>: <%= grunt.template.today("mm/dd/yyyy") %> */\n'
             },
             dist: {
                 src: 'build/dev/<%= pkg.name %>.<%= pkg.version %>.js',
@@ -23,7 +23,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-shell'); // Grunt shell
     grunt.loadNpmTasks('grunt-contrib-uglify'); // Uglify
 
-    // Register taks
+    // Register tasks
     grunt.registerTask('default', ['build']);
     grunt.registerTask('build', 'Build the library.', ['shell:build', 'uglify:dist']);
 

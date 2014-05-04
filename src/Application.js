@@ -20,6 +20,9 @@ var Application = function (documentParsers, commandParser, interpreters, hookNa
     this.debug = false;
     this.listeners = {};
     this.initialCommands = [];
+    this.dependencies = [];
+    this.$ = null;
+    this.isRunning = false;
 };
 
 // Event management
@@ -39,7 +42,7 @@ Application.prototype.on = function(event, callback)
         this.listeners[event] = [];
     }
 
-    // Add the listenenr
+    // Add the listener
     this.listeners[event].push(callback);
 
     // Return
@@ -49,7 +52,7 @@ Application.prototype.on = function(event, callback)
 /**
  * Remove an event listener.
  *
- * @param event The even'ts name
+ * @param event The event's name
  * @param callback The callback to be removed. If omitted all listeners to the given event will be removed.
  * @returns {Application} This
  */
@@ -89,9 +92,9 @@ Application.prototype.off = function(event, callback)
  * Trigger an event. All listener currently listening to the given event will be triggered.
  *
  * @param event The event's name
- * @param arguements The event's arguments.
+ * @param arguments The event's arguments.
  */
-Application.prototype.trigger = function (event, arguements)
+Application.prototype.trigger = function (event, arguments)
 {
     if (!(event in this.listeners))
     {
@@ -100,7 +103,7 @@ Application.prototype.trigger = function (event, arguements)
 
     for(var i = 0; i < this.listeners[event].length; ++i)
     {
-        this.listeners[event][i](arguements);
+        this.listeners[event][i](arguments);
     }
 };
 
@@ -114,6 +117,7 @@ Application.prototype.trigger = function (event, arguements)
  */
 Application.prototype.run = function(givenArguments)
 {
+    var self = this;
     givenArguments = givenArguments || {};
 
     // Handle arguments
@@ -126,13 +130,128 @@ Application.prototype.run = function(givenArguments)
         arguments[argumentName] = givenArguments[argumentName];
     }
 
-    // Run
-    this.debug = arguments.debug;
-    this.trigger('start', this);
-    this.refresh();
+    // Finish building the application
+    // Add jQuery dependency
+    this.addDependency('script', '//code.jquery.com/jquery-1.11.0.min.js', function() {
+        return window.jQuery === undefined || window.jQuery.fn.jquery !== '1.11.0';
+    }, function(application) {
+        application.$ = window.jQuery.noConflict(true);
+    });
+
+    // Load javascript dependencies
+    this.loadDependencies(function () {
+        // Run
+        self.debug = arguments.debug;
+        self.isRunning = true;
+        self.trigger('start', self);
+        self.refresh();
+    });
 
     // Return
     return this;
+};
+
+Application.prototype.addDependency = function(type, url, check, success)
+{
+    // Format parameters
+    success = success || null;
+
+    // Add dependency
+    this.dependencies.push({
+        type: type,
+        url: url,
+        check: check,
+        success: success,
+    });
+};
+
+Application.prototype.loadDependencies = function(callback)
+{
+    var dependenciesToLoad = this.dependencies.length;
+
+    for(var i = 0, dependency; dependency = this.dependencies[i]; ++i)
+    {
+        // Developer feedback
+        if(this.debug)
+        {
+            console.log("YouMe: Loading dependency: " + dependency.url);
+        }
+
+        // Check if the dependency should be added
+        if(dependency.check())
+        {
+            var htmlTag = null;
+
+            // Prepare the HTML tag to be added
+            switch(dependency.type)
+            {
+                case "script":
+                    htmlTag = document.createElement("script");
+                    htmlTag.setAttribute("type","text/javascript");
+                    htmlTag.setAttribute("src", dependency.url);
+                    break;
+                case "style":
+                    htmlTag = document.createElement("link");
+                    htmlTag.setAttribute("rel","stylesheet");
+                    htmlTag.setAttribute("type","text/css");
+                    htmlTag.setAttribute("href", dependency.url);
+                    break;
+            }
+
+            // Handle "unknown dependency type" errors.
+            if(null === htmlTag)
+            {
+                throw "YouMe Error: Unknown dependency of type " +dependency.type;
+            }
+
+            // Bind events to the HTML tag loading
+            (function(self, dependency) {
+                if (htmlTag.readyState) {
+                    htmlTag.onreadystatechange = function () { // For old versions of IE
+                        if (this.readyState == 'complete' || this.readyState == 'loaded') {
+                            // Handle loaded dependency
+                            if(null !== dependency.success)
+                            {
+                                dependency.success(self);
+                            }
+                            --dependenciesToLoad;
+                            if(0 == dependenciesToLoad)
+                            {
+                                callback();
+                            }
+                        }
+                    };
+                } else { // Other browsers
+                    htmlTag.onload = function() {
+                        // Handle loaded dependency
+                        if(null !== dependency.success)
+                        {
+                            dependency.success(self);
+                        }
+                        --dependenciesToLoad;
+                        if(0 == dependenciesToLoad)
+                        {
+                            callback();
+                        }
+                    };
+                }
+            })(this, dependency);
+
+            // Add the tag
+            (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(htmlTag);
+        } else {
+            // Handle loaded dependency
+            if(null !== dependency.success)
+            {
+                dependency.success(self);
+            }
+            --dependenciesToLoad;
+            if(0 == dependenciesToLoad)
+            {
+                callback();
+            }
+        }
+    }
 };
 
 /**
@@ -144,6 +263,13 @@ Application.prototype.run = function(givenArguments)
  */
 Application.prototype.refresh = function(rootNode, context, depth)
 {
+    // Discard premature calls
+    if(!this.isRunning)
+    {
+        return;
+    }
+
+    // Format arguments
     depth = depth || 0;
     rootNode = rootNode || this.rootNode;
     context = context || {};

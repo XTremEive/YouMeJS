@@ -18,8 +18,8 @@ CommentParser.prototype.parse = function(application, rootNode, context, hookNam
     var commands = [];
     var self = this;
 
-    $(rootNode).each(function(index, element) {
-        var nodesToParse = [$(element).get(0)];
+    application.$(rootNode).each(function(index, element) {
+        var nodesToParse = [application.$(element).get(0)];
 
         // Initialize parsing parameters
         var htmlTagsWithOptionallyClosingChildren = { 'ul': true, 'ol': true };
@@ -46,7 +46,7 @@ CommentParser.prototype.parse = function(application, rootNode, context, hookNam
                 case self.isEndComment(nodeToParse):
                     scopes[scopes.length - 1].endNode = nodeToParse;
                     var scope = scopes.pop();
-                    var parsedCommands = application.commandParser.parse(application, new VirtualNode(scope.startNode, scope.contentNodes, scope.endNode), context, scope.commandString);
+                    var parsedCommands = application.commandParser.parse(application, new VirtualNode(application.$, scope.startNode, scope.contentNodes, scope.endNode), context, scope.commandString);
                     for(var i = 0; i < parsedCommands.length; ++i)
                     {
                         commands.push(parsedCommands[i]);
