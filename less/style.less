@@ -32,6 +32,7 @@ body {
 }
 
 footer {
+  color: @color2;
   font-style: italic;
   padding: @spacing;
   text-align: right;
@@ -139,18 +140,6 @@ section {
     }
   }
 
-  em {
-    background: white;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    color: black;
-    display: inline-block;
-    font-size: @textSize;
-    font-style: italic;
-    line-height: @lineHeight * 0.9;
-    padding: 0 4px;
-  }
-
   h2 {
     font-size: @textSize * 2.3;
     font-weight: 600;
@@ -181,6 +170,21 @@ section {
 
     p {
       margin: 0;
+    }
+  }
+
+  p {
+    code {
+      box-shadow: none;
+      background: white;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      color: @textColor;
+      display: inline-block;
+      font-style: italic;
+      line-height: @lineHeight * 0.9;
+      margin: 0;
+      padding: 0 6px !important;
     }
   }
 }

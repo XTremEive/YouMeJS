@@ -58,7 +58,7 @@
     <div class="container">
         <a href="https://github.com/XTremEive/YouMeJS" class="button">Get it at Github!</a>
         <h1>YouMeJS</h1>
-        <p>The <em>simple</em> library &hearts; helping developers creating <em>powerful</em> web widgets.</p>
+        <p>The <code>simple</code> library &hearts; helping developers creating <code>powerful</code> web widgets.</p>
     </div>
 </header>
 
@@ -76,14 +76,14 @@
             <h3>Features</h3>
             <ul>
                 <li><a href="http://knockoutjs.com/">Knockout</a> inspired template syntax</li>
-                <li>Seamless refresh</li>
-                <li>Events</li>
-                <li>Customizable and extensible library</li>
+                <li>Powerful API: Events, seamless refresh, external resources loading, ...</li>
                 <li>Developer friendly</li>
+                <li>Customizable and extensible</li>
+                <li>...</li>
             </ul>
             <h3>Requirements and compatibility.</h3>
-            <p>YouMe doesn't require any library but will inject <a href="http://jquery.com/">jQuery</a> in noConflict mode on the client side. <br />
-                Keep in mind that this library as yet to be tested on different browser, but. if this interactive guide works for you, then YouMeJS is probably compatible with your browser.</p>
+            <p>YouMe doesn't have any requirement but Javascript enabled. <br />
+                Keep in mind that this library as yet to be tested on different browser, but.if this interactive guide works for you, then YouMeJS is probably compatible with your browser.</p>
         </section>
     </div>
 
@@ -96,7 +96,7 @@
     <div class="strip-bright">
         <section class="container">
             <h2>Where to get it?</h2>
-            <p>For now YouMe is only available <a href="https://github.com/XTremEive/YouMeJS">at my Github repository</a> under the <em>/build/release</em> folder. <a href="https://github.com/XTremEive/YouMeJS/tree/master/build/release">Get it here</a>.</p>
+            <p>For now YouMe is only available at <a href="https://github.com/XTremEive/YouMeJS">my Github repository</a> under the <code>/build/release</code> folder. <a href="https://github.com/XTremEive/YouMeJS/tree/master/build/release">Get it here</a>.</p>
         </section>
     </div>
 
@@ -111,13 +111,13 @@
             <h2>Getting started</h2>
             <p>
                 As a web widget developer, your job is to provide another developer with a simple yet powerful <a href="http://en.wikipedia.org/wiki/Application_programming_interface">API</a> for him to use on his website.
-                In this guide we will develop a Javascript object named <em>MyAwesomeService</em> which will act as such API. Lets get started!
+                In this guide we will develop a Javascript object named <code>MyAwesomeService</code> which will act as such API. Lets get started!
             </p>
             <code class="js">
                 // /js/mas.js<br />
                 MyAwesomeService = {};
             </code>
-            <p>That's it! You are done. Now the client can load your code and get access to <em>MyAwesomeService</em> object.</p>
+            <p>That's it! You are done. Now the client can load your code and get access to <code>MyAwesomeService</code> object.</p>
             <code class="html">
                 &lt;!-- /index.html --&gt;<br />
                 &lt;script src=&quot;js/mas.js&quot;&gt;&lt;/script&gt;<br />
@@ -125,7 +125,7 @@
                     console.log(MyAwesomeService);<br />
                 &lt;/script&gt;<br />
             </code>
-            <p>But our newly created API doesn't do much, lets fix that with the <em>YouMe()</em> function.<p>
+            <p>But our newly created API doesn't do much, lets fix that with the <code>YouMe()</code> function.</p>
             <code class="js">
                 // /js/mas.js<br />
                 // We expose a application interface in the global space.<br />
@@ -187,7 +187,7 @@
             <h2>Expose and display variables</h2>
             <p>
                 As web widget developer, keep in mind that YouMe will take care of exposing a comprehensive API to your client, but it's you who provides its backend.<br />
-                To do so you must provide the <em>YouMe()</em> function with a <em>Storage</em> object as a parameter. Like so:
+                To do so you must provide the <code>YouMe()</code> function with a <code>Storage</code> object as a parameter. Like so:
             </p>
             <code class="js">
                 // /js/mas.js<br />
@@ -198,7 +198,7 @@
                 // [...]
             </code>
 
-            <p>Here is an example of a minimal <em>Storage</em> object:</p>
+            <p>Here is an example of a minimal <code>Storage</code> object:</p>
             <code class="js">
                 // A constructor, feel free to add parameters such as API key, configuration or whatever.<br />
                 var MyStorage = function()<br />
@@ -247,7 +247,7 @@
                 &nbsp;&nbsp;return this; // Return &quot;this&quot; to allow chaining.<br />
                 };
             </code>
-            <p>As you can see a <em>Storage</em> object must implement at least <em>set()</em>, <em>unset()</em>, <em>has()</em>, <em>get()</em>, and <em>save()</em>. You can include any logic behind those functions though.</p>
+            <p>As you can see a <code>Storage</code> object must implement at least <code>set()</code>, <code>unset()</code>, <code>has()</code>, <code>get()</code>, and <code>save()</code>. You can include any logic behind those functions though.</p>
 
             <p>In this guide we have a storage which contains the following variables:</p>
             <dl class="storage">
@@ -305,7 +305,7 @@
     <div class="strip-bright">
         <section class="container">
             <h2>Conditions</h2>
-            <p>Without requiring you to change any line in your <em>Storage</em>  object, YouMe offers the possibility for your client to declare conditions in his HTML page.<br />
+            <p>Without requiring you to change any line in your <code>Storage</code>  object, YouMe offers the possibility for your client to declare conditions in his HTML page.<br />
                 Here are some examples:</p>
             <code class="html">
                 &lt;p data-mas=&quot;if: aSimpleTrueBoolean&quot;&gt;This paragraph should be shown&lt;/p&gt;<br />
@@ -343,7 +343,7 @@
                 <p><a href="#" data-mas='attribute: {"title": "I am a tooltip!"} {"title": "aSimpleArray.length == 3"}'>This link will not have a tooltip</a></p>
             </div>
             <p>For the sake of brevity, we did not repeat the alternative comment syntax, but keep in mind that they are available.<br />
-               For the same reason we did not show all operators, but know that <em>==</em>, <em>!=</em> <em>&gt;</em> <em>&lt;</em> <em>&gt;=</em> <em>&lt;=</em> <em>||</em> and <em>&amp;&amp;</em> are all available.<br />
+               For the same reason we did not show all operators, but know that <code>==</code>, <code>!=</code> <code>&gt;</code> <code>&lt;</code> <code>&gt;=</code> <code>&lt;=</code> <code>||</code> and <code>&amp;&amp;</code> are all available.<br />
                Conditional attributes are a little bit tricky. Think of them as two JSON objects separated by a space: one for attributes, the other one for conditions.</p>
         </section>
     </div>
@@ -358,7 +358,7 @@
     <div class="strip-color1">
         <section class="container">
             <h2>Loops</h2>
-            <p>YouMe also exposes a simple loop system for <em>array</em> variables. As usual some examples:</p>
+            <p>YouMe also exposes a simple loop system for <code>array</code> variables. As usual some examples:</p>
             <code class="html">
                 &lt;!-- mas for: aSimpleArray --&gt;<br />
                 &lt;p data-mas=&quot;text: context.item&quot;&gt;&lt;/p&gt;<br />
@@ -378,8 +378,8 @@
                     <li>Index: <span data-mas="text: context.loopIndex"></span> / Length: <span data-mas="text: context.loopLength"></span></li>
                 </ul>
             </div>
-            <p>When using a loop a special variable get exposed: <em>context</em>.<br />
-            The <em>context</em> variable exposes <em>context.item</em>, <em>context.loopIndex</em> and <em>context.loopLength</em> properties.</p>
+            <p>When using a loop a special variable get exposed: <code>context</code>.<br />
+            The <code>context</code> variable exposes <code>context.item</code>, <code>context.loopIndex</code> and <code>context.loopLength</code> properties.</p>
         </section>
     </div>
 
@@ -393,7 +393,7 @@
     <div class="strip-dark">
         <section class="container">
             <h2>Set variables and save</h2>
-            <p>YouMe provides ways for clients to set some of your <em>Storage</em> object variable too. Here is how a developer would set this up in his HTML page.</p>
+            <p>YouMe provides ways for clients to set some of your <code>Storage</code> object variable too. Here is how a developer would set this up in his HTML page.</p>
             <code class="html">
                 &lt;form methd=&quot;get&quot; action=&quot;&quot;&gt;<br />
                 &nbsp;&nbsp;&lt;input name=&quot;aSimpleVariable&quot; type=&quot;text&quot; value=&quot;&quot; data-mas=&quot;input: aSimpleVariable&quot; /&gt;<br />
@@ -407,8 +407,8 @@
                     <input type="button" data-mas="save" value="Save" />
                 </form>
             </div>
-            <p>What <em>input</em> does is just calling <em>Storage.set()</em> function of the <em>Storage</em> object. As for <em>save</em> it just calls <em>Storage.save()</em>.<br />
-            Even though we used a proper form, <em>input</em> can be added to any HTML control, as for <em>save</em> it can be added to any clickable HTML element.<br />
+            <p>What <code>input</code> does is just calling <code>Storage.set()</code> function of the <code>Storage</code> object. As for <code>save</code> it just calls <code>Storage.save()</code>.<br />
+            Even though we used a proper form, <code>input</code> can be added to any HTML control, as for <code>save</code> it can be added to any clickable HTML element.<br />
             Scroll up to see how your changes affected this document itself.</p>
         </section>
     </div>
@@ -444,13 +444,13 @@
                 });
             </code>
             <p>
-                These events are exposed through your <b>API</b>, but can only be accessed after <em>YouMe()</em> is called. To achieve this you might want to tweak the <em>load()</em>
+                These events are exposed through your <b>API</b>, but can only be accessed after <code>YouMe()</code> is called. To achieve this you might want to tweak the <code>load()</code>
                 function that we defined earlier. You can check the source code of this page for a real example.
             </p>
 
             <p>
-                In Javascript nothing is really private. As such a client is free to call your <em>Storage</em> object functions whenever he wants.<br />
-                And YouMe is making it even easier for them as your interface will expose the same <em>set()</em>, <em>unset()</em>, <em>has()</em>, <em>get()</em>, and <em>save()</em> functions as your storage but will additionally trigger a seamless refresh of the template.
+                In Javascript nothing is really private. As such a client is free to call your <code>Storage</code> object functions whenever he wants.<br />
+                And YouMe is making it even easier for them as your interface will expose the same <code>set()</code>, <code>unset()</code>, <code>has()</code>, <code>get()</code>, and <code>save()</code> functions as your storage but will additionally trigger a seamless refresh of the template.
             </p>
             <code class="js">
                 MyAwesomeService.set(&quot;someVariable&quot;, &quot;Some value&quot;);<br />
@@ -505,7 +505,7 @@
 
 <footer>
     <div class="container">
-        YouMeJS is maintained by <a href="https://github.com/XTremEive">XTremEive</a>.
+        YouMeJS is maintained by <a href="https://github.com/XTremEive">XTremEive</a>, thanks to <a href="http://knockoutjs.com/">Knockout</a>, <a href="http://jquery.com/">jQuery</a>, <a href="http://lesscss.org/">LESS</a> and <a href="http://highlightjs.org/">Highlight.js</a>.
     </div>
 </footer>
 
