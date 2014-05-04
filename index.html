@@ -134,33 +134,27 @@
                 &nbsp;&nbsp;// The load function will our client's entry point.<br />
                 &nbsp;&nbsp;load: function()<br />
                 &nbsp;&nbsp;{<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;// For the sake of the demo we're using jQuery to load YouMe,<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;// but in a real case scenario youme.x.x.x.min.js and mas.js would be one file.<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;var YouMePath = 'js/youme.0.0.4.min.js';<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;$.getScript(YouMePath, function() {<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;// We transform our application interface in an advanced application interface using YouMe<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;MyAwesomeService = YouMe();<br />
                 <br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// We transform our application interface in an advanced application interface using YouMe<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MyAwesomeService = YouMe();<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;// Then we expose a start() function to our client.<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;// For the sake of the demo the parameter provided is a debug flag... But it doesn't have to be exposed in a real case..<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;// We also provide a selector to work only on the demo part of the document... Think about the possibilities.<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;MyAwesomeService.start = function(debug, selector) {<br />
                 <br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Then we expose a start() function to our client.<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// For the sake of the demo the parameter provided is a debug flag... But it doesn't have to be exposed in a real case..<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// We also provide a selector to work only on the demo part of the document... Think about the possibilities.<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MyAwesomeService.start = function(debug, selector) {<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Finally we call fuse() (a function from the initial YouMe object).<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The first argument is a selector.<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The second argument is an name to use in document parsing. Here it's &quot;mas&quot;.<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The third parameter is a set of options.<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.fuse(selector, 'mas', { // &quot;mas&quot; stands for &quot;MyAwesomeService&quot;... Obviously.<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;debug: debug<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;};<br />
                 <br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Finally we call fuse() (a function from the initial YouMe object).<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The first argument is a selector.<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The second argument is an name to use in document parsing. Here it's &quot;mas&quot;.<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The third parameter is a set of options.<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.fuse(selector, 'mas', { // &quot;mas&quot; stands for &quot;MyAwesomeService&quot;... Obviously.<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;debug: debug<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;};<br />
-                <br />
-                &nbsp;&nbsp;&nbsp;&nbsp;});<br />
                 &nbsp;&nbsp;}<br />
                 };
             </code>
-            <p>It's a lot of comments but it's only 7 lines of code... Really.</p>
+            <p>It's a lot of comments but it's only 5 statements... Really.</p>
         </section>
     </div>
 
