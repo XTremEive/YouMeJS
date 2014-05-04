@@ -136,7 +136,7 @@ Application.prototype.run = function(givenArguments)
         return window.jQuery === undefined || window.jQuery.fn.jquery !== '1.11.0';
     }, function(application) {
         application.$ = window.jQuery.noConflict(true);
-    });
+    }, true);
 
     // Load javascript dependencies
     this.loadDependencies(function () {
@@ -151,18 +151,27 @@ Application.prototype.run = function(givenArguments)
     return this;
 };
 
-Application.prototype.addDependency = function(type, url, check, success)
+Application.prototype.addDependency = function(type, url, check, success, prepend)
 {
     // Format parameters
     success = success || null;
+    prepend = prepend || false
 
-    // Add dependency
-    this.dependencies.push({
+    // Create the dependency object
+    var dependency = {
         type: type,
         url: url,
         check: check,
         success: success,
-    });
+    };
+
+    // Add dependency
+    if(prepend)
+    {
+        this.dependencies.unshift(dependency);
+    } else {
+        this.dependencies.push(dependency);
+    }
 };
 
 Application.prototype.loadDependencies = function(callback)
