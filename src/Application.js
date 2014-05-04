@@ -140,6 +140,10 @@ Application.prototype.run = function(givenArguments)
 
     // Load javascript dependencies
     this.loadDependencies(function () {
+        // Finalize dependencies
+        self.finalizeDependencies();
+
+
         // Run
         self.debug = arguments.debug;
         self.isRunning = true;
@@ -151,10 +155,10 @@ Application.prototype.run = function(givenArguments)
     return this;
 };
 
-Application.prototype.addDependency = function(type, url, check, success, prepend)
+Application.prototype.addDependency = function(type, url, check, successCallback, prepend)
 {
     // Format parameters
-    success = success || null;
+    successCallback = successCallback || null;
     prepend = prepend || false
 
     // Create the dependency object
@@ -162,7 +166,7 @@ Application.prototype.addDependency = function(type, url, check, success, prepen
         type: type,
         url: url,
         check: check,
-        success: success,
+        successCallback: successCallback,
     };
 
     // Add dependency
@@ -214,51 +218,49 @@ Application.prototype.loadDependencies = function(callback)
             }
 
             // Bind events to the HTML tag loading
-            (function(self, dependency) {
-                if (htmlTag.readyState) {
-                    htmlTag.onreadystatechange = function () { // For old versions of IE
-                        if (this.readyState == 'complete' || this.readyState == 'loaded') {
-                            // Handle loaded dependency
-                            if(null !== dependency.success)
-                            {
-                                dependency.success(self);
-                            }
-                            --dependenciesToLoad;
-                            if(0 == dependenciesToLoad)
-                            {
-                                callback();
-                            }
-                        }
-                    };
-                } else { // Other browsers
-                    htmlTag.onload = function() {
+            if (htmlTag.readyState) {
+                htmlTag.onreadystatechange = function () { // For old versions of IE
+                    if (this.readyState == 'complete' || this.readyState == 'loaded') {
                         // Handle loaded dependency
-                        if(null !== dependency.success)
-                        {
-                            dependency.success(self);
-                        }
                         --dependenciesToLoad;
                         if(0 == dependenciesToLoad)
                         {
                             callback();
                         }
-                    };
-                }
-            })(this, dependency);
+                    }
+                };
+            } else { // Other browsers
+                htmlTag.onload = function() {
+                    // Handle loaded dependency
+                    --dependenciesToLoad;
+                    if(0 == dependenciesToLoad)
+                    {
+                        callback();
+                    }
+                };
+            }
 
             // Add the tag
             (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(htmlTag);
         } else {
             // Handle loaded dependency
-            if(null !== dependency.success)
-            {
-                dependency.success(self);
-            }
             --dependenciesToLoad;
             if(0 == dependenciesToLoad)
             {
                 callback();
             }
+        }
+    }
+};
+
+
+Application.prototype.finalizeDependencies = function()
+{
+    for(var i = 0, dependency; dependency = this.dependencies[i]; ++i)
+    {
+        if(null !== dependency.successCallback)
+        {
+            dependency.successCallback(this);
         }
     }
 };

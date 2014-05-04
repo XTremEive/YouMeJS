@@ -97,7 +97,7 @@ module.exports = function(storage)
             // Format parameters
             check = check || function() {return true;}
 
-            this.application.addDependency('script', url, check);
+            this.application.addDependency('script', url, check, success);
 
             return this;
         },
