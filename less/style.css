@@ -142,9 +142,8 @@ section p code {
   border-radius: 6px;
   border: 1px solid #ccc;
   color: #555555;
-  display: inline-block;
   font-style: italic;
-  line-height: 1.44em;
+  line-height: 1.6em;
   margin: 0;
   padding: 0 6px !important;
 }
@@ -153,7 +152,7 @@ section p code {
 }
 .container {
   margin: auto;
-  max-width: 1170px;
+  width: 1170px;
 }
 .strip-bright {
   color: #555555;
