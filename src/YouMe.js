@@ -32,17 +32,23 @@ module.exports = function(storage)
         {
             return new MockStorage(data);
         },
+        refresh: function()
+        {
+            this.application.refresh();
+
+            return this;
+        },
         set: function(key, value)
         {
             this.storage.set(key, value);
-            this.application.refresh();
+            this.refresh();
 
             return this;
         },
         unset: function(key)
         {
             this.storage.unset(key);
-            this.application.refresh();
+            this.refresh();
 
             return this;
         },

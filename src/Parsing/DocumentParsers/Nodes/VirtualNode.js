@@ -38,6 +38,11 @@ VirtualNode.prototype.setAttribute = function(name, value)
     this.startComment.attr(name, value);
 };
 
+VirtualNode.prototype.unsetAttribute = function(name)
+{
+    return this.$(this.nodes).removeAttr(name);
+};
+
 VirtualNode.prototype.getAttribute = function(name)
 {
     return this.startComment.attr(name);
@@ -81,7 +86,11 @@ VirtualNode.prototype.hide = function()
 
 VirtualNode.prototype.on = function(eventName, callback)
 {
-    this.$(this.nodes).on(eventName, callback);
+    this.$(this.nodes).on(eventName, function(event) {
+        event.preventDefault();
+
+        callback(event);
+    });
 };
 
 VirtualNode.prototype.show = function()

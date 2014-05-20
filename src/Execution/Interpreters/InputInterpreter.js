@@ -23,6 +23,12 @@ InputInterpreter.prototype.interpret = function(command)
         return false;
     }
 
+    // Prevent the command to be bound two times
+    if (command.executionCount > 0)
+    {
+        return true;
+    }
+
     // Get value from storage
     var value = this.getValue(command.context, command.getArgument(0), '');
 

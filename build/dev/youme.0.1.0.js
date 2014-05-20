@@ -148,7 +148,7 @@ Application.prototype.run = function(givenArguments)
         // Run
         self.debug = arguments.debug;
         self.isRunning = true;
-        self.trigger('start', self);
+        self.trigger('ready', self);
         self.refresh();
     });
 
@@ -391,6 +391,8 @@ AttributeInterpreter.prototype.interpret = function(command)
         if (conditionValue)
         {
             command.target.setAttribute(attributeName, value);
+        } else {
+            command.target.unsetAttribute(attributeName);
         }
     }
 
@@ -621,6 +623,12 @@ InputInterpreter.prototype.interpret = function(command)
         return false;
     }
 
+    // Prevent the command to be bound two times
+    if (command.executionCount > 0)
+    {
+        return true;
+    }
+
     // Get value from storage
     var value = this.getValue(command.context, command.getArgument(0), '');
 
@@ -748,7 +756,7 @@ SaveInterpreter.prototype.interpret = function(command)
         return false;
     }
 
-    // ...
+    // Prevent the command to be bound two times
     if (command.executionCount > 0)
     {
         return true;
@@ -1286,6 +1294,11 @@ NormalNode.prototype.setAttribute = function(name, value)
     return this.node.attr(name, value);
 };
 
+NormalNode.prototype.unsetAttribute = function(name)
+{
+    return this.node.removeAttr(name);
+};
+
 NormalNode.prototype.getHtml = function()
 {
     return this.node.html();
@@ -1313,7 +1326,11 @@ NormalNode.prototype.hide = function()
 
 NormalNode.prototype.on = function(eventName, callback)
 {
-    this.node.on(eventName, callback);
+    this.node.on(eventName, function(event) {
+        event.preventDefault();
+
+        callback(event);
+    });
 };
 
 NormalNode.prototype.show = function()
@@ -1364,6 +1381,11 @@ VirtualNode.prototype.setAttribute = function(name, value)
     this.startComment.attr(name, value);
 };
 
+VirtualNode.prototype.unsetAttribute = function(name)
+{
+    return this.$(this.nodes).removeAttr(name);
+};
+
 VirtualNode.prototype.getAttribute = function(name)
 {
     return this.startComment.attr(name);
@@ -1407,7 +1429,11 @@ VirtualNode.prototype.hide = function()
 
 VirtualNode.prototype.on = function(eventName, callback)
 {
-    this.$(this.nodes).on(eventName, callback);
+    this.$(this.nodes).on(eventName, function(event) {
+        event.preventDefault();
+
+        callback(event);
+    });
 };
 
 VirtualNode.prototype.show = function()
@@ -1454,17 +1480,23 @@ module.exports = function(storage)
         {
             return new MockStorage(data);
         },
+        refresh: function()
+        {
+            this.application.refresh();
+
+            return this;
+        },
         set: function(key, value)
         {
             this.storage.set(key, value);
-            this.application.refresh();
+            this.refresh();
 
             return this;
         },
         unset: function(key)
         {
             this.storage.unset(key);
-            this.application.refresh();
+            this.refresh();
 
             return this;
         },

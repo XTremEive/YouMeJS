@@ -14,13 +14,13 @@ This part also aim at showcasing what we can do so far.
     </style>
 
     <!-- User will start the service like so -->
-    <script src="../build/dev/youme.0.0.5.js"></script>
+    <script src="../build/dev/youme.0.1.0.js"></script>
     <script src="./mas.js"></script>
     <script>
         MyAwesomeService.load(function() {
 
             // Here are some user defined hooks
-            MyAwesomeService.on('start', function () {
+            MyAwesomeService.on('ready', function () {
                 alert("This javascript hook is triggered on application's start (but before any refresh)") ;
             });
             MyAwesomeService.on('beforeRefresh', function () {

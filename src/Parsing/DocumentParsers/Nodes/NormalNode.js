@@ -38,6 +38,11 @@ NormalNode.prototype.setAttribute = function(name, value)
     return this.node.attr(name, value);
 };
 
+NormalNode.prototype.unsetAttribute = function(name)
+{
+    return this.node.removeAttr(name);
+};
+
 NormalNode.prototype.getHtml = function()
 {
     return this.node.html();
@@ -65,7 +70,11 @@ NormalNode.prototype.hide = function()
 
 NormalNode.prototype.on = function(eventName, callback)
 {
-    this.node.on(eventName, callback);
+    this.node.on(eventName, function(event) {
+        event.preventDefault();
+
+        callback(event);
+    });
 };
 
 NormalNode.prototype.show = function()

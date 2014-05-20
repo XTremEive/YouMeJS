@@ -50,6 +50,8 @@ AttributeInterpreter.prototype.interpret = function(command)
         if (conditionValue)
         {
             command.target.setAttribute(attributeName, value);
+        } else {
+            command.target.unsetAttribute(attributeName);
         }
     }
 

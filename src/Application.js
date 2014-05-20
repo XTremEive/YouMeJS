@@ -147,7 +147,7 @@ Application.prototype.run = function(givenArguments)
         // Run
         self.debug = arguments.debug;
         self.isRunning = true;
-        self.trigger('start', self);
+        self.trigger('ready', self);
         self.refresh();
     });
 
