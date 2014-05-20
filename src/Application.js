@@ -134,8 +134,13 @@ Application.prototype.run = function(givenArguments)
     // Add jQuery dependency
     this.addDependency('script', '//code.jquery.com/jquery-1.11.0.min.js', function() {
         return window.jQuery === undefined || window.jQuery.fn.jquery !== '1.11.0';
-    }, function(application) {
-        application.$ = window.jQuery.noConflict(true);
+    }, function(application, dependency) {
+        if (dependency.isLoaded)
+        {
+            application.$ = window.jQuery.noConflict(true);
+        } else {
+            application.$ = window.$;
+        }
     }, true);
 
     // Load javascript dependencies
@@ -191,71 +196,67 @@ Application.prototype.loadDependencies = function(callback)
             console.log("YouMe: Loading dependency: " + dependency.url);
         }
 
-        // Handle dependency
-        (function(dependency) {
-            // Check if the dependency should be added
-            if(dependency.check())
+        // Check if the dependency should be added
+        if(dependency.check())
+        {
+            var htmlTag = null;
+            dependency.isLoaded = true;
+
+            // Prepare the HTML tag to be added
+            switch(dependency.type)
             {
-                var htmlTag = null;
+                case "script":
+                    htmlTag = document.createElement("script");
+                    htmlTag.setAttribute("type","text/javascript");
+                    htmlTag.setAttribute("src", dependency.url);
+                    break;
+                case "style":
+                    htmlTag = document.createElement("link");
+                    htmlTag.setAttribute("rel","stylesheet");
+                    htmlTag.setAttribute("type","text/css");
+                    htmlTag.setAttribute("href", dependency.url);
+                    break;
+            }
 
-                // Prepare the HTML tag to be added
-                switch(dependency.type)
-                {
-                    case "script":
-                        htmlTag = document.createElement("script");
-                        htmlTag.setAttribute("type","text/javascript");
-                        htmlTag.setAttribute("src", dependency.url);
-                        break;
-                    case "style":
-                        htmlTag = document.createElement("link");
-                        htmlTag.setAttribute("rel","stylesheet");
-                        htmlTag.setAttribute("type","text/css");
-                        htmlTag.setAttribute("href", dependency.url);
-                        break;
-                }
+            // Handle "unknown dependency type" errors.
+            if(null === htmlTag)
+            {
+                throw "YouMe Error: Unknown dependency of type " + dependency.type;
+            }
 
-                // Handle "unknown dependency type" errors.
-                if(null === htmlTag)
-                {
-                    throw "YouMe Error: Unknown dependency of type " +dependency.type;
-                }
-
-                // Bind events to the HTML tag loading
-                if (htmlTag.readyState) {
-                    htmlTag.onreadystatechange = function () { // For old versions of IE
-                        if (this.readyState == 'complete' || this.readyState == 'loaded') {
-                            // Handle loaded dependency
-                            dependency.isLoaded = true;
-                            --dependenciesToLoad;
-                            if(0 == dependenciesToLoad)
-                            {
-                                callback(dependency);
-                            }
-                        }
-                    };
-                } else { // Other browsers
-                    htmlTag.onload = function() {
+            // Bind events to the HTML tag loading
+            if (htmlTag.readyState) {
+                htmlTag.onreadystatechange = function () { // For old versions of IE
+                    if (this.readyState == 'complete' || this.readyState == 'loaded') {
                         // Handle loaded dependency
-                        dependency.isLoaded = true;
                         --dependenciesToLoad;
                         if(0 == dependenciesToLoad)
                         {
-                            callback(dependency);
+                            callback();
                         }
-                    };
-                }
-
-                // Add the tag
-                (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(htmlTag);
-            } else {
-                // Handle loaded dependency
-                --dependenciesToLoad;
-                if(0 == dependenciesToLoad)
-                {
-                    callback(dependency);
-                }
+                    }
+                };
+            } else { // Other browsers
+                htmlTag.onload = function() {
+                    // Handle loaded dependency
+                    --dependenciesToLoad;
+                    if(0 == dependenciesToLoad)
+                    {
+                        callback();
+                    }
+                };
             }
-        })(dependency);
+
+            // Add the tag
+            (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(htmlTag);
+        } else {
+            // Handle loaded dependency
+            --dependenciesToLoad;
+            if(0 == dependenciesToLoad)
+            {
+                callback();
+            }
+        }
     }
 };
 
@@ -266,7 +267,7 @@ Application.prototype.finalizeDependencies = function()
     {
         if(null !== dependency.successCallback)
         {
-            dependency.successCallback(this);
+            dependency.successCallback(this, dependency);
         }
     }
 };
