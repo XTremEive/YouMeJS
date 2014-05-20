@@ -17,7 +17,7 @@
         MyAwesomeService.load(function() {
             // Here are some user defined listeners
 
-            MyAwesomeService.on('start', function () {
+            MyAwesomeService.on('ready', function () {
                 console.log("This javascript listener is triggered on application's start (but before any refresh)") ;
             });
 
@@ -96,7 +96,7 @@
     <div class="strip-bright">
         <section class="container">
             <h2>Where can I get it?</h2>
-            <p>You can <a href="youme.0.0.5.min.js">get the latest release here</a> or check <a href="https://github.com/XTremEive/YouMeJS">my Github repository</a> for the source code.</p>
+            <p>You can <a href="youme.0.1.0.min.js">get the latest release here</a> or check <a href="https://github.com/XTremEive/YouMeJS">my Github repository</a> for the source code.</p>
         </section>
     </div>
 
@@ -419,7 +419,7 @@
             <h2>Expose events and actions</h2>
             <p>Lets stop with HTML and move back to Javascript. YouMe exposes events for your client to listen to. Here are some <b>Javascript</b> examples.</p>
             <code class="js">
-                MyAwesomeService.on('start', function () {<br />
+                MyAwesomeService.on('ready', function () {<br />
                 &nbsp;&nbsp;console.log(&quot;This javascript listener is triggered on application's start (but before any refresh)&quot;) ;<br />
                 });<br />
                 <br />
