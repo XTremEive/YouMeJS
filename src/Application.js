@@ -167,6 +167,7 @@ Application.prototype.addDependency = function(type, url, check, successCallback
         url: url,
         check: check,
         successCallback: successCallback,
+        isLoaded: false
     };
 
     // Add dependency
@@ -190,66 +191,71 @@ Application.prototype.loadDependencies = function(callback)
             console.log("YouMe: Loading dependency: " + dependency.url);
         }
 
-        // Check if the dependency should be added
-        if(dependency.check())
-        {
-            var htmlTag = null;
-
-            // Prepare the HTML tag to be added
-            switch(dependency.type)
+        // Handle dependency
+        (function(dependency) {
+            // Check if the dependency should be added
+            if(dependency.check())
             {
-                case "script":
-                    htmlTag = document.createElement("script");
-                    htmlTag.setAttribute("type","text/javascript");
-                    htmlTag.setAttribute("src", dependency.url);
-                    break;
-                case "style":
-                    htmlTag = document.createElement("link");
-                    htmlTag.setAttribute("rel","stylesheet");
-                    htmlTag.setAttribute("type","text/css");
-                    htmlTag.setAttribute("href", dependency.url);
-                    break;
-            }
+                var htmlTag = null;
 
-            // Handle "unknown dependency type" errors.
-            if(null === htmlTag)
-            {
-                throw "YouMe Error: Unknown dependency of type " +dependency.type;
-            }
+                // Prepare the HTML tag to be added
+                switch(dependency.type)
+                {
+                    case "script":
+                        htmlTag = document.createElement("script");
+                        htmlTag.setAttribute("type","text/javascript");
+                        htmlTag.setAttribute("src", dependency.url);
+                        break;
+                    case "style":
+                        htmlTag = document.createElement("link");
+                        htmlTag.setAttribute("rel","stylesheet");
+                        htmlTag.setAttribute("type","text/css");
+                        htmlTag.setAttribute("href", dependency.url);
+                        break;
+                }
 
-            // Bind events to the HTML tag loading
-            if (htmlTag.readyState) {
-                htmlTag.onreadystatechange = function () { // For old versions of IE
-                    if (this.readyState == 'complete' || this.readyState == 'loaded') {
+                // Handle "unknown dependency type" errors.
+                if(null === htmlTag)
+                {
+                    throw "YouMe Error: Unknown dependency of type " +dependency.type;
+                }
+
+                // Bind events to the HTML tag loading
+                if (htmlTag.readyState) {
+                    htmlTag.onreadystatechange = function () { // For old versions of IE
+                        if (this.readyState == 'complete' || this.readyState == 'loaded') {
+                            // Handle loaded dependency
+                            dependency.isLoaded = true;
+                            --dependenciesToLoad;
+                            if(0 == dependenciesToLoad)
+                            {
+                                callback(dependency);
+                            }
+                        }
+                    };
+                } else { // Other browsers
+                    htmlTag.onload = function() {
                         // Handle loaded dependency
+                        dependency.isLoaded = true;
                         --dependenciesToLoad;
                         if(0 == dependenciesToLoad)
                         {
-                            callback();
+                            callback(dependency);
                         }
-                    }
-                };
-            } else { // Other browsers
-                htmlTag.onload = function() {
-                    // Handle loaded dependency
-                    --dependenciesToLoad;
-                    if(0 == dependenciesToLoad)
-                    {
-                        callback();
-                    }
-                };
-            }
+                    };
+                }
 
-            // Add the tag
-            (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(htmlTag);
-        } else {
-            // Handle loaded dependency
-            --dependenciesToLoad;
-            if(0 == dependenciesToLoad)
-            {
-                callback();
+                // Add the tag
+                (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(htmlTag);
+            } else {
+                // Handle loaded dependency
+                --dependenciesToLoad;
+                if(0 == dependenciesToLoad)
+                {
+                    callback(dependency);
+                }
             }
-        }
+        })(dependency);
     }
 };
 
