@@ -94,7 +94,7 @@ module.exports = function(storage)
 
         addCommand: function(commandName, callback)
         {
-            this.application.interpreters.push(new UserDefinedInterpreter(this.storage, commandName, callback));
+            this.application.addInterpreter(new UserDefinedInterpreter(this.storage, commandName, callback));
 
             return this;
         },

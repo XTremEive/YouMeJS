@@ -7,6 +7,7 @@
 var Interpreter = function(storage)
 {
     this.storage = storage || null;
+    this.application = null;
 };
 
 Interpreter.prototype.interpret = function(command)

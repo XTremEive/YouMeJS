@@ -13,9 +13,13 @@
  */
 var Application = function (documentParsers, commandParser, interpreters, hookName, rootNode)
 {
+    // Format parameters
+    interpreters = interpreters || [];
+
+    // Set members
     this.documentParsers = documentParsers || [];
     this.commandParser = commandParser || null;
-    this.interpreters = interpreters || [];
+    this.interpreters = [];
     this.hookName = hookName || 'missingHookName'
     this.rootNode = rootNode || 'body';
     this.debug = false;
@@ -24,6 +28,12 @@ var Application = function (documentParsers, commandParser, interpreters, hookNa
     this.dependencies = [];
     this.$ = null;
     this.isRunning = false;
+
+    // Initialize
+    for(var i = 0; i < interpreters.length; ++i)
+    {
+        this.addInterpreter(interpreters[i]);
+    }
 };
 
 // Event management
@@ -106,6 +116,17 @@ Application.prototype.trigger = function (event, arguments)
     {
         this.listeners[event][i](arguments);
     }
+};
+
+/**
+ * Add an interpreter to this application.
+ *
+ * @param interpreter The interpreter to be added.
+ */
+Application.prototype.addInterpreter = function(interpreter)
+{
+    this.interpreters.push(interpreter);
+    interpreter.application = this;
 };
 
 // Application's life cycle
@@ -664,6 +685,7 @@ module.exports = InputInterpreter;
 var Interpreter = function(storage)
 {
     this.storage = storage || null;
+    this.application = null;
 };
 
 Interpreter.prototype.interpret = function(command)
@@ -738,6 +760,7 @@ Interpreter.prototype.getValue = function(context, path, defaultValue)
 
 // Exports
 module.exports = Interpreter;
+
 },{}],8:[function(_dereq_,module,exports){
 // Require statements
 var Interpreter = _dereq_('./Interpreter');
@@ -1549,7 +1572,7 @@ module.exports = function(storage)
 
         addCommand: function(commandName, callback)
         {
-            this.application.interpreters.push(new UserDefinedInterpreter(this.storage, commandName, callback));
+            this.application.addInterpreter(new UserDefinedInterpreter(this.storage, commandName, callback));
 
             return this;
         },
@@ -1597,6 +1620,7 @@ module.exports = function(storage)
         }
     };
 };
+
 },{"./Application":1,"./Execution/Interpreters/AttributeInterpreter":2,"./Execution/Interpreters/ConditionEvaluator":3,"./Execution/Interpreters/ForInterpreter":4,"./Execution/Interpreters/IfInterpreter":5,"./Execution/Interpreters/InputInterpreter":6,"./Execution/Interpreters/SaveInterpreter":8,"./Execution/Interpreters/TextInterpreter":9,"./Execution/Interpreters/UserDefinedInterpreter":10,"./Execution/Storages/MockStorage":11,"./Parsing/CommandParsers/CommandParser":13,"./Parsing/DocumentParsers/CommentParser":14,"./Parsing/DocumentParsers/DocumentParser":15}]},{},["u88BNT"])
 ("u88BNT")
 });

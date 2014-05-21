@@ -12,9 +12,13 @@
  */
 var Application = function (documentParsers, commandParser, interpreters, hookName, rootNode)
 {
+    // Format parameters
+    interpreters = interpreters || [];
+
+    // Set members
     this.documentParsers = documentParsers || [];
     this.commandParser = commandParser || null;
-    this.interpreters = interpreters || [];
+    this.interpreters = [];
     this.hookName = hookName || 'missingHookName'
     this.rootNode = rootNode || 'body';
     this.debug = false;
@@ -23,6 +27,12 @@ var Application = function (documentParsers, commandParser, interpreters, hookNa
     this.dependencies = [];
     this.$ = null;
     this.isRunning = false;
+
+    // Initialize
+    for(var i = 0; i < interpreters.length; ++i)
+    {
+        this.addInterpreter(interpreters[i]);
+    }
 };
 
 // Event management
@@ -105,6 +115,17 @@ Application.prototype.trigger = function (event, arguments)
     {
         this.listeners[event][i](arguments);
     }
+};
+
+/**
+ * Add an interpreter to this application.
+ *
+ * @param interpreter The interpreter to be added.
+ */
+Application.prototype.addInterpreter = function(interpreter)
+{
+    this.interpreters.push(interpreter);
+    interpreter.application = this;
 };
 
 // Application's life cycle
