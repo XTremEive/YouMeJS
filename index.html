@@ -128,23 +128,23 @@
             <p>But our newly created API doesn't do much, lets fix that with the <code>YouMe()</code> function.</p>
             <code class="js">
                 // /js/mas.js<br />
-                // We expose a application interface in the global space.<br />
+                // We expose an application interface in the global space.<br />
                 MyAwesomeService = {<br />
                 &nbsp;&nbsp;<br />
-                &nbsp;&nbsp;// The load function will our client's entry point.<br />
+                &nbsp;&nbsp;// The load function will be our client's entry point.<br />
                 &nbsp;&nbsp;load: function()<br />
                 &nbsp;&nbsp;{<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;// We transform our application interface in an advanced application interface using YouMe<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;MyAwesomeService = YouMe();<br />
                 <br />
                 &nbsp;&nbsp;&nbsp;&nbsp;// Then we expose a start() function to our client.<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;// For the sake of the demo the parameter provided is a debug flag... But it doesn't have to be exposed in a real case..<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;// For the sake of the demo the parameter provided is a debug flag... But it doesn't have to be that way in a real case..<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;// We also provide a selector to work only on the demo part of the document... Think about the possibilities.<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;MyAwesomeService.start = function(debug, selector) {<br />
                 <br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Finally we call fuse() (a function from the initial YouMe object).<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The first argument is a selector.<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The second argument is an name to use in document parsing. Here it's &quot;mas&quot;.<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The second argument is a name to use in document parsing. Here it's &quot;mas&quot;.<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The third parameter is a set of options.<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.fuse(selector, 'mas', { // &quot;mas&quot; stands for &quot;MyAwesomeService&quot;... Obviously.<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;debug: debug<br />
@@ -180,7 +180,7 @@
         <section class="container">
             <h2>Expose and display variables</h2>
             <p>
-                As web widget developer, keep in mind that YouMe will take care of exposing a comprehensive API to your client, but it's you who provides its backend.<br />
+                As a web widget developer, keep in mind that YouMe will take care of exposing a comprehensive API to your client, but it's you who provides its backend.<br />
                 To do so you must provide the <code>YouMe()</code> function with a <code>Storage</code> object as a parameter. Like so:
             </p>
             <code class="js">
@@ -257,7 +257,7 @@
                 <dd class="demo" data-mas="text: aSimpleObject">---</dd>
             </dl>
 
-            <p>Lets see how our client will access those variables in his HTML page. Observe the use <b>mas</b> keyword which is our own namespace.</p>
+            <p>Lets see how our client will access those variables in his HTML page. Observe the use <b>mas</b> keyword which acts as our own namespace.</p>
             <code class="html">
                 &lt;p data-mas='text: aSimpleVariable'&gt;&lt;/p&gt;<br />
                 &lt;p data-mas='text: aSimpleArray'&gt;&lt;/p&gt;<br />
@@ -438,7 +438,7 @@
                 });
             </code>
             <p>
-                These events are exposed through your <b>API</b>, but can only be accessed after <code>YouMe()</code> is called. To achieve this you might want to tweak the <code>load()</code>
+                These events are exposed through your <b>API</b>, but can only be accessed after <code>YouMe()</code> is called. In order to achieve this you might want to tweak the <code>load()</code>
                 function that we defined earlier. You can check the source code of this page for a real example.
             </p>
 
